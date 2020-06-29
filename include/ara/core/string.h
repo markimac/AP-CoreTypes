@@ -93,14 +93,14 @@ namespace ara::core {
         // [SWS_CORE_03323]
         template<typename T>
         int compare(size_type pos1, size_type n1, T const& t, size_type pos2, size_type n2 = npos) const {}
-
-        // [SWS_CORE_03296]
-        template<typename Allocator>
-        void swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs) {}
     };
 
     // [SWS_CORE_03001]
     using String = BasicString<>;
+
+    // [SWS_CORE_03296]
+    template<typename Allocator>
+    void swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs) {}
 }
 
 #endif // ARA_CORE_STRING_H
