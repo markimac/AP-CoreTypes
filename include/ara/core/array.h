@@ -21,10 +21,10 @@ template<typename T, std::size_t N> class Array
  public:
     // Draft only
     // todo: write our own iterators
-    using iterator               = std::array<T, N>::iterator;
-    using const_iterator         = std::array<T, N>::const_iterator;
-    using reverse_iterator       = std::array<T, N>::reverse_iterator;
-    using const_reverse_iterator = std::array<T, N>::const_reverse_iterator;
+    using iterator               = typename std::array<T, N>::iterator;
+    using const_iterator         = typename std::array<T, N>::const_iterator;
+    using reverse_iterator       = typename std::array<T, N>::reverse_iterator;
+    using const_reverse_iterator = typename std::array<T, N>::const_reverse_iterator;
 
     typedef T                 value_type;
     typedef std::size_t       size_type;
