@@ -5,14 +5,14 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef ARA_CORE_STRING_H
-#define ARA_CORE_STRING_H
+#ifndef ARA_CORE_STRING_H_
+#define ARA_CORE_STRING_H_
 
 #include <string> // std::basic_string
 
-#include "allocator.h"
+#include "ara/core/allocator.h"
 
-#include "string_view.h"
+#include "ara/core/string_view.h"
 
 namespace ara::core
 {
@@ -299,4 +299,4 @@ namespace ara::core
     }
 }
 
-#endif // ARA_CORE_STRING_H
+#endif // ARA_CORE_STRING_H_

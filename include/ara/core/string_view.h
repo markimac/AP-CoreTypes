@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef ARA_CORE_STRING_VIEW_H
-#define ARA_CORE_STRING_VIEW_H
+#ifndef ARA_CORE_STRING_VIEW_H_
+#define ARA_CORE_STRING_VIEW_H_
 
 #include <string_view> // std::string_view
 
@@ -21,3 +21,4 @@ namespace ara::core
 } // ara::core
 
 #endif // ARA_CORE_STRING_VIEW_H
+#endif // ARA_CORE_STRING_VIEW_H_
