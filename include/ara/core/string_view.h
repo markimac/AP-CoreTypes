@@ -20,5 +20,4 @@ namespace ara::core
     };
 } // ara::core
 
-#endif // ARA_CORE_STRING_VIEW_H
 #endif // ARA_CORE_STRING_VIEW_H_
