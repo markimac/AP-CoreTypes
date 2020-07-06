@@ -94,7 +94,7 @@ namespace ara::core
             return *this;
         }
 
-        // [SWS_CORE_03307] operator+ from StringView
+        // [SWS_CORE_03307] operator+= from StringView
         /*
         An operator+= member function shall be defined for BasicString that accepts a StringView argument by value.
         This function shall behave the same as the corresponding std::basic_string function from [6, the C++17 standard].
