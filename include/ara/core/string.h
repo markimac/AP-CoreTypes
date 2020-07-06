@@ -143,6 +143,40 @@ namespace ara::core
         const char* data() const noexcept { return this->__data.data(); }
         allocator_type get_allocator() const noexcept { return this->__data.get_allocator(); }
 
+        size_type find(const BasicString& str, size_type pos = 0) const noexcept { return this->__data.find(str.data, pos); }
+        size_type find(const char* s, size_type pos, size_type n) const { return this->__data.find(s, pos, n); }
+        size_type find(const char* s, size_type pos = 0) const { return this->__data.find(s, pos); }
+        size_type find(char c, size_type pos = 0) const noexcept { return this->__data.find(c, pos); }
+        size_type rfind(const BasicString& str, size_type pos = npos) const noexcept { return this->__data.rfind(str.data, pos); }
+        size_type rfind(const char* s, size_type pos, size_type n) const { return this->__data.rfind(s, pos, n); }
+        size_type rfind(const char* s, size_type pos = npos) const { return this->__data.rfind(s, pos); }
+        size_type rfind(char c, size_type pos = npos) const noexcept { return this->__data.rfind(c, pos); }
+
+        size_type find_first_of(const BasicString& str, size_type pos = 0) const noexcept { return this->__data.find_first_of(str.data, pos); }
+        size_type find_first_of(const char* s, size_type pos, size_type n) const { return this->__data.find_first_of(s, pos, n); }
+        size_type find_first_of(const char* s, size_type pos = 0) const { return this->__data.find_first_of(s, pos); }
+        size_type find_first_of(char c, size_type pos = 0) const noexcept { return this->__data.find_first_of(c, pos); }
+        size_type find_last_of(const BasicString& str, size_type pos = npos) const noexcept { return this->__data.find_last_of(str.data, pos); }
+        size_type find_last_of(const char* s, size_type pos, size_type n) const { return this->__data.find_last_of(s, pos, n); }
+        size_type find_last_of(const char* s, size_type pos = npos) const { return this->__data.find_last_of(s, pos); }
+        size_type find_last_of(char c, size_type pos = npos) const noexcept { return this->__data.find_last_of(c, pos); }
+
+        size_type find_first_not_of(const BasicString& str, size_type pos = 0) const noexcept { return this->__data.find_first_not_of(str.data, pos); }
+        size_type find_first_not_of(const char* s, size_type pos, size_type n) const { return this->__data.find_first_not_of(s, pos, n); }
+        size_type find_first_not_of(const char* s, size_type pos = 0) const { return this->__data.find_first_not_of(s, pos); }
+        size_type find_first_not_of(char c, size_type pos = 0) const noexcept { return this->__data.find_first_not_of(c, pos); }
+        size_type find_last_not_of(const BasicString& str, size_type pos = npos) const noexcept { return this->__data.find_last_not_of(str.data, pos); }
+        size_type find_last_not_of(const char* s, size_type pos, size_type n) const { return this->__data.find_last_not_of(s, pos, n); }
+        size_type find_last_not_of(const char* s, size_type pos = npos) const { return this->__data.find_last_not_of(s, pos); }
+        size_type find_last_not_of(char c, size_type pos = npos) const noexcept { return this->__data.find_last_not_of(c, pos); }
+
+        BasicString substr(size_type pos = 0, size_type n = npos) const
+        {
+            BasicString retval;
+            retval.__data = this->__data.substr(pos, n);
+            return retval;
+        }
+
         int compare(const BasicString& str) const noexcept { return this->__data.compare(str.__data); }
         int compare(size_type pos1, size_type n1, const BasicString& str) const
         {
