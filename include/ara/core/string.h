@@ -119,11 +119,45 @@ namespace ara::core
         const char& back() const { return this->__data.back(); }
         char& back() { return this->__data.back(); }
 
+        // comparision operators from STL
+        bool operator==(const BasicString& other) const { return this->__data == other.__data; }
+        bool operator==(const char* s) const { return this->__data == s; }
+        bool operator!=(const BasicString& other) const { return this->__data != other.__data; }
+        bool operator!=(const char* s) const { return this->__data != s; }
+
+        bool operator<(const BasicString& other) const { return this->__data < other.__data; }
+        bool operator<(const char* s) const { return this->__data < s; }
+
+        bool operator>(const BasicString& other) const { return this->__data > other.__data; }
+        bool operator>(const char* s) const { return this->__data > s; }
+
+        bool operator<=(const BasicString& other) const { return this->__data <= other.__data; }
+        bool operator<=(const char* s) const { return this->__data <= s; }
+
+        bool operator>=(const BasicString& other) const { return this->__data >= other.__data; }
+        bool operator>=(const char* s) const { return this->__data >= s; }
+
         // string operations methods from STL
 
         const char* c_str() const noexcept { return this->__data.c_str(); }
         const char* data() const noexcept { return this->__data.data(); }
         allocator_type get_allocator() const noexcept { return this->__data.get_allocator(); }
+
+        int compare(const BasicString& str) const noexcept { return this->__data.compare(str.__data); }
+        int compare(size_type pos1, size_type n1, const BasicString& str) const
+        {
+            return this->__data.compare(pos1, n1, str.__data);
+        }
+        int compare(size_type pos1, size_type n1, const BasicString& str, size_type pos2, size_type n2) const
+        {
+            return this->__data.compare(pos1, n1, str.__data, pos2, n2);
+        }
+        int compare(const char* s) const { return this->__data.compare(s); }
+        int compare(size_type pos1, size_type n1, const char* s) const { return this->__data.compare(pos1, n1, s); }
+        int compare(size_type pos1, size_type n1, const char* s, size_type n2) const
+        {
+            return this->__data.compare(pos1, n1, s, n2);
+        }
 
         // [SWS_CORE_03301] Implicit conversion to StringView
         /*
@@ -383,6 +417,43 @@ namespace ara::core
     void swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs)
     {
         std::swap(lhs.__data, rhs.__data);
+    }
+
+    // comparision operators from STL
+    template <class AllocatorT>
+    bool operator==(const char* s, const BasicString<AllocatorT>& bs)
+    {
+        return bs == s;
+    }
+
+    template <class AllocatorT>
+    bool operator!=(const char* s, const BasicString<AllocatorT>& bs)
+    {
+        return bs != s;
+    }
+
+    template <class AllocatorT>
+    bool operator<(const char* s, const BasicString<AllocatorT>& bs)
+    {
+        return bs.compare(s) > 0;
+    }
+
+    template <class AllocatorT>
+    bool operator>(const char* s, const BasicString<AllocatorT>& bs)
+    {
+        return bs.compare(s) < 0;
+    }
+
+    template <class AllocatorT>
+    bool operator<=(const char* s, const BasicString<AllocatorT>& bs)
+    {
+        return bs.compare(s) >= 0;
+    }
+
+    template <class AllocatorT>
+    bool operator>=(const char* s, const BasicString<AllocatorT>& bs)
+    {
+        return bs.compare(s) <= 0;
     }
 }
 
