@@ -30,7 +30,7 @@ namespace ara::core
     template <class AllocatorT=ara::core::Allocator<char> >
     class BasicString
     {
-        std::basic_string<char> data;
+        std::basic_string<char> __data;
 
         public:
 
@@ -43,14 +43,14 @@ namespace ara::core
         An operator shall be defined for BasicString that provides implicit conversion to StringView:
         This function shall behave the same as the corresponding std::basic_string function from [6, the C++17 standard].
         */
-        operator StringView() const noexcept { return static_cast<std::basic_string_view<char> >(this->data); }
+        operator StringView() const noexcept { return static_cast<std::basic_string_view<char> >(this->__data); }
 
         // [SWS_CORE_03302] Constructor from StringView
         /*
         A constructor shall be defined for BasicString that accepts a StringView argument by value.
         This function shall behave the same as the corresponding std::basic_string function from [6, the C++17 standard].
         */
-        explicit BasicString(StringView sv) : data(sv.data) {}
+        explicit BasicString(StringView sv) : __data(sv.data) {}
 
         // [SWS_CORE_03303] Constructor from implicit StringView
         /*
@@ -58,7 +58,7 @@ namespace ara::core
         This function shall behave the same as the corresponding std::basic_string function from [6, the C++17 standard].
         */
         template <typename T>
-        BasicString(T const& t, size_type pos, size_type n) : data(t, pos, n) {}
+        BasicString(T const& t, size_type pos, size_type n) : __data(t, pos, n) {}
 
         // [SWS_CORE_03304] operator= from StringView
         /*
@@ -67,7 +67,7 @@ namespace ara::core
         */
         BasicString& operator=(StringView sv)
         {
-            this->data = sv.data;
+            this->__data = sv.data;
             return *this;
         }
 
@@ -78,7 +78,7 @@ namespace ara::core
         */
         BasicString& assign(StringView sv)
         {
-            this->data.assign(sv.data);
+            this->__data.assign(sv.data);
             return *this;
         }
 
@@ -90,7 +90,7 @@ namespace ara::core
         template <typename T>
         BasicString& assign(T const& t, size_type pos, size_type n = npos)
         {
-            this->data.assign(t, pos, n);
+            this->__data.assign(t, pos, n);
             return *this;
         }
 
@@ -101,7 +101,7 @@ namespace ara::core
         */
         BasicString& operator+=(StringView sv)
         {
-            this->data += sv.data;
+            this->__data += sv.data;
             return *this;
         }
 
@@ -112,7 +112,7 @@ namespace ara::core
         */
         BasicString& append(StringView sv)
         {
-            this->data.append(sv.data);
+            this->__data.append(sv.data);
             return *this;
         }
 
@@ -124,7 +124,7 @@ namespace ara::core
         template<typename T>
         BasicString& append(T const& t, size_type pos, size_type n = npos)
         {
-            this->data.append(t, pos, n);
+            this->__data.append(t, pos, n);
             return *this;
         }
 
@@ -135,7 +135,7 @@ namespace ara::core
         */
         BasicString& insert(size_type pos, StringView sv)
         {
-            this->data.insert(pos, sv.data);
+            this->__data.insert(pos, sv.data);
             return *this;
         }
 
@@ -147,7 +147,7 @@ namespace ara::core
         template <typename T>
         BasicString& insert(size_type pos1, T const& t, size_type pos2, size_type n = npos)
         {
-            this->data.insert(pos1, t, pos2, n);
+            this->__data.insert(pos1, t, pos2, n);
             return *this;
         }
 
@@ -158,7 +158,7 @@ namespace ara::core
         */
         BasicString& replace(size_type pos1, size_type n1, StringView sv)
         {
-            this->data.replace(pos1, n1, sv.data);
+            this->__data.replace(pos1, n1, sv.data);
             return *this;
         }
 
@@ -171,7 +171,7 @@ namespace ara::core
         template<typename T>
         BasicString& replace(size_type pos1, size_type n1, T const& t, size_type pos2, size_type n2 = npos)
         {
-            this->data.replace(pos1, n1, t, pos2, n2);
+            this->__data.replace(pos1, n1, t, pos2, n2);
             return *this;
         }
 
@@ -183,7 +183,7 @@ namespace ara::core
         */
         BasicString& replace(const_iterator i1, const_iterator i2, StringView sv)
         {
-            this->data.replace(i1, i2, sv.data);
+            this->__data.replace(i1, i2, sv.data);
             return *this;
         }
 
@@ -194,7 +194,7 @@ namespace ara::core
         */
         size_type find(StringView sv, size_type pos = 0) const noexcept
         {
-            return this->data.find(sv.data, pos);
+            return this->__data.find(sv.data, pos);
         }
 
         // [SWS_CORE_03316] Reverse-find a StringView
@@ -204,7 +204,7 @@ namespace ara::core
         */
         size_type rfind(StringView sv, size_type pos = npos) const noexcept
         {
-            return this->data.rfind(sv.data, pos);
+            return this->__data.rfind(sv.data, pos);
         }
 
         // [SWS_CORE_03317] Forward-find of character set within a StringView
@@ -214,7 +214,7 @@ namespace ara::core
         */
         size_type find_first_of(StringView sv, size_type pos = 0) const noexcept
         {
-            return this->data.find_first_of(sv.data, pos);
+            return this->__data.find_first_of(sv.data, pos);
         }
 
         // [SWS_CORE_03318] Reverse-find of character set within a StringView
@@ -224,7 +224,7 @@ namespace ara::core
         */
         size_type find_last_of(StringView sv, size_type pos = npos) const noexcept
         {
-            return this->data.find_last_of(sv.data, pos);
+            return this->__data.find_last_of(sv.data, pos);
         }
 
         // [SWS_CORE_03319] Forward-find of character set not within a StringView
@@ -234,7 +234,7 @@ namespace ara::core
         */
         size_type find_first_not_of(StringView sv, size_type pos = 0) const noexcept
         {
-            return this->data.find_first_not_of(sv.data, pos);
+            return this->__data.find_first_not_of(sv.data, pos);
         }
 
         // [SWS_CORE_03320] Reverse-find of character set not within a StringView
@@ -244,7 +244,7 @@ namespace ara::core
         */
         size_type find_last_not_of(StringView sv, size_type pos = npos) const noexcept
         {
-            return this->data.find_last_not_of(sv.data, pos);
+            return this->__data.find_last_not_of(sv.data, pos);
         }
 
         // [SWS_CORE_03321] Comparison with a StringView
@@ -254,7 +254,7 @@ namespace ara::core
         */
         int compare(StringView sv) const noexcept
         {
-            return this->data.compare(sv.data);
+            return this->__data.compare(sv.data);
         }
 
         // [SWS_CORE_03322] Comparison of subsequence with a StringView
@@ -264,7 +264,7 @@ namespace ara::core
         */
         int compare(size_type pos1, size_type n1, StringView sv) const
         {
-            return this->data.compare(pos1, n1, sv.data);
+            return this->__data.compare(pos1, n1, sv.data);
         }
 
         // [SWS_CORE_03323] Comparison of subsequence with a subsequence of a StringView
@@ -277,7 +277,7 @@ namespace ara::core
         template<typename T>
         int compare(size_type pos1, size_type n1, T const& t, size_type pos2, size_type n2 = npos) const
         {
-            return this->data.compare(pos1, n1, t, pos2, n2);
+            return this->__data.compare(pos1, n1, t, pos2, n2);
         }
     };
 
@@ -295,7 +295,7 @@ namespace ara::core
     template<typename Allocator>
     void swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs)
     {
-        std::swap(lhs.data, rhs.data);
+        std::swap(lhs.__data, rhs.__data);
     }
 }
 
