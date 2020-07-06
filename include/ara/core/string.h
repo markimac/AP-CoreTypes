@@ -52,6 +52,22 @@ namespace ara::core
 
         static const size_type npos = std::basic_string<char>::npos;
 
+        // iterator methods from STL
+        iterator begin() noexcept { return this->__data.begin(); }
+        const_iterator begin() const noexcept { return this->__data.begin(); }
+        iterator end() noexcept { return this->__data.end(); }
+        const_iterator end() const noexcept { return this->__data.end(); }
+
+        reverse_iterator rbegin() noexcept { return this->__data.rbegin(); }
+        const_reverse_iterator rbegin() const noexcept { return this->__data.rbegin(); }
+        reverse_iterator rend() noexcept { return this->__data.rend(); }
+        const_reverse_iterator rend() const noexcept { return this->__data.rend(); }
+
+        const_iterator cbegin() const noexcept { return this->__data.cbegin(); }
+        const_iterator cend() const noexcept { return this->__data.cend(); }
+        const_reverse_iterator crbegin() const noexcept { return this->__data.crbegin(); }
+        const_reverse_iterator crend() const noexcept { return this->__data.crend(); }
+
         // [SWS_CORE_03301] Implicit conversion to StringView
         /*
         An operator shall be defined for BasicString that provides implicit conversion to StringView:
