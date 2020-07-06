@@ -52,6 +52,34 @@ namespace ara::core
 
         static const size_type npos = std::basic_string<char>::npos;
 
+        // constructors from STL
+        explicit BasicString(const AllocatorT& a = AllocatorT()) : __data(a) {}
+        BasicString(const BasicString& bs) : __data(bs.__data) {}
+        BasicString(BasicString&&) noexcept = default;
+        BasicString(const BasicString& str,
+                    size_type pos,
+                    size_type n = npos,
+                    const AllocatorT& a = AllocatorT()) : __data(str, pos, n, a) {}
+        BasicString(const char* s,
+                    size_type n,
+                    const AllocatorT& a = AllocatorT()) : __data(s, n, a) {}
+        BasicString(const char* s,
+                    const AllocatorT& a = AllocatorT()) : __data(s, a) {}
+        BasicString(size_type n, char c, const AllocatorT& a = AllocatorT()) : __data(n, c, a) {}
+        template<class InputIterator>
+        BasicString(InputIterator begin, InputIterator end, const AllocatorT& a = AllocatorT()) :
+            __data(begin, end, a) {}
+        BasicString(std::initializer_list<char> i, const AllocatorT& a = AllocatorT()) : __data(i, a) {}
+        BasicString(const BasicString& bs, const AllocatorT& a) : __data(bs.__data, a) {}
+        BasicString(BasicString&& bs, const AllocatorT& a) : __data(std::move(bs.__data), a) {}
+
+        // assignment operator= from STL
+        BasicString& operator=(const BasicString& str) { return this->__data = str; }
+        BasicString& operator=(BasicString&& str) noexcept { return this->__data = str; }
+        BasicString& operator=(const char* s) { return this->__data = s; }
+        BasicString& operator=(char c) { return this->__data = c; }
+        BasicString& operator=(std::initializer_list<char>i) { return this->__data = i; }
+
         // iterator methods from STL
         iterator begin() noexcept { return this->__data.begin(); }
         const_iterator begin() const noexcept { return this->__data.begin(); }
