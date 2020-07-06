@@ -108,6 +108,17 @@ namespace ara::core
         void clear() noexcept { this->__data.clear(); }
         bool empty() const noexcept { return this->__data.empty(); }
 
+        // element access methods from STL
+        const_reference operator[](size_type pos) const { return this->__data[pos]; }
+        reference operator[](size_type pos) { return this->__data[pos]; }
+        const_reference at(size_type n) const { return this->__data.at(n); }
+        reference at(size_type n) { return this->__data.at(n); }
+
+        const char& front() const { return this->__data.front(); }
+        char& front() { return this->__data.front(); }
+        const char& back() const { return this->__data.back(); }
+        char& back() { return this->__data.back(); }
+
         // [SWS_CORE_03301] Implicit conversion to StringView
         /*
         An operator shall be defined for BasicString that provides implicit conversion to StringView:
