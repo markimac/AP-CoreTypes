@@ -33,9 +33,23 @@ namespace ara::core
         std::basic_string<char> __data;
 
         public:
+        // types from STL
+        typedef std::basic_string<char>::traits_type traits_type;
+        typedef typename traits_type::char_type value_type;
+        typedef AllocatorT allocator_type;
+        typedef typename std::allocator_traits<AllocatorT>::size_type size_type;
+        typedef typename std::allocator_traits<AllocatorT>::difference_type difference_type;
 
-        typedef std::allocator_traits<AllocatorT>::size_type size_type;
+        typedef value_type& reference;
+        typedef const value_type& const_reference;
+        typedef typename std::allocator_traits<AllocatorT>::pointer pointer;
+        typedef typename std::allocator_traits<AllocatorT>::const_pointer const_pointer;
+
+        typedef std::basic_string<char>::iterator iterator;
         typedef std::basic_string<char>::const_iterator const_iterator;
+        typedef std::reverse_iterator<iterator> reverse_iterator;
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
         static const size_type npos = std::basic_string<char>::npos;
 
         // [SWS_CORE_03301] Implicit conversion to StringView
