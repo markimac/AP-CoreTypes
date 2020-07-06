@@ -119,6 +119,12 @@ namespace ara::core
         const char& back() const { return this->__data.back(); }
         char& back() { return this->__data.back(); }
 
+        // string operations methods from STL
+
+        const char* c_str() const noexcept { return this->__data.c_str(); }
+        const char* data() const noexcept { return this->__data.data(); }
+        allocator_type get_allocator() const noexcept { return this->__data.get_allocator(); }
+
         // [SWS_CORE_03301] Implicit conversion to StringView
         /*
         An operator shall be defined for BasicString that provides implicit conversion to StringView:
