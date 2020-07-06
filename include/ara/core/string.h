@@ -96,6 +96,18 @@ namespace ara::core
         const_reverse_iterator crbegin() const noexcept { return this->__data.crbegin(); }
         const_reverse_iterator crend() const noexcept { return this->__data.crend(); }
 
+        // capacity methods from STL
+        size_type size() const noexcept { return this->__data.size(); }
+        size_type length() const noexcept { return this->__data.length(); }
+        size_type max_size() const noexcept { return this->__data.max_size(); }
+        void resize(size_type n, char c) { this->__data.resize(n, c); }
+        void resize(size_type n) { this->__data.resize(n); }
+        size_type capacity() const noexcept { return this->__data.capacity(); }
+        void reserve(size_type res_arg = 0) { this->__data.reserve(); }
+        void shrink_to_fit() { this->__data.shrink_to_fit(); }
+        void clear() noexcept { this->__data.clear(); }
+        bool empty() const noexcept { return this->__data.empty(); }
+
         // [SWS_CORE_03301] Implicit conversion to StringView
         /*
         An operator shall be defined for BasicString that provides implicit conversion to StringView:
