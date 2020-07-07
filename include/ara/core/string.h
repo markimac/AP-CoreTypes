@@ -119,6 +119,61 @@ namespace ara::core
         const char& back() const { return this->__data.back(); }
         char& back() { return this->__data.back(); }
 
+        // modifier methods from STL
+        BasicString& operator+=(const BasicString& str) { this->__data += str.__data; return *this; }
+        BasicString& operator+=(const char* s) { this->__data += s; return *this; }
+        BasicString& operator+=(char c) { this->__data += c; return *this; }
+        BasicString& operator+=(std::initializer_list<char> i) { this->__data += i; return *this; }
+        BasicString& append(const BasicString& str) { this->__data.append(str.__data); return *this; }
+        BasicString& append(const BasicString& str, size_type pos, size_type n) { this->__data.append(str.__data, pos, n); return *this; }
+        BasicString& append(const char* s, size_type n) { this->__data.append(s, n); return *this; }
+        BasicString& append(const char* s) { this->__data.append(s); return *this; }
+        BasicString& append(size_type n, char c) { this->__data.append(n, c); return *this; }
+        void push_back(char c) { this->__data.push_back(c); }
+
+        BasicString& assign(const BasicString& str) { this->__data.assign(str.__data); return *this; }
+        BasicString& assign(BasicString&& str) noexcept { this->__data.assign(str.__data); return *this; }
+        BasicString& assign(const BasicString& str, size_type pos, size_type n) { this->__data.assign(str.__data, pos, n); return *this; }
+        BasicString& assign(const char* s, size_type n) { this->__data.assign(s, n); return *this; }
+        BasicString& assign(const char* s) { this->__data.assign(s); return *this; }
+        template<class InputIterator>
+        BasicString& assign(InputIterator first, InputIterator last) { this->__data.assign(first, last); return *this; }
+        BasicString& assign(std::initializer_list<char> i) { this->__data.assign(i); return *this; }
+
+        BasicString& insert(size_type pos1, const BasicString& str) { this->__data.insert(pos1, str.__data); return *this; }
+        BasicString& insert(size_type pos1, const BasicString& str, size_type pos2, size_type n) { this->__data.insert(pos1, str.__data, pos2, n); return *this; }
+        BasicString& insert(size_type pos, const char* str, size_type n) { this->__data.insert(pos, str, n); return *this; }
+        BasicString& insert(size_type pos, const char* str) { this->__data.insert(pos, str); return *this; }
+        BasicString& insert(size_type pos, size_type n, char c) { this->__data.insert(pos, n, c); return *this; }
+        iterator insert(const_iterator p, char c) { return this->__data.insert(p, c); }
+        iterator insert(const_iterator p, size_type n, char c) { return this->__data.insert(p, n, c); }
+        template<class InputIterator>
+        iterator insert(const_iterator p, InputIterator first, InputIterator last) { return this->__data.insert(p, first, last); }
+        iterator insert(const_iterator p, std::initializer_list<char> i) { return this->__data.insert(p, i); }
+
+        BasicString& erase(size_type pos = 0, size_type n = npos) { this->__data.erase(pos, n); return *this; }
+        BasicString& erase(const_iterator p) { this->__data.erase(p); return *this; }
+        BasicString& erase(const_iterator first, const_iterator last) { this->__data.erase(first, last); return *this; }
+
+        void pop_back() { this->__data.pop_back(); }
+
+        BasicString& replace(size_type pos1, size_type n1, const BasicString& str) { this->__data.replace(pos1, n1, str.__data); return *this; }
+        BasicString& replace(size_type pos1, size_type n1, const BasicString& str, size_type pos2, size_type n2) { this->__data.replace(pos1, n1, str.__data, pos2, n2); return *this; }
+        BasicString& replace(size_type pos, size_type n1, const char* s, size_type n2) { this->__data.replace(pos, n1, s, n2); return *this; }
+        BasicString& replace(size_type pos, size_type n1, const char* s) { this->__data.replace(pos, n1, s); return *this; }
+        BasicString& replace(size_type pos, size_type n1, size_type n2, char c) { this->__data.replace(pos, n1, n2, c); return *this; }
+
+        BasicString& replace(const_iterator i1, const_iterator i2, const BasicString& str) { this->__data.replace(i1, i2, str.__data); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, const char* s, size_type n) { this->__data.replace(i1, i2, s, n); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, const char* s) { this->__data.replace(i1, i2, s); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, size_type n, char c) { this->__data.replace(i1, i2, n, c); return *this; }
+        template<class InputIterator>
+        BasicString& replace(const_iterator i1, const_iterator i2, InputIterator j1, InputIterator j2) { this->__data.replace(i1, i2, j1, j2); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, std::initializer_list<char> i) { this->__data.replace(i1, i2, i); return *this; }
+
+        size_type copy(char* s, size_type n, size_type pos = 0) const { return this->__data.copy(s, n, pos); }
+        void swap(BasicString& str) { this->__data.swap(str.__data); }
+
         // comparision operators from STL
         bool operator==(const BasicString& other) const { return this->__data == other.__data; }
         bool operator==(const char* s) const { return this->__data == s; }
