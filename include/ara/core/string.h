@@ -30,7 +30,7 @@ namespace ara::core
     template <class AllocatorT=ara::core::Allocator<char> >
     class BasicString
     {
-        std::basic_string<char> __data;
+        std::basic_string<char, std::char_traits<char>, AllocatorT> __data;
 
         public:
         // types from STL
@@ -50,7 +50,7 @@ namespace ara::core
         using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-        inline static const size_type npos = std::basic_string<char>::npos;
+        static constexpr size_type npos = std::basic_string<char>::npos;
 
         // constructors from STL
         explicit BasicString(const AllocatorT& a = AllocatorT()) : __data(a) {}
@@ -75,7 +75,7 @@ namespace ara::core
 
         // assignment operator= from STL
         BasicString& operator=(const BasicString& str) { __data = str.__data; return *this; }
-        BasicString& operator=(BasicString&& str) noexcept { __data = str.__data; return *this; }
+        BasicString& operator=(BasicString&& str) noexcept { __data = std::move(str.__data); return *this; }
         BasicString& operator=(const char* s) { __data = s; return *this; }
         BasicString& operator=(char c) { __data = c; return *this; }
         BasicString& operator=(std::initializer_list<char> i) { __data = i; return *this; }
@@ -132,7 +132,7 @@ namespace ara::core
         void push_back(char c) { __data.push_back(c); }
 
         BasicString& assign(const BasicString& str) { __data.assign(str.__data); return *this; }
-        BasicString& assign(BasicString&& str) noexcept { __data.assign(str.__data); return *this; }
+        BasicString& assign(BasicString&& str) noexcept { __data.assign(std::move(str.__data)); return *this; }
         BasicString& assign(const BasicString& str, size_type pos, size_type n) { __data.assign(str.__data, pos, n); return *this; }
         BasicString& assign(const char* s, size_type n) { __data.assign(s, n); return *this; }
         BasicString& assign(const char* s) { __data.assign(s); return *this; }
