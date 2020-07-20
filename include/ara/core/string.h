@@ -34,23 +34,23 @@ namespace ara::core
 
         public:
         // types from STL
-        typedef std::basic_string<char>::traits_type traits_type;
-        typedef typename traits_type::char_type value_type;
-        typedef AllocatorT allocator_type;
-        typedef typename std::allocator_traits<AllocatorT>::size_type size_type;
-        typedef typename std::allocator_traits<AllocatorT>::difference_type difference_type;
+        using traits_type = std::basic_string<char>::traits_type;
+        using value_type = typename traits_type::char_type;
+        using allocator_type = AllocatorT;
+        using size_type = typename std::allocator_traits<AllocatorT>::size_type;
+        using difference_type = typename std::allocator_traits<AllocatorT>::difference_type;
 
-        typedef value_type& reference;
-        typedef const value_type& const_reference;
-        typedef typename std::allocator_traits<AllocatorT>::pointer pointer;
-        typedef typename std::allocator_traits<AllocatorT>::const_pointer const_pointer;
+        using reference = value_type&;
+        using const_reference = const value_type&;
+        using pointer = typename std::allocator_traits<AllocatorT>::pointer;
+        using const_pointer = typename std::allocator_traits<AllocatorT>::const_pointer;
 
-        typedef std::basic_string<char>::iterator iterator;
-        typedef std::basic_string<char>::const_iterator const_iterator;
-        typedef std::reverse_iterator<iterator> reverse_iterator;
-        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+        using iterator = std::basic_string<char>::iterator;
+        using const_iterator = std::basic_string<char>::const_iterator;
+        using reverse_iterator = std::reverse_iterator<iterator>;
+        using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-        static const size_type npos = std::basic_string<char>::npos;
+        inline static const size_type npos = std::basic_string<char>::npos;
 
         // constructors from STL
         explicit BasicString(const AllocatorT& a = AllocatorT()) : __data(a) {}
@@ -59,7 +59,7 @@ namespace ara::core
         BasicString(const BasicString& str,
                     size_type pos,
                     size_type n = npos,
-                    const AllocatorT& a = AllocatorT()) : __data(str, pos, n, a) {}
+                    const AllocatorT& a = AllocatorT()) : __data(str.__data, pos, n, a) {}
         BasicString(const char* s,
                     size_type n,
                     const AllocatorT& a = AllocatorT()) : __data(s, n, a) {}
@@ -74,178 +74,178 @@ namespace ara::core
         BasicString(BasicString&& bs, const AllocatorT& a) : __data(std::move(bs.__data), a) {}
 
         // assignment operator= from STL
-        BasicString& operator=(const BasicString& str) { return this->__data = str; }
-        BasicString& operator=(BasicString&& str) noexcept { return this->__data = str; }
-        BasicString& operator=(const char* s) { return this->__data = s; }
-        BasicString& operator=(char c) { return this->__data = c; }
-        BasicString& operator=(std::initializer_list<char>i) { return this->__data = i; }
+        BasicString& operator=(const BasicString& str) { __data = str.__data; return *this; }
+        BasicString& operator=(BasicString&& str) noexcept { __data = str.__data; return *this; }
+        BasicString& operator=(const char* s) { __data = s; return *this; }
+        BasicString& operator=(char c) { __data = c; return *this; }
+        BasicString& operator=(std::initializer_list<char> i) { __data = i; return *this; }
 
         // iterator methods from STL
-        iterator begin() noexcept { return this->__data.begin(); }
-        const_iterator begin() const noexcept { return this->__data.begin(); }
-        iterator end() noexcept { return this->__data.end(); }
-        const_iterator end() const noexcept { return this->__data.end(); }
+        iterator begin() noexcept { return __data.begin(); }
+        const_iterator begin() const noexcept { return __data.begin(); }
+        iterator end() noexcept { return __data.end(); }
+        const_iterator end() const noexcept { return __data.end(); }
 
-        reverse_iterator rbegin() noexcept { return this->__data.rbegin(); }
-        const_reverse_iterator rbegin() const noexcept { return this->__data.rbegin(); }
-        reverse_iterator rend() noexcept { return this->__data.rend(); }
-        const_reverse_iterator rend() const noexcept { return this->__data.rend(); }
+        reverse_iterator rbegin() noexcept { return __data.rbegin(); }
+        const_reverse_iterator rbegin() const noexcept { return __data.rbegin(); }
+        reverse_iterator rend() noexcept { return __data.rend(); }
+        const_reverse_iterator rend() const noexcept { return __data.rend(); }
 
-        const_iterator cbegin() const noexcept { return this->__data.cbegin(); }
-        const_iterator cend() const noexcept { return this->__data.cend(); }
-        const_reverse_iterator crbegin() const noexcept { return this->__data.crbegin(); }
-        const_reverse_iterator crend() const noexcept { return this->__data.crend(); }
+        const_iterator cbegin() const noexcept { return __data.cbegin(); }
+        const_iterator cend() const noexcept { return __data.cend(); }
+        const_reverse_iterator crbegin() const noexcept { return __data.crbegin(); }
+        const_reverse_iterator crend() const noexcept { return __data.crend(); }
 
         // capacity methods from STL
-        size_type size() const noexcept { return this->__data.size(); }
-        size_type length() const noexcept { return this->__data.length(); }
-        size_type max_size() const noexcept { return this->__data.max_size(); }
-        void resize(size_type n, char c) { this->__data.resize(n, c); }
-        void resize(size_type n) { this->__data.resize(n); }
-        size_type capacity() const noexcept { return this->__data.capacity(); }
-        void reserve(size_type res_arg = 0) { this->__data.reserve(); }
-        void shrink_to_fit() { this->__data.shrink_to_fit(); }
-        void clear() noexcept { this->__data.clear(); }
-        bool empty() const noexcept { return this->__data.empty(); }
+        size_type size() const noexcept { return __data.size(); }
+        size_type length() const noexcept { return __data.length(); }
+        size_type max_size() const noexcept { return __data.max_size(); }
+        void resize(size_type n, char c) { __data.resize(n, c); }
+        void resize(size_type n) { __data.resize(n); }
+        size_type capacity() const noexcept { return __data.capacity(); }
+        void reserve(size_type res_arg = 0) { __data.reserve(res_arg); }
+        void shrink_to_fit() { __data.shrink_to_fit(); }
+        void clear() noexcept { __data.clear(); }
+        bool empty() const noexcept { return __data.empty(); }
 
         // element access methods from STL
-        const_reference operator[](size_type pos) const { return this->__data[pos]; }
-        reference operator[](size_type pos) { return this->__data[pos]; }
-        const_reference at(size_type n) const { return this->__data.at(n); }
-        reference at(size_type n) { return this->__data.at(n); }
+        const_reference operator[](size_type pos) const { return __data[pos]; }
+        reference operator[](size_type pos) { return __data[pos]; }
+        const_reference at(size_type n) const { return __data.at(n); }
+        reference at(size_type n) { return __data.at(n); }
 
-        const char& front() const { return this->__data.front(); }
-        char& front() { return this->__data.front(); }
-        const char& back() const { return this->__data.back(); }
-        char& back() { return this->__data.back(); }
+        const char& front() const { return __data.front(); }
+        char& front() { return __data.front(); }
+        const char& back() const { return __data.back(); }
+        char& back() { return __data.back(); }
 
         // modifier methods from STL
-        BasicString& operator+=(const BasicString& str) { this->__data += str.__data; return *this; }
-        BasicString& operator+=(const char* s) { this->__data += s; return *this; }
-        BasicString& operator+=(char c) { this->__data += c; return *this; }
-        BasicString& operator+=(std::initializer_list<char> i) { this->__data += i; return *this; }
-        BasicString& append(const BasicString& str) { this->__data.append(str.__data); return *this; }
-        BasicString& append(const BasicString& str, size_type pos, size_type n) { this->__data.append(str.__data, pos, n); return *this; }
-        BasicString& append(const char* s, size_type n) { this->__data.append(s, n); return *this; }
-        BasicString& append(const char* s) { this->__data.append(s); return *this; }
-        BasicString& append(size_type n, char c) { this->__data.append(n, c); return *this; }
-        void push_back(char c) { this->__data.push_back(c); }
+        BasicString& operator+=(const BasicString& str) { __data += str.__data; return *this; }
+        BasicString& operator+=(const char* s) { __data += s; return *this; }
+        BasicString& operator+=(char c) { __data += c; return *this; }
+        BasicString& operator+=(std::initializer_list<char> i) { __data += i; return *this; }
+        BasicString& append(const BasicString& str) { __data.append(str.__data); return *this; }
+        BasicString& append(const BasicString& str, size_type pos, size_type n) { __data.append(str.__data, pos, n); return *this; }
+        BasicString& append(const char* s, size_type n) { __data.append(s, n); return *this; }
+        BasicString& append(const char* s) { __data.append(s); return *this; }
+        BasicString& append(size_type n, char c) { __data.append(n, c); return *this; }
+        void push_back(char c) { __data.push_back(c); }
 
-        BasicString& assign(const BasicString& str) { this->__data.assign(str.__data); return *this; }
-        BasicString& assign(BasicString&& str) noexcept { this->__data.assign(str.__data); return *this; }
-        BasicString& assign(const BasicString& str, size_type pos, size_type n) { this->__data.assign(str.__data, pos, n); return *this; }
-        BasicString& assign(const char* s, size_type n) { this->__data.assign(s, n); return *this; }
-        BasicString& assign(const char* s) { this->__data.assign(s); return *this; }
+        BasicString& assign(const BasicString& str) { __data.assign(str.__data); return *this; }
+        BasicString& assign(BasicString&& str) noexcept { __data.assign(str.__data); return *this; }
+        BasicString& assign(const BasicString& str, size_type pos, size_type n) { __data.assign(str.__data, pos, n); return *this; }
+        BasicString& assign(const char* s, size_type n) { __data.assign(s, n); return *this; }
+        BasicString& assign(const char* s) { __data.assign(s); return *this; }
         template<class InputIterator>
-        BasicString& assign(InputIterator first, InputIterator last) { this->__data.assign(first, last); return *this; }
-        BasicString& assign(std::initializer_list<char> i) { this->__data.assign(i); return *this; }
+        BasicString& assign(InputIterator first, InputIterator last) { __data.assign(first, last); return *this; }
+        BasicString& assign(std::initializer_list<char> i) { __data.assign(i); return *this; }
 
-        BasicString& insert(size_type pos1, const BasicString& str) { this->__data.insert(pos1, str.__data); return *this; }
-        BasicString& insert(size_type pos1, const BasicString& str, size_type pos2, size_type n) { this->__data.insert(pos1, str.__data, pos2, n); return *this; }
-        BasicString& insert(size_type pos, const char* str, size_type n) { this->__data.insert(pos, str, n); return *this; }
-        BasicString& insert(size_type pos, const char* str) { this->__data.insert(pos, str); return *this; }
-        BasicString& insert(size_type pos, size_type n, char c) { this->__data.insert(pos, n, c); return *this; }
-        iterator insert(const_iterator p, char c) { return this->__data.insert(p, c); }
-        iterator insert(const_iterator p, size_type n, char c) { return this->__data.insert(p, n, c); }
+        BasicString& insert(size_type pos1, const BasicString& str) { __data.insert(pos1, str.__data); return *this; }
+        BasicString& insert(size_type pos1, const BasicString& str, size_type pos2, size_type n) { __data.insert(pos1, str.__data, pos2, n); return *this; }
+        BasicString& insert(size_type pos, const char* str, size_type n) { __data.insert(pos, str, n); return *this; }
+        BasicString& insert(size_type pos, const char* str) { __data.insert(pos, str); return *this; }
+        BasicString& insert(size_type pos, size_type n, char c) { __data.insert(pos, n, c); return *this; }
+        iterator insert(const_iterator p, char c) { return __data.insert(p, c); }
+        iterator insert(const_iterator p, size_type n, char c) { return __data.insert(p, n, c); }
         template<class InputIterator>
-        iterator insert(const_iterator p, InputIterator first, InputIterator last) { return this->__data.insert(p, first, last); }
-        iterator insert(const_iterator p, std::initializer_list<char> i) { return this->__data.insert(p, i); }
+        iterator insert(const_iterator p, InputIterator first, InputIterator last) { return __data.insert(p, first, last); }
+        iterator insert(const_iterator p, std::initializer_list<char> i) { return __data.insert(p, i); }
 
-        BasicString& erase(size_type pos = 0, size_type n = npos) { this->__data.erase(pos, n); return *this; }
-        BasicString& erase(const_iterator p) { this->__data.erase(p); return *this; }
-        BasicString& erase(const_iterator first, const_iterator last) { this->__data.erase(first, last); return *this; }
+        BasicString& erase(size_type pos = 0, size_type n = npos) { __data.erase(pos, n); return *this; }
+        BasicString& erase(const_iterator p) { __data.erase(p); return *this; }
+        BasicString& erase(const_iterator first, const_iterator last) { __data.erase(first, last); return *this; }
 
-        void pop_back() { this->__data.pop_back(); }
+        void pop_back() { __data.pop_back(); }
 
-        BasicString& replace(size_type pos1, size_type n1, const BasicString& str) { this->__data.replace(pos1, n1, str.__data); return *this; }
-        BasicString& replace(size_type pos1, size_type n1, const BasicString& str, size_type pos2, size_type n2) { this->__data.replace(pos1, n1, str.__data, pos2, n2); return *this; }
-        BasicString& replace(size_type pos, size_type n1, const char* s, size_type n2) { this->__data.replace(pos, n1, s, n2); return *this; }
-        BasicString& replace(size_type pos, size_type n1, const char* s) { this->__data.replace(pos, n1, s); return *this; }
-        BasicString& replace(size_type pos, size_type n1, size_type n2, char c) { this->__data.replace(pos, n1, n2, c); return *this; }
+        BasicString& replace(size_type pos1, size_type n1, const BasicString& str) { __data.replace(pos1, n1, str.__data); return *this; }
+        BasicString& replace(size_type pos1, size_type n1, const BasicString& str, size_type pos2, size_type n2) { __data.replace(pos1, n1, str.__data, pos2, n2); return *this; }
+        BasicString& replace(size_type pos, size_type n1, const char* s, size_type n2) { __data.replace(pos, n1, s, n2); return *this; }
+        BasicString& replace(size_type pos, size_type n1, const char* s) { __data.replace(pos, n1, s); return *this; }
+        BasicString& replace(size_type pos, size_type n1, size_type n2, char c) { __data.replace(pos, n1, n2, c); return *this; }
 
-        BasicString& replace(const_iterator i1, const_iterator i2, const BasicString& str) { this->__data.replace(i1, i2, str.__data); return *this; }
-        BasicString& replace(const_iterator i1, const_iterator i2, const char* s, size_type n) { this->__data.replace(i1, i2, s, n); return *this; }
-        BasicString& replace(const_iterator i1, const_iterator i2, const char* s) { this->__data.replace(i1, i2, s); return *this; }
-        BasicString& replace(const_iterator i1, const_iterator i2, size_type n, char c) { this->__data.replace(i1, i2, n, c); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, const BasicString& str) { __data.replace(i1, i2, str.__data); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, const char* s, size_type n) { __data.replace(i1, i2, s, n); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, const char* s) { __data.replace(i1, i2, s); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, size_type n, char c) { __data.replace(i1, i2, n, c); return *this; }
         template<class InputIterator>
-        BasicString& replace(const_iterator i1, const_iterator i2, InputIterator j1, InputIterator j2) { this->__data.replace(i1, i2, j1, j2); return *this; }
-        BasicString& replace(const_iterator i1, const_iterator i2, std::initializer_list<char> i) { this->__data.replace(i1, i2, i); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, InputIterator j1, InputIterator j2) { __data.replace(i1, i2, j1, j2); return *this; }
+        BasicString& replace(const_iterator i1, const_iterator i2, std::initializer_list<char> i) { __data.replace(i1, i2, i); return *this; }
 
-        size_type copy(char* s, size_type n, size_type pos = 0) const { return this->__data.copy(s, n, pos); }
-        void swap(BasicString& str) { this->__data.swap(str.__data); }
+        size_type copy(char* s, size_type n, size_type pos = 0) const { return __data.copy(s, n, pos); }
+        void swap(BasicString& str) { __data.swap(str.__data); }
 
         // comparision operators from STL
-        bool operator==(const BasicString& other) const { return this->__data == other.__data; }
-        bool operator==(const char* s) const { return this->__data == s; }
-        bool operator!=(const BasicString& other) const { return this->__data != other.__data; }
-        bool operator!=(const char* s) const { return this->__data != s; }
+        bool operator==(const BasicString& other) const { return __data == other.__data; }
+        bool operator==(const char* s) const { return __data == s; }
+        bool operator!=(const BasicString& other) const { return __data != other.__data; }
+        bool operator!=(const char* s) const { return __data != s; }
 
-        bool operator<(const BasicString& other) const { return this->__data < other.__data; }
-        bool operator<(const char* s) const { return this->__data < s; }
+        bool operator<(const BasicString& other) const { return __data < other.__data; }
+        bool operator<(const char* s) const { return __data < s; }
 
-        bool operator>(const BasicString& other) const { return this->__data > other.__data; }
-        bool operator>(const char* s) const { return this->__data > s; }
+        bool operator>(const BasicString& other) const { return __data > other.__data; }
+        bool operator>(const char* s) const { return __data > s; }
 
-        bool operator<=(const BasicString& other) const { return this->__data <= other.__data; }
-        bool operator<=(const char* s) const { return this->__data <= s; }
+        bool operator<=(const BasicString& other) const { return __data <= other.__data; }
+        bool operator<=(const char* s) const { return __data <= s; }
 
-        bool operator>=(const BasicString& other) const { return this->__data >= other.__data; }
-        bool operator>=(const char* s) const { return this->__data >= s; }
+        bool operator>=(const BasicString& other) const { return __data >= other.__data; }
+        bool operator>=(const char* s) const { return __data >= s; }
 
         // string operations methods from STL
 
-        const char* c_str() const noexcept { return this->__data.c_str(); }
-        const char* data() const noexcept { return this->__data.data(); }
-        allocator_type get_allocator() const noexcept { return this->__data.get_allocator(); }
+        const char* c_str() const noexcept { return __data.c_str(); }
+        const char* data() const noexcept { return __data.data(); }
+        allocator_type get_allocator() const noexcept { return __data.get_allocator(); }
 
-        size_type find(const BasicString& str, size_type pos = 0) const noexcept { return this->__data.find(str.data, pos); }
-        size_type find(const char* s, size_type pos, size_type n) const { return this->__data.find(s, pos, n); }
-        size_type find(const char* s, size_type pos = 0) const { return this->__data.find(s, pos); }
-        size_type find(char c, size_type pos = 0) const noexcept { return this->__data.find(c, pos); }
-        size_type rfind(const BasicString& str, size_type pos = npos) const noexcept { return this->__data.rfind(str.data, pos); }
-        size_type rfind(const char* s, size_type pos, size_type n) const { return this->__data.rfind(s, pos, n); }
-        size_type rfind(const char* s, size_type pos = npos) const { return this->__data.rfind(s, pos); }
-        size_type rfind(char c, size_type pos = npos) const noexcept { return this->__data.rfind(c, pos); }
+        size_type find(const BasicString& str, size_type pos = 0) const noexcept { return __data.find(str.__data, pos); }
+        size_type find(const char* s, size_type pos, size_type n) const { return __data.find(s, pos, n); }
+        size_type find(const char* s, size_type pos = 0) const { return __data.find(s, pos); }
+        size_type find(char c, size_type pos = 0) const noexcept { return __data.find(c, pos); }
+        size_type rfind(const BasicString& str, size_type pos = npos) const noexcept { return __data.rfind(str.__data, pos); }
+        size_type rfind(const char* s, size_type pos, size_type n) const { return __data.rfind(s, pos, n); }
+        size_type rfind(const char* s, size_type pos = npos) const { return __data.rfind(s, pos); }
+        size_type rfind(char c, size_type pos = npos) const noexcept { return __data.rfind(c, pos); }
 
-        size_type find_first_of(const BasicString& str, size_type pos = 0) const noexcept { return this->__data.find_first_of(str.data, pos); }
-        size_type find_first_of(const char* s, size_type pos, size_type n) const { return this->__data.find_first_of(s, pos, n); }
-        size_type find_first_of(const char* s, size_type pos = 0) const { return this->__data.find_first_of(s, pos); }
-        size_type find_first_of(char c, size_type pos = 0) const noexcept { return this->__data.find_first_of(c, pos); }
-        size_type find_last_of(const BasicString& str, size_type pos = npos) const noexcept { return this->__data.find_last_of(str.data, pos); }
-        size_type find_last_of(const char* s, size_type pos, size_type n) const { return this->__data.find_last_of(s, pos, n); }
-        size_type find_last_of(const char* s, size_type pos = npos) const { return this->__data.find_last_of(s, pos); }
-        size_type find_last_of(char c, size_type pos = npos) const noexcept { return this->__data.find_last_of(c, pos); }
+        size_type find_first_of(const BasicString& str, size_type pos = 0) const noexcept { return __data.find_first_of(str.__data, pos); }
+        size_type find_first_of(const char* s, size_type pos, size_type n) const { return __data.find_first_of(s, pos, n); }
+        size_type find_first_of(const char* s, size_type pos = 0) const { return __data.find_first_of(s, pos); }
+        size_type find_first_of(char c, size_type pos = 0) const noexcept { return __data.find_first_of(c, pos); }
+        size_type find_last_of(const BasicString& str, size_type pos = npos) const noexcept { return __data.find_last_of(str.__data, pos); }
+        size_type find_last_of(const char* s, size_type pos, size_type n) const { return __data.find_last_of(s, pos, n); }
+        size_type find_last_of(const char* s, size_type pos = npos) const { return __data.find_last_of(s, pos); }
+        size_type find_last_of(char c, size_type pos = npos) const noexcept { return __data.find_last_of(c, pos); }
 
-        size_type find_first_not_of(const BasicString& str, size_type pos = 0) const noexcept { return this->__data.find_first_not_of(str.data, pos); }
-        size_type find_first_not_of(const char* s, size_type pos, size_type n) const { return this->__data.find_first_not_of(s, pos, n); }
-        size_type find_first_not_of(const char* s, size_type pos = 0) const { return this->__data.find_first_not_of(s, pos); }
-        size_type find_first_not_of(char c, size_type pos = 0) const noexcept { return this->__data.find_first_not_of(c, pos); }
-        size_type find_last_not_of(const BasicString& str, size_type pos = npos) const noexcept { return this->__data.find_last_not_of(str.data, pos); }
-        size_type find_last_not_of(const char* s, size_type pos, size_type n) const { return this->__data.find_last_not_of(s, pos, n); }
-        size_type find_last_not_of(const char* s, size_type pos = npos) const { return this->__data.find_last_not_of(s, pos); }
-        size_type find_last_not_of(char c, size_type pos = npos) const noexcept { return this->__data.find_last_not_of(c, pos); }
+        size_type find_first_not_of(const BasicString& str, size_type pos = 0) const noexcept { return __data.find_first_not_of(str.__data, pos); }
+        size_type find_first_not_of(const char* s, size_type pos, size_type n) const { return __data.find_first_not_of(s, pos, n); }
+        size_type find_first_not_of(const char* s, size_type pos = 0) const { return __data.find_first_not_of(s, pos); }
+        size_type find_first_not_of(char c, size_type pos = 0) const noexcept { return __data.find_first_not_of(c, pos); }
+        size_type find_last_not_of(const BasicString& str, size_type pos = npos) const noexcept { return __data.find_last_not_of(str.__data, pos); }
+        size_type find_last_not_of(const char* s, size_type pos, size_type n) const { return __data.find_last_not_of(s, pos, n); }
+        size_type find_last_not_of(const char* s, size_type pos = npos) const { return __data.find_last_not_of(s, pos); }
+        size_type find_last_not_of(char c, size_type pos = npos) const noexcept { return __data.find_last_not_of(c, pos); }
 
         BasicString substr(size_type pos = 0, size_type n = npos) const
         {
             BasicString retval;
-            retval.__data = this->__data.substr(pos, n);
+            retval.__data = __data.substr(pos, n);
             return retval;
         }
 
-        int compare(const BasicString& str) const noexcept { return this->__data.compare(str.__data); }
+        int compare(const BasicString& str) const noexcept { return __data.compare(str.__data); }
         int compare(size_type pos1, size_type n1, const BasicString& str) const
         {
-            return this->__data.compare(pos1, n1, str.__data);
+            return __data.compare(pos1, n1, str.__data);
         }
         int compare(size_type pos1, size_type n1, const BasicString& str, size_type pos2, size_type n2) const
         {
-            return this->__data.compare(pos1, n1, str.__data, pos2, n2);
+            return __data.compare(pos1, n1, str.__data, pos2, n2);
         }
-        int compare(const char* s) const { return this->__data.compare(s); }
-        int compare(size_type pos1, size_type n1, const char* s) const { return this->__data.compare(pos1, n1, s); }
+        int compare(const char* s) const { return __data.compare(s); }
+        int compare(size_type pos1, size_type n1, const char* s) const { return __data.compare(pos1, n1, s); }
         int compare(size_type pos1, size_type n1, const char* s, size_type n2) const
         {
-            return this->__data.compare(pos1, n1, s, n2);
+            return __data.compare(pos1, n1, s, n2);
         }
 
         // [SWS_CORE_03301] Implicit conversion to StringView
@@ -253,7 +253,7 @@ namespace ara::core
         An operator shall be defined for BasicString that provides implicit conversion to StringView:
         This function shall behave the same as the corresponding std::basic_string function from [6, the C++17 standard].
         */
-        operator StringView() const noexcept { return static_cast<std::basic_string_view<char> >(this->__data); }
+        operator StringView() const noexcept { return static_cast<std::basic_string_view<char> >(__data); }
 
         // [SWS_CORE_03302] Constructor from StringView
         /*
@@ -277,7 +277,7 @@ namespace ara::core
         */
         BasicString& operator=(StringView sv)
         {
-            this->__data = sv.data;
+            __data = sv.data;
             return *this;
         }
 
@@ -288,7 +288,7 @@ namespace ara::core
         */
         BasicString& assign(StringView sv)
         {
-            this->__data.assign(sv.data);
+            __data.assign(sv.data);
             return *this;
         }
 
@@ -300,7 +300,7 @@ namespace ara::core
         template <typename T>
         BasicString& assign(T const& t, size_type pos, size_type n = npos)
         {
-            this->__data.assign(t, pos, n);
+            __data.assign(t, pos, n);
             return *this;
         }
 
@@ -311,7 +311,7 @@ namespace ara::core
         */
         BasicString& operator+=(StringView sv)
         {
-            this->__data += sv.data;
+            __data += sv.data;
             return *this;
         }
 
@@ -322,7 +322,7 @@ namespace ara::core
         */
         BasicString& append(StringView sv)
         {
-            this->__data.append(sv.data);
+            __data.append(sv.data);
             return *this;
         }
 
@@ -334,7 +334,7 @@ namespace ara::core
         template<typename T>
         BasicString& append(T const& t, size_type pos, size_type n = npos)
         {
-            this->__data.append(t, pos, n);
+            __data.append(t, pos, n);
             return *this;
         }
 
@@ -345,7 +345,7 @@ namespace ara::core
         */
         BasicString& insert(size_type pos, StringView sv)
         {
-            this->__data.insert(pos, sv.data);
+            __data.insert(pos, sv.data);
             return *this;
         }
 
@@ -357,7 +357,7 @@ namespace ara::core
         template <typename T>
         BasicString& insert(size_type pos1, T const& t, size_type pos2, size_type n = npos)
         {
-            this->__data.insert(pos1, t, pos2, n);
+            __data.insert(pos1, t, pos2, n);
             return *this;
         }
 
@@ -368,7 +368,7 @@ namespace ara::core
         */
         BasicString& replace(size_type pos1, size_type n1, StringView sv)
         {
-            this->__data.replace(pos1, n1, sv.data);
+            __data.replace(pos1, n1, sv.data);
             return *this;
         }
 
@@ -381,7 +381,7 @@ namespace ara::core
         template<typename T>
         BasicString& replace(size_type pos1, size_type n1, T const& t, size_type pos2, size_type n2 = npos)
         {
-            this->__data.replace(pos1, n1, t, pos2, n2);
+            __data.replace(pos1, n1, t, pos2, n2);
             return *this;
         }
 
@@ -393,7 +393,7 @@ namespace ara::core
         */
         BasicString& replace(const_iterator i1, const_iterator i2, StringView sv)
         {
-            this->__data.replace(i1, i2, sv.data);
+            __data.replace(i1, i2, sv.data);
             return *this;
         }
 
@@ -404,7 +404,7 @@ namespace ara::core
         */
         size_type find(StringView sv, size_type pos = 0) const noexcept
         {
-            return this->__data.find(sv.data, pos);
+            return __data.find(sv.data, pos);
         }
 
         // [SWS_CORE_03316] Reverse-find a StringView
@@ -414,7 +414,7 @@ namespace ara::core
         */
         size_type rfind(StringView sv, size_type pos = npos) const noexcept
         {
-            return this->__data.rfind(sv.data, pos);
+            return __data.rfind(sv.data, pos);
         }
 
         // [SWS_CORE_03317] Forward-find of character set within a StringView
@@ -424,7 +424,7 @@ namespace ara::core
         */
         size_type find_first_of(StringView sv, size_type pos = 0) const noexcept
         {
-            return this->__data.find_first_of(sv.data, pos);
+            return __data.find_first_of(sv.data, pos);
         }
 
         // [SWS_CORE_03318] Reverse-find of character set within a StringView
@@ -434,7 +434,7 @@ namespace ara::core
         */
         size_type find_last_of(StringView sv, size_type pos = npos) const noexcept
         {
-            return this->__data.find_last_of(sv.data, pos);
+            return __data.find_last_of(sv.data, pos);
         }
 
         // [SWS_CORE_03319] Forward-find of character set not within a StringView
@@ -444,7 +444,7 @@ namespace ara::core
         */
         size_type find_first_not_of(StringView sv, size_type pos = 0) const noexcept
         {
-            return this->__data.find_first_not_of(sv.data, pos);
+            return __data.find_first_not_of(sv.data, pos);
         }
 
         // [SWS_CORE_03320] Reverse-find of character set not within a StringView
@@ -454,7 +454,7 @@ namespace ara::core
         */
         size_type find_last_not_of(StringView sv, size_type pos = npos) const noexcept
         {
-            return this->__data.find_last_not_of(sv.data, pos);
+            return __data.find_last_not_of(sv.data, pos);
         }
 
         // [SWS_CORE_03321] Comparison with a StringView
@@ -464,7 +464,7 @@ namespace ara::core
         */
         int compare(StringView sv) const noexcept
         {
-            return this->__data.compare(sv.data);
+            return __data.compare(sv.data);
         }
 
         // [SWS_CORE_03322] Comparison of subsequence with a StringView
@@ -474,7 +474,7 @@ namespace ara::core
         */
         int compare(size_type pos1, size_type n1, StringView sv) const
         {
-            return this->__data.compare(pos1, n1, sv.data);
+            return __data.compare(pos1, n1, sv.data);
         }
 
         // [SWS_CORE_03323] Comparison of subsequence with a subsequence of a StringView
@@ -487,7 +487,7 @@ namespace ara::core
         template<typename T>
         int compare(size_type pos1, size_type n1, T const& t, size_type pos2, size_type n2 = npos) const
         {
-            return this->__data.compare(pos1, n1, t, pos2, n2);
+            return __data.compare(pos1, n1, t, pos2, n2);
         }
     };
 
@@ -505,7 +505,7 @@ namespace ara::core
     template<typename Allocator>
     void swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs)
     {
-        std::swap(lhs.__data, rhs.__data);
+        lhs.swap(rhs);
     }
 
     // comparision operators from STL
