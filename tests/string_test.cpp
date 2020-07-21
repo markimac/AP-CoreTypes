@@ -1,6 +1,7 @@
 #include <catch2/catch.hpp>
 
 #include <type_traits>
+#include <cstring>
 
 #include "ara/core/string.h"
 
