@@ -1,7 +1,7 @@
 /**
- * Copytight (c) 2020
+ * Copyright (c) 2020
  * umlaut Software Development and contributors
- * 
+ *
  * SPDX-License-Identifier: MIT
  */
 #ifndef ARA_EXPOSITION_H_
@@ -13,6 +13,6 @@ namespace ara::exposition {
 
 using SupportDataType_impl = std::uint32_t;
 
-} // ara::exposition
+}  // namespace ara::exposition
 
 #endif  // ARA_EXPOSITION_H_
