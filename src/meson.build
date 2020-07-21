@@ -1,5 +1,6 @@
 srcs = [
-    'dummy.cpp'
+    'ara/core/exception.cpp',
+    'ara/core/core_error_domain.cpp'
 ]
 
 ap_coretypes_lib = library('ap-coretypes',

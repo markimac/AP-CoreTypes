@@ -1,7 +1,7 @@
 /**
- * Copytight (c) 2020
+ * Copyright (c) 2020
  * umlaut Software Development and contributors
- * 
+ *
  * SPDX-License-Identifier: MIT
  */
 #ifndef ARA_CORE_ERRORDOMAIN_H_
@@ -13,6 +13,10 @@
 #include "ara/exposition.h"       // IMPLEMENTATION_DEFINED
 
 namespace ara::core {
+
+// forward declaration
+class ErrorCode;
+
 /**
  * Encapsulation of an error domain.
  *
@@ -25,7 +29,7 @@ namespace ara::core {
  */
 class ErrorDomain
 {
-public:
+ public:
     /**
      * Alias type for a unique ErrorDomain identifier type.
      *

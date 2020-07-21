@@ -2,7 +2,9 @@
 
 #include <type_traits>
 
+#include "ara/core/error_code.h"
 #include "ara/core/error_domain.h"
+#include "ara/core/exception.h"
 
 namespace core = ara::core;
 
@@ -28,27 +30,32 @@ TEST_CASE("ErrorDomain can be constructed", "[SWS_CORE], [SWS_CORE_00135]")
     REQUIRE_NOTHROW(ErrorDomainTestImpl{id});
 }
 
-TEST_CASE("ErrorDomain copy constructor is disabled", "[SWS_CORE], [SWS_CORE_00131]")
+TEST_CASE("ErrorDomain copy constructor is disabled",
+          "[SWS_CORE], [SWS_CORE_00131]")
 {
     REQUIRE_FALSE(std::is_copy_constructible_v<ErrorDomainTestImpl>);
 }
 
-TEST_CASE("ErrorDomain move constructor is disabled", "[SWS_CORE], [SWS_CORE_00132]")
+TEST_CASE("ErrorDomain move constructor is disabled",
+          "[SWS_CORE], [SWS_CORE_00132]")
 {
     REQUIRE_FALSE(std::is_move_constructible_v<ErrorDomainTestImpl>);
 }
 
-TEST_CASE("ErrorDomain copy assignment is disabled", "[SWS_CORE], [SWS_CORE_00133]")
+TEST_CASE("ErrorDomain copy assignment is disabled",
+          "[SWS_CORE], [SWS_CORE_00133]")
 {
     REQUIRE_FALSE(std::is_copy_assignable_v<ErrorDomainTestImpl>);
 }
 
-TEST_CASE("ErrorDomain move assignment is disabled", "[SWS_CORE], [SWS_CORE_00134]")
+TEST_CASE("ErrorDomain move assignment is disabled",
+          "[SWS_CORE], [SWS_CORE_00134]")
 {
     REQUIRE_FALSE(std::is_move_assignable_v<ErrorDomainTestImpl>);
 }
 
-TEST_CASE("ErrorDomain can be compared for equality", "[SWS_CORE], [SWS_CORE_00137]")
+TEST_CASE("ErrorDomain can be compared for equality",
+          "[SWS_CORE], [SWS_CORE_00137]")
 {
     constexpr ErrorDomainTestImpl::IdType id1{1};
     constexpr ErrorDomainTestImpl::IdType id2{2};
@@ -59,7 +66,8 @@ TEST_CASE("ErrorDomain can be compared for equality", "[SWS_CORE], [SWS_CORE_001
     REQUIRE_FALSE(error1 == error2);
 }
 
-TEST_CASE("ErrorDomain can be compared for non-equality", "[SWS_CORE], [SWS_CORE_00138]")
+TEST_CASE("ErrorDomain can be compared for non-equality",
+          "[SWS_CORE], [SWS_CORE_00138]")
 {
     constexpr ErrorDomainTestImpl::IdType id1{1};
     constexpr ErrorDomainTestImpl::IdType id2{2};

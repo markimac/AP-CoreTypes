@@ -142,6 +142,6 @@ function run_coverage() {
 }
 
 parse_parameters "${@}"
-run_compile 
+run_compile
 run_test
 run_coverage
