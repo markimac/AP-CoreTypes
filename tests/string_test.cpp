@@ -15,7 +15,6 @@ TEST_CASE("BasicString: Implicit conversion to StringView (nothrow)",
 
     CHECK(std::is_convertible<BasicString<>, StringView>::value);
     CHECK(std::is_nothrow_convertible<BasicString<>, StringView>::value);
-
 }
 
 TEST_CASE("BasicString: Constructor from StringView (explicit)",
@@ -26,7 +25,6 @@ TEST_CASE("BasicString: Constructor from StringView (explicit)",
 
     CHECK(std::is_constructible<BasicString<>, StringView>::value);
     CHECK_FALSE(std::is_convertible<StringView, BasicString<>>::value);
-
 }
 
 TEST_CASE("BasicString: Constructor from implicit StringView",
@@ -40,7 +38,6 @@ TEST_CASE("BasicString: Constructor from implicit StringView",
     CHECK(
       std::is_constructible<BasicString<>, StringView, size_type, size_type>::
         value);
-
 }
 
 TEST_CASE("BasicString: operator= from StringView",
