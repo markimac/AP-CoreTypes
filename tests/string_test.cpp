@@ -1,44 +1,50 @@
 #include <catch2/catch.hpp>
 
-#include <type_traits>
 #include <cstring>
+#include <type_traits>
 
 #include "ara/core/string.h"
 
 namespace core = ara::core;
 
-TEST_CASE("BasicString: Implicit conversion to StringView (nothrow)", "[SWS_CORE], [SWS_CORE_03301]")
+TEST_CASE("BasicString: Implicit conversion to StringView (nothrow)",
+          "[SWS_CORE], [SWS_CORE_03301]")
 {
     using core::BasicString;
     using core::StringView;
 
-    CHECK(std::is_convertible<BasicString<>, StringView >::value);
-    CHECK(std::is_nothrow_convertible<BasicString<>, StringView >::value);
+    CHECK(std::is_convertible<BasicString<>, StringView>::value);
+    CHECK(std::is_nothrow_convertible<BasicString<>, StringView>::value);
 
 }
 
-TEST_CASE("BasicString: Constructor from StringView (explicit)", "[SWS_CORE], [SWS_CORE_03302]")
+TEST_CASE("BasicString: Constructor from StringView (explicit)",
+          "[SWS_CORE], [SWS_CORE_03302]")
 {
     using core::BasicString;
     using core::StringView;
 
     CHECK(std::is_constructible<BasicString<>, StringView>::value);
-    CHECK_FALSE(std::is_convertible<StringView, BasicString<> >::value);
+    CHECK_FALSE(std::is_convertible<StringView, BasicString<>>::value);
 
 }
 
-TEST_CASE("BasicString: Constructor from implicit StringView", "[SWS_CORE], [SWS_CORE_03303]")
+TEST_CASE("BasicString: Constructor from implicit StringView",
+          "[SWS_CORE], [SWS_CORE_03303]")
 {
     using core::BasicString;
     using core::StringView;
 
     typedef BasicString<>::size_type size_type;
 
-    CHECK(std::is_constructible<BasicString<>, StringView, size_type, size_type>::value);
+    CHECK(
+      std::is_constructible<BasicString<>, StringView, size_type, size_type>::
+        value);
 
 }
 
-TEST_CASE("BasicString: operator= from StringView", "[SWS_CORE], [SWS_CORE_03304]")
+TEST_CASE("BasicString: operator= from StringView",
+          "[SWS_CORE], [SWS_CORE_03304]")
 {
     using core::BasicString;
     using core::StringView;
@@ -48,10 +54,12 @@ TEST_CASE("BasicString: operator= from StringView", "[SWS_CORE], [SWS_CORE_03304
 
 TEST_CASE("BasicString: String type", "[SWS_CORE], [SWS_CORE_03001]")
 {
-    CHECK(std::is_same<class core::BasicString<>, typename core::String >::value);
+    CHECK(
+      std::is_same<class core::BasicString<>, typename core::String>::value);
 }
 
-TEST_CASE("BasicString: swap overload for BasicString", "[SWS_CORE], [SWS_CORE_03296]")
+TEST_CASE("BasicString: swap overload for BasicString",
+          "[SWS_CORE], [SWS_CORE_03296]")
 {
     using core::BasicString;
     using core::swap;
@@ -72,11 +80,12 @@ TEST_CASE("BasicString::operator=", "[SWS_CORE], [SWS_CORE_03000]")
 {
     using core::BasicString;
 
-    REQUIRE(std::is_copy_assignable<BasicString<> >::value);
-    REQUIRE(std::is_move_assignable<BasicString<> >::value);
+    REQUIRE(std::is_copy_assignable<BasicString<>>::value);
+    REQUIRE(std::is_move_assignable<BasicString<>>::value);
     REQUIRE(std::is_assignable<BasicString<>, const char*>::value);
     REQUIRE(std::is_assignable<BasicString<>, char>::value);
-    REQUIRE(std::is_assignable<BasicString<>, std::initializer_list<char> >::value);
+    REQUIRE(
+      std::is_assignable<BasicString<>, std::initializer_list<char>>::value);
 
     BasicString str;
     REQUIRE(str.empty());
@@ -113,34 +122,51 @@ TEST_CASE("BasicString::BasicString", "[SWS_CORE], [SWS_CORE_03000]")
 {
     using core::BasicString;
     typedef core::BasicString<>::size_type size_type;
-    typedef core::Allocator<char> Alloc;
+    typedef core::Allocator<char>          Alloc;
 
     REQUIRE(std::is_constructible<BasicString<>, Alloc>::value);
 
-    REQUIRE(std::is_copy_constructible<BasicString<> >::value);
+    REQUIRE(std::is_copy_constructible<BasicString<>>::value);
 
-    REQUIRE(std::is_nothrow_move_constructible<BasicString<> >::value);
+    REQUIRE(std::is_nothrow_move_constructible<BasicString<>>::value);
 
-    REQUIRE(std::is_constructible<BasicString<>, BasicString<>&, size_type, size_type, const Alloc&>::value);
-    REQUIRE(std::is_constructible<BasicString<>, BasicString<>&, size_type, size_type>::value);
+    REQUIRE(std::is_constructible<BasicString<>,
+                                  BasicString<>&,
+                                  size_type,
+                                  size_type,
+                                  const Alloc&>::value);
+    REQUIRE(
+      std::is_constructible<BasicString<>, BasicString<>&, size_type, size_type>::
+        value);
 
-    REQUIRE(std::is_constructible<BasicString<>, const char*, size_type, const Alloc&>::value);
-    REQUIRE(std::is_constructible<BasicString<>, const char*, size_type>::value);
+    REQUIRE(
+      std::is_constructible<BasicString<>, const char*, size_type, const Alloc&>::
+        value);
+    REQUIRE(
+      std::is_constructible<BasicString<>, const char*, size_type>::value);
 
-    REQUIRE(std::is_constructible<BasicString<>, const char*, const Alloc&>::value);
+    REQUIRE(
+      std::is_constructible<BasicString<>, const char*, const Alloc&>::value);
     REQUIRE(std::is_constructible<BasicString<>, const char*>::value);
 
-    REQUIRE(std::is_constructible<BasicString<>, size_type, char, const Alloc&>::value);
+    REQUIRE(
+      std::is_constructible<BasicString<>, size_type, char, const Alloc&>::value);
     REQUIRE(std::is_constructible<BasicString<>, size_type, char>::value);
 
-    REQUIRE(std::is_constructible<BasicString<>, char*, char*, const Alloc&>::value);
+    REQUIRE(
+      std::is_constructible<BasicString<>, char*, char*, const Alloc&>::value);
 
-    REQUIRE(std::is_constructible<BasicString<>, std::initializer_list<char>, const Alloc&>::value);
-    REQUIRE(std::is_constructible<BasicString<>, std::initializer_list<char> >::value);
+    REQUIRE(std::is_constructible<BasicString<>,
+                                  std::initializer_list<char>,
+                                  const Alloc&>::value);
+    REQUIRE(
+      std::is_constructible<BasicString<>, std::initializer_list<char>>::value);
 
-    REQUIRE(std::is_constructible<BasicString<>, const BasicString<>&, const Alloc&>::value);
-    REQUIRE(std::is_constructible<BasicString<>, BasicString<>&, const Alloc&>::value);
-
+    REQUIRE(std::is_constructible<BasicString<>,
+                                  const BasicString<>&,
+                                  const Alloc&>::value);
+    REQUIRE(
+      std::is_constructible<BasicString<>, BasicString<>&, const Alloc&>::value);
 }
 
 TEST_CASE("BasicString::operator==", "[SWS_CORE], [SWS_CORE_03000]")
@@ -352,10 +378,10 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
     BasicString abc("abc");
     SECTION("BasicString::compare(const BasicString&) >= 0")
     {
-        CHECK(      abc.compare(BasicString("ab")) >= 0);
-        CHECK(      abc.compare(BasicString("abb")) >= 0);
-        CHECK(      abc.compare(BasicString("abc")) >= 0);
-        CHECK(      abc.compare(BasicString("abab")) >= 0);
+        CHECK(abc.compare(BasicString("ab")) >= 0);
+        CHECK(abc.compare(BasicString("abb")) >= 0);
+        CHECK(abc.compare(BasicString("abc")) >= 0);
+        CHECK(abc.compare(BasicString("abab")) >= 0);
         CHECK_FALSE(abc.compare(BasicString("ac")) >= 0);
         CHECK_FALSE(abc.compare(BasicString("acb")) >= 0);
         CHECK_FALSE(abc.compare(BasicString("abcb")) >= 0);
@@ -363,9 +389,9 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(const BasicString&) > 0")
     {
-        CHECK(      abc.compare(BasicString("ab")) > 0);
-        CHECK(      abc.compare(BasicString("abb")) > 0);
-        CHECK(      abc.compare(BasicString("abab")) > 0);
+        CHECK(abc.compare(BasicString("ab")) > 0);
+        CHECK(abc.compare(BasicString("abb")) > 0);
+        CHECK(abc.compare(BasicString("abab")) > 0);
         CHECK_FALSE(abc.compare(BasicString("ac")) > 0);
         CHECK_FALSE(abc.compare(BasicString("acb")) > 0);
         CHECK_FALSE(abc.compare(BasicString("abcb")) > 0);
@@ -373,10 +399,10 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(const BasicString&) <= 0")
     {
-        CHECK(      abc.compare(BasicString("ad")) <= 0);
-        CHECK(      abc.compare(BasicString("abc")) <= 0);
-        CHECK(      abc.compare(BasicString("abd")) <= 0);
-        CHECK(      abc.compare(BasicString("abca")) <= 0);
+        CHECK(abc.compare(BasicString("ad")) <= 0);
+        CHECK(abc.compare(BasicString("abc")) <= 0);
+        CHECK(abc.compare(BasicString("abd")) <= 0);
+        CHECK(abc.compare(BasicString("abca")) <= 0);
         CHECK_FALSE(abc.compare(BasicString("ab")) <= 0);
         CHECK_FALSE(abc.compare(BasicString("aba")) <= 0);
         CHECK_FALSE(abc.compare(BasicString("abab")) <= 0);
@@ -384,9 +410,9 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(const BasicString&) < 0")
     {
-        CHECK(      abc.compare(BasicString("ad")) < 0);
-        CHECK(      abc.compare(BasicString("abd")) < 0);
-        CHECK(      abc.compare(BasicString("abca")) < 0);
+        CHECK(abc.compare(BasicString("ad")) < 0);
+        CHECK(abc.compare(BasicString("abd")) < 0);
+        CHECK(abc.compare(BasicString("abca")) < 0);
         CHECK_FALSE(abc.compare(BasicString("ab")) < 0);
         CHECK_FALSE(abc.compare(BasicString("aba")) < 0);
         CHECK_FALSE(abc.compare(BasicString("abab")) < 0);
@@ -394,10 +420,10 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(const char*) >= 0")
     {
-        CHECK(      abc.compare("ab") >= 0);
-        CHECK(      abc.compare("abb") >= 0);
-        CHECK(      abc.compare("abc") >= 0);
-        CHECK(      abc.compare("abab") >= 0);
+        CHECK(abc.compare("ab") >= 0);
+        CHECK(abc.compare("abb") >= 0);
+        CHECK(abc.compare("abc") >= 0);
+        CHECK(abc.compare("abab") >= 0);
         CHECK_FALSE(abc.compare("ac") >= 0);
         CHECK_FALSE(abc.compare("acb") >= 0);
         CHECK_FALSE(abc.compare("abcb") >= 0);
@@ -405,9 +431,9 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(const char*) > 0")
     {
-        CHECK(      abc.compare("ab") > 0);
-        CHECK(      abc.compare("abb") > 0);
-        CHECK(      abc.compare("abab") > 0);
+        CHECK(abc.compare("ab") > 0);
+        CHECK(abc.compare("abb") > 0);
+        CHECK(abc.compare("abab") > 0);
         CHECK_FALSE(abc.compare("ac") > 0);
         CHECK_FALSE(abc.compare("acb") > 0);
         CHECK_FALSE(abc.compare("abcb") > 0);
@@ -415,10 +441,10 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(const char*) <= 0")
     {
-        CHECK(      abc.compare("ad") <= 0);
-        CHECK(      abc.compare("abc") <= 0);
-        CHECK(      abc.compare("abd") <= 0);
-        CHECK(      abc.compare("abca") <= 0);
+        CHECK(abc.compare("ad") <= 0);
+        CHECK(abc.compare("abc") <= 0);
+        CHECK(abc.compare("abd") <= 0);
+        CHECK(abc.compare("abca") <= 0);
         CHECK_FALSE(abc.compare("ab") <= 0);
         CHECK_FALSE(abc.compare("aba") <= 0);
         CHECK_FALSE(abc.compare("abab") <= 0);
@@ -426,9 +452,9 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(const char*) < 0")
     {
-        CHECK(      abc.compare("ad") < 0);
-        CHECK(      abc.compare("abd") < 0);
-        CHECK(      abc.compare("abca") < 0);
+        CHECK(abc.compare("ad") < 0);
+        CHECK(abc.compare("abd") < 0);
+        CHECK(abc.compare("abca") < 0);
         CHECK_FALSE(abc.compare("ab") < 0);
         CHECK_FALSE(abc.compare("aba") < 0);
         CHECK_FALSE(abc.compare("abab") < 0);
@@ -436,10 +462,10 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(size_type, size_type, const char*) >= 0")
     {
-        CHECK(      abc.compare(0, 3, "ab") >= 0);
-        CHECK(      abc.compare(0, 3, "abb") >= 0);
-        CHECK(      abc.compare(0, 3, "abc") >= 0);
-        CHECK(      abc.compare(0, 3, "abab") >= 0);
+        CHECK(abc.compare(0, 3, "ab") >= 0);
+        CHECK(abc.compare(0, 3, "abb") >= 0);
+        CHECK(abc.compare(0, 3, "abc") >= 0);
+        CHECK(abc.compare(0, 3, "abab") >= 0);
         CHECK_FALSE(abc.compare(0, 3, "ac") >= 0);
         CHECK_FALSE(abc.compare(0, 3, "acb") >= 0);
         CHECK_FALSE(abc.compare(0, 3, "abcb") >= 0);
@@ -447,9 +473,9 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(size_type, size_type, const char*) > 0")
     {
-        CHECK(      abc.compare(0, 3, "ab") > 0);
-        CHECK(      abc.compare(0, 3, "abb") > 0);
-        CHECK(      abc.compare(0, 3, "abab") > 0);
+        CHECK(abc.compare(0, 3, "ab") > 0);
+        CHECK(abc.compare(0, 3, "abb") > 0);
+        CHECK(abc.compare(0, 3, "abab") > 0);
         CHECK_FALSE(abc.compare(0, 3, "ac") > 0);
         CHECK_FALSE(abc.compare(0, 3, "acb") > 0);
         CHECK_FALSE(abc.compare(0, 3, "abcb") > 0);
@@ -457,10 +483,10 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(size_type, size_type, const char*) <= 0")
     {
-        CHECK(      abc.compare(0, 3, "ad") <= 0);
-        CHECK(      abc.compare(0, 3, "abc") <= 0);
-        CHECK(      abc.compare(0, 3, "abd") <= 0);
-        CHECK(      abc.compare(0, 3, "abca") <= 0);
+        CHECK(abc.compare(0, 3, "ad") <= 0);
+        CHECK(abc.compare(0, 3, "abc") <= 0);
+        CHECK(abc.compare(0, 3, "abd") <= 0);
+        CHECK(abc.compare(0, 3, "abca") <= 0);
         CHECK_FALSE(abc.compare(0, 3, "ab") <= 0);
         CHECK_FALSE(abc.compare(0, 3, "aba") <= 0);
         CHECK_FALSE(abc.compare(0, 3, "abab") <= 0);
@@ -468,170 +494,188 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
 
     SECTION("BasicString::compare(size_type, size_type, const char*) < 0")
     {
-        CHECK(      abc.compare(0, 3, "ad") < 0);
-        CHECK(      abc.compare(0, 3, "abd") < 0);
-        CHECK(      abc.compare(0, 3, "abca") < 0);
+        CHECK(abc.compare(0, 3, "ad") < 0);
+        CHECK(abc.compare(0, 3, "abd") < 0);
+        CHECK(abc.compare(0, 3, "abca") < 0);
         CHECK_FALSE(abc.compare(0, 3, "ab") < 0);
         CHECK_FALSE(abc.compare(0, 3, "aba") < 0);
         CHECK_FALSE(abc.compare(0, 3, "abab") < 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const BasicString&) >= 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const BasicString&) >= 0")
     {
-        CHECK(      abc.compare(0, 3, BasicString("ab")) >= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abb")) >= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abc")) >= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abab")) >= 0);
+        CHECK(abc.compare(0, 3, BasicString("ab")) >= 0);
+        CHECK(abc.compare(0, 3, BasicString("abb")) >= 0);
+        CHECK(abc.compare(0, 3, BasicString("abc")) >= 0);
+        CHECK(abc.compare(0, 3, BasicString("abab")) >= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("ac")) >= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("acb")) >= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("abcb")) >= 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const BasicString&) > 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const BasicString&) > 0")
     {
-        CHECK(      abc.compare(0, 3, BasicString("ab")) > 0);
-        CHECK(      abc.compare(0, 3, BasicString("abb")) > 0);
-        CHECK(      abc.compare(0, 3, BasicString("abab")) > 0);
+        CHECK(abc.compare(0, 3, BasicString("ab")) > 0);
+        CHECK(abc.compare(0, 3, BasicString("abb")) > 0);
+        CHECK(abc.compare(0, 3, BasicString("abab")) > 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("ac")) > 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("acb")) > 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("abcb")) > 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const BasicString&) <= 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const BasicString&) <= 0")
     {
-        CHECK(      abc.compare(0, 3, BasicString("ad")) <= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abc")) <= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abd")) <= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abca")) <= 0);
+        CHECK(abc.compare(0, 3, BasicString("ad")) <= 0);
+        CHECK(abc.compare(0, 3, BasicString("abc")) <= 0);
+        CHECK(abc.compare(0, 3, BasicString("abd")) <= 0);
+        CHECK(abc.compare(0, 3, BasicString("abca")) <= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("ab")) <= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("aba")) <= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("abab")) <= 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const BasicString&) < 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const BasicString&) < 0")
     {
-        CHECK(      abc.compare(0, 3, BasicString("ad")) < 0);
-        CHECK(      abc.compare(0, 3, BasicString("abd")) < 0);
-        CHECK(      abc.compare(0, 3, BasicString("abca")) < 0);
+        CHECK(abc.compare(0, 3, BasicString("ad")) < 0);
+        CHECK(abc.compare(0, 3, BasicString("abd")) < 0);
+        CHECK(abc.compare(0, 3, BasicString("abca")) < 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("ab")) < 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("aba")) < 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("abab")) < 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const char*, size_type) >= 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const char*, size_type) >= 0")
     {
-        CHECK(      abc.compare(0, 3, "ab", 2) >= 0);
-        CHECK(      abc.compare(0, 3, "abb", 3) >= 0);
-        CHECK(      abc.compare(0, 3, "abc", 3) >= 0);
-        CHECK(      abc.compare(0, 3, "abab", 4) >= 0);
+        CHECK(abc.compare(0, 3, "ab", 2) >= 0);
+        CHECK(abc.compare(0, 3, "abb", 3) >= 0);
+        CHECK(abc.compare(0, 3, "abc", 3) >= 0);
+        CHECK(abc.compare(0, 3, "abab", 4) >= 0);
         CHECK_FALSE(abc.compare(0, 3, "ac", 2) >= 0);
         CHECK_FALSE(abc.compare(0, 3, "acb", 3) >= 0);
         CHECK_FALSE(abc.compare(0, 3, "abcb", 4) >= 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const char*, size_type) > 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const char*, size_type) > 0")
     {
-        CHECK(      abc.compare(0, 3, "ab", 2) > 0);
-        CHECK(      abc.compare(0, 3, "abb", 3) > 0);
-        CHECK(      abc.compare(0, 3, "abab", 4) > 0);
+        CHECK(abc.compare(0, 3, "ab", 2) > 0);
+        CHECK(abc.compare(0, 3, "abb", 3) > 0);
+        CHECK(abc.compare(0, 3, "abab", 4) > 0);
         CHECK_FALSE(abc.compare(0, 3, "ac", 2) > 0);
         CHECK_FALSE(abc.compare(0, 3, "acb", 3) > 0);
         CHECK_FALSE(abc.compare(0, 3, "abcb", 4) > 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const char*, size_type) <= 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const char*, size_type) <= 0")
     {
-        CHECK(      abc.compare(0, 3, "ad", 2) <= 0);
-        CHECK(      abc.compare(0, 3, "abc", 3) <= 0);
-        CHECK(      abc.compare(0, 3, "abd", 3) <= 0);
-        CHECK(      abc.compare(0, 3, "abca", 4) <= 0);
+        CHECK(abc.compare(0, 3, "ad", 2) <= 0);
+        CHECK(abc.compare(0, 3, "abc", 3) <= 0);
+        CHECK(abc.compare(0, 3, "abd", 3) <= 0);
+        CHECK(abc.compare(0, 3, "abca", 4) <= 0);
         CHECK_FALSE(abc.compare(0, 3, "ab", 2) <= 0);
         CHECK_FALSE(abc.compare(0, 3, "aba", 3) <= 0);
         CHECK_FALSE(abc.compare(0, 3, "abab", 4) <= 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const char*, size_type) < 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const char*, size_type) < 0")
     {
-        CHECK(      abc.compare(0, 3, "ad", 2) < 0);
-        CHECK(      abc.compare(0, 3, "abd", 3) < 0);
-        CHECK(      abc.compare(0, 3, "abca", 4) < 0);
+        CHECK(abc.compare(0, 3, "ad", 2) < 0);
+        CHECK(abc.compare(0, 3, "abd", 3) < 0);
+        CHECK(abc.compare(0, 3, "abca", 4) < 0);
         CHECK_FALSE(abc.compare(0, 3, "ab", 2) < 0);
         CHECK_FALSE(abc.compare(0, 3, "aba", 3) < 0);
         CHECK_FALSE(abc.compare(0, 3, "abab", 4) < 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const BasicString&, size_type, size_type) >= 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const BasicString&, size_type, size_type) >= 0")
     {
-        CHECK(      abc.compare(0, 3, BasicString("ab"), 0, 2) >= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abb"), 0, 3) >= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abc"), 0, 3) >= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abab"), 0, 4) >= 0);
+        CHECK(abc.compare(0, 3, BasicString("ab"), 0, 2) >= 0);
+        CHECK(abc.compare(0, 3, BasicString("abb"), 0, 3) >= 0);
+        CHECK(abc.compare(0, 3, BasicString("abc"), 0, 3) >= 0);
+        CHECK(abc.compare(0, 3, BasicString("abab"), 0, 4) >= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("ac"), 0, 2) >= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("acb"), 0, 3) >= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("abcb"), 0, 4) >= 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const BasicString&, size_type, size_type) > 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const BasicString&, size_type, size_type) > 0")
     {
-        CHECK(      abc.compare(0, 3, BasicString("ab"), 0, 2) > 0);
-        CHECK(      abc.compare(0, 3, BasicString("abb"), 0, 3) > 0);
-        CHECK(      abc.compare(0, 3, BasicString("abab"), 0, 4) > 0);
+        CHECK(abc.compare(0, 3, BasicString("ab"), 0, 2) > 0);
+        CHECK(abc.compare(0, 3, BasicString("abb"), 0, 3) > 0);
+        CHECK(abc.compare(0, 3, BasicString("abab"), 0, 4) > 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("ac"), 0, 2) > 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("acb"), 0, 3) > 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("abcb"), 0, 4) > 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const BasicString&, size_type, size_type) <= 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const BasicString&, size_type, size_type) <= 0")
     {
-        CHECK(      abc.compare(0, 3, BasicString("ad"), 0, 2) <= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abc"), 0, 3) <= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abd"), 0, 3) <= 0);
-        CHECK(      abc.compare(0, 3, BasicString("abca"), 0, 4) <= 0);
+        CHECK(abc.compare(0, 3, BasicString("ad"), 0, 2) <= 0);
+        CHECK(abc.compare(0, 3, BasicString("abc"), 0, 3) <= 0);
+        CHECK(abc.compare(0, 3, BasicString("abd"), 0, 3) <= 0);
+        CHECK(abc.compare(0, 3, BasicString("abca"), 0, 4) <= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("ab"), 0, 2) <= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("aba"), 0, 3) <= 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("abab"), 0, 4) <= 0);
     }
 
-    SECTION("BasicString::compare(size_type, size_type, const BasicString&, size_type, size_type) < 0")
+    SECTION(
+      "BasicString::compare(size_type, size_type, const BasicString&, size_type, size_type) < 0")
     {
-        CHECK(      abc.compare(0, 3, BasicString("ad"), 0, 2) < 0);
-        CHECK(      abc.compare(0, 3, BasicString("abd"), 0, 3) < 0);
-        CHECK(      abc.compare(0, 3, BasicString("abca"), 0, 4) < 0);
+        CHECK(abc.compare(0, 3, BasicString("ad"), 0, 2) < 0);
+        CHECK(abc.compare(0, 3, BasicString("abd"), 0, 3) < 0);
+        CHECK(abc.compare(0, 3, BasicString("abca"), 0, 4) < 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("ab"), 0, 2) < 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("aba"), 0, 3) < 0);
         CHECK_FALSE(abc.compare(0, 3, BasicString("abab"), 0, 4) < 0);
     }
-
 }
 
 TEST_CASE("BasicString::find", "[SWS_CORE], [SWS_CORE_03000]")
 {
     /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    Comparing results to the std::string's equivalents due to SWS_CORE_03000
+    requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
+    "All members of this class and supporting constructs (such as global
+    relational operators) shall behave identical to those of std::basic_string
+    in header <string> from [5, the C++11 standard] section 21.3, except that
+    the default value for the Allocator template argument is
+    implementation-defined.""
     */
 
     using core::BasicString;
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
-    BasicString haystack(sample);
-    std::string example(sample);
+    BasicString    haystack(sample);
+    std::string    example(sample);
 
-    SECTION("BasicString::find(const BasicString&, size_type = 0) const noexcept")
+    SECTION(
+      "BasicString::find(const BasicString&, size_type = 0) const noexcept")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find(BasicString(needle)) == example.find(std::string(needle)));
-            CHECK(haystack.find(BasicString(needle), 3) == example.find(std::string(needle), 3));
+            CHECK(haystack.find(BasicString(needle))
+                  == example.find(std::string(needle)));
+            CHECK(haystack.find(BasicString(needle), 3)
+                  == example.find(std::string(needle), 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find(BasicString("fox")) == example.find(std::string(needle)));
-            CHECK(haystack.find(BasicString("fox"), 3) == example.find(std::string(needle), 3));
+            CHECK(haystack.find(BasicString("fox"))
+                  == example.find(std::string(needle)));
+            CHECK(haystack.find(BasicString("fox"), 3)
+                  == example.find(std::string(needle), 3));
         }
     }
 
@@ -680,34 +724,43 @@ TEST_CASE("BasicString::find", "[SWS_CORE], [SWS_CORE_03000]")
 
 TEST_CASE("BasicString::rfind", "[SWS_CORE], [SWS_CORE_03000]")
 {
-     /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+   Comparing results to the std::string's equivalents due to SWS_CORE_03000
+   requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+   "All members of this class and supporting constructs (such as global
+   relational operators) shall behave identical to those of std::basic_string in
+   header <string> from [5, the C++11 standard] section 21.3, except that the
+   default value for the Allocator template argument is
+   implementation-defined.""
+   */
 
     using core::BasicString;
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
-    BasicString haystack(sample);
-    std::string example(sample);
+    BasicString    haystack(sample);
+    std::string    example(sample);
 
-    SECTION("BasicString::rfind(const BasicString&, size_type = npos) const noexcept")
+    SECTION(
+      "BasicString::rfind(const BasicString&, size_type = npos) const noexcept")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.rfind(BasicString(needle)) == example.rfind(std::string(needle)));
-            CHECK(haystack.rfind(BasicString(needle), 1) == example.rfind(std::string(needle), 1));
-            CHECK(haystack.rfind(BasicString(needle), 0) == example.rfind(std::string(needle), 0));
+            CHECK(haystack.rfind(BasicString(needle))
+                  == example.rfind(std::string(needle)));
+            CHECK(haystack.rfind(BasicString(needle), 1)
+                  == example.rfind(std::string(needle), 1));
+            CHECK(haystack.rfind(BasicString(needle), 0)
+                  == example.rfind(std::string(needle), 0));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.rfind(BasicString(needle)) == example.rfind(std::string(needle)));
-            CHECK(haystack.rfind(BasicString(needle), 17) == example.rfind(std::string(needle), 17));
-            CHECK(haystack.rfind(BasicString(needle), 16) == example.rfind(std::string(needle), 16));
+            CHECK(haystack.rfind(BasicString(needle))
+                  == example.rfind(std::string(needle)));
+            CHECK(haystack.rfind(BasicString(needle), 17)
+                  == example.rfind(std::string(needle), 17));
+            CHECK(haystack.rfind(BasicString(needle), 16)
+                  == example.rfind(std::string(needle), 16));
         }
     }
 
@@ -720,8 +773,9 @@ TEST_CASE("BasicString::rfind", "[SWS_CORE], [SWS_CORE_03000]")
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.rfind(needle,  0, 3) == example.rfind(needle,  0, 3));
-            CHECK(haystack.rfind(needle, 17, 3) == example.rfind(needle, 17, 3));
+            CHECK(haystack.rfind(needle, 0, 3) == example.rfind(needle, 0, 3));
+            CHECK(haystack.rfind(needle, 17, 3)
+                  == example.rfind(needle, 17, 3));
         }
     }
 
@@ -756,46 +810,58 @@ TEST_CASE("BasicString::rfind", "[SWS_CORE], [SWS_CORE_03000]")
 
 TEST_CASE("BasicString::find_first_of", "[SWS_CORE], [SWS_CORE_03000]")
 {
- /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+       Comparing results to the std::string's equivalents due to SWS_CORE_03000
+       requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+       "All members of this class and supporting constructs (such as global
+       relational operators) shall behave identical to those of
+       std::basic_string in header <string> from [5, the C++11 standard]
+       section 21.3, except that the default value for the Allocator template
+       argument is implementation-defined.""
+       */
 
     using core::BasicString;
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
-    BasicString haystack(sample);
-    std::string example(sample);
+    BasicString    haystack(sample);
+    std::string    example(sample);
 
-    SECTION("BasicString::find_first_of(const BasicString&, size_type = 0) const noexcept")
+    SECTION(
+      "BasicString::find_first_of(const BasicString&, size_type = 0) const noexcept")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_first_of(BasicString(needle)) == example.find_first_of(std::string(needle)));
-            CHECK(haystack.find_first_of(BasicString(needle), 3) == example.find_first_of(std::string(needle), 3));
+            CHECK(haystack.find_first_of(BasicString(needle))
+                  == example.find_first_of(std::string(needle)));
+            CHECK(haystack.find_first_of(BasicString(needle), 3)
+                  == example.find_first_of(std::string(needle), 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_first_of(BasicString(needle)) == example.find_first_of(std::string(needle)));
-            CHECK(haystack.find_first_of(BasicString(needle), 3) == example.find_first_of(std::string(needle), 3));
+            CHECK(haystack.find_first_of(BasicString(needle))
+                  == example.find_first_of(std::string(needle)));
+            CHECK(haystack.find_first_of(BasicString(needle), 3)
+                  == example.find_first_of(std::string(needle), 3));
         }
     }
 
-    SECTION("BasicString::find_first_of(const char*, size_type, size_type) const")
+    SECTION(
+      "BasicString::find_first_of(const char*, size_type, size_type) const")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_first_of(needle, 0, 3) == example.find_first_of(needle, 0, 3));
-            CHECK(haystack.find_first_of(needle, 3, 3) == example.find_first_of(needle, 3, 3));
+            CHECK(haystack.find_first_of(needle, 0, 3)
+                  == example.find_first_of(needle, 0, 3));
+            CHECK(haystack.find_first_of(needle, 3, 3)
+                  == example.find_first_of(needle, 3, 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_first_of(needle, 3, 3) == example.find_first_of(needle, 3, 3));
-            CHECK(haystack.find_first_of(needle, 0, 3) == example.find_first_of(needle, 0, 3));
+            CHECK(haystack.find_first_of(needle, 3, 3)
+                  == example.find_first_of(needle, 3, 3));
+            CHECK(haystack.find_first_of(needle, 0, 3)
+                  == example.find_first_of(needle, 0, 3));
         }
     }
 
@@ -803,13 +869,17 @@ TEST_CASE("BasicString::find_first_of", "[SWS_CORE], [SWS_CORE_03000]")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_first_of(needle) == example.find_first_of(needle));
-            CHECK(haystack.find_first_of(needle, 3) == example.find_first_of(needle, 3));
+            CHECK(haystack.find_first_of(needle)
+                  == example.find_first_of(needle));
+            CHECK(haystack.find_first_of(needle, 3)
+                  == example.find_first_of(needle, 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_first_of(needle) == example.find_first_of(needle));
-            CHECK(haystack.find_first_of(needle, 3) == example.find_first_of(needle, 3));
+            CHECK(haystack.find_first_of(needle)
+                  == example.find_first_of(needle));
+            CHECK(haystack.find_first_of(needle, 3)
+                  == example.find_first_of(needle, 3));
         }
     }
 
@@ -817,59 +887,75 @@ TEST_CASE("BasicString::find_first_of", "[SWS_CORE], [SWS_CORE_03000]")
     {
         {
             const char needle = 't';
-            CHECK(haystack.find_first_of(needle) == example.find_first_of(needle));
-            CHECK(haystack.find_first_of(needle, 3) == example.find_first_of(needle, 3));
+            CHECK(haystack.find_first_of(needle)
+                  == example.find_first_of(needle));
+            CHECK(haystack.find_first_of(needle, 3)
+                  == example.find_first_of(needle, 3));
         }
         {
             const char needle = 'x';
-            CHECK(haystack.find_first_of(needle) == example.find_first_of(needle));
-            CHECK(haystack.find_first_of(needle, 3) == example.find_first_of(needle, 3));
+            CHECK(haystack.find_first_of(needle)
+                  == example.find_first_of(needle));
+            CHECK(haystack.find_first_of(needle, 3)
+                  == example.find_first_of(needle, 3));
         }
     }
 }
 
 TEST_CASE("BasicString::find_last_of", "[SWS_CORE], [SWS_CORE_03000]")
 {
- /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+       Comparing results to the std::string's equivalents due to SWS_CORE_03000
+       requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+       "All members of this class and supporting constructs (such as global
+       relational operators) shall behave identical to those of
+       std::basic_string in header <string> from [5, the C++11 standard]
+       section 21.3, except that the default value for the Allocator template
+       argument is implementation-defined.""
+       */
 
     using core::BasicString;
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
-    BasicString haystack(sample);
-    std::string example(sample);
+    BasicString    haystack(sample);
+    std::string    example(sample);
 
-    SECTION("BasicString::find_last_of(const BasicString&, size_type = 0) const noexcept")
+    SECTION(
+      "BasicString::find_last_of(const BasicString&, size_type = 0) const noexcept")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_last_of(BasicString(needle)) == example.find_last_of(std::string(needle)));
-            CHECK(haystack.find_last_of(BasicString(needle), 3) == example.find_last_of(std::string(needle), 3));
+            CHECK(haystack.find_last_of(BasicString(needle))
+                  == example.find_last_of(std::string(needle)));
+            CHECK(haystack.find_last_of(BasicString(needle), 3)
+                  == example.find_last_of(std::string(needle), 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_last_of(BasicString(needle)) == example.find_last_of(std::string(needle)));
-            CHECK(haystack.find_last_of(BasicString(needle), 3) == example.find_last_of(std::string(needle), 3));
+            CHECK(haystack.find_last_of(BasicString(needle))
+                  == example.find_last_of(std::string(needle)));
+            CHECK(haystack.find_last_of(BasicString(needle), 3)
+                  == example.find_last_of(std::string(needle), 3));
         }
     }
 
-    SECTION("BasicString::find_last_of(const char*, size_type, size_type) const")
+    SECTION(
+      "BasicString::find_last_of(const char*, size_type, size_type) const")
     {
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_last_of(needle, 45, 3) == example.find_last_of(needle, 45, 3));
-            CHECK(haystack.find_last_of(needle,  3, 3) == example.find_last_of(needle,  3, 3));
+            CHECK(haystack.find_last_of(needle, 45, 3)
+                  == example.find_last_of(needle, 45, 3));
+            CHECK(haystack.find_last_of(needle, 3, 3)
+                  == example.find_last_of(needle, 3, 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_last_of(needle,  3, 3) == example.find_last_of(needle,  3, 3));
-            CHECK(haystack.find_last_of(needle, 32, 3) == example.find_last_of(needle, 32, 3));
+            CHECK(haystack.find_last_of(needle, 3, 3)
+                  == example.find_last_of(needle, 3, 3));
+            CHECK(haystack.find_last_of(needle, 32, 3)
+                  == example.find_last_of(needle, 32, 3));
         }
     }
 
@@ -877,13 +963,17 @@ TEST_CASE("BasicString::find_last_of", "[SWS_CORE], [SWS_CORE_03000]")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_last_of(needle) == example.find_last_of(needle));
-            CHECK(haystack.find_last_of(needle, 3) == example.find_last_of(needle, 3));
+            CHECK(haystack.find_last_of(needle)
+                  == example.find_last_of(needle));
+            CHECK(haystack.find_last_of(needle, 3)
+                  == example.find_last_of(needle, 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_last_of(needle) == example.find_last_of(needle));
-            CHECK(haystack.find_last_of(needle, 3) == example.find_last_of(needle, 3));
+            CHECK(haystack.find_last_of(needle)
+                  == example.find_last_of(needle));
+            CHECK(haystack.find_last_of(needle, 3)
+                  == example.find_last_of(needle, 3));
         }
     }
 
@@ -891,59 +981,75 @@ TEST_CASE("BasicString::find_last_of", "[SWS_CORE], [SWS_CORE_03000]")
     {
         {
             const char needle = 't';
-            CHECK(haystack.find_last_of(needle) == example.find_last_of(needle));
-            CHECK(haystack.find_last_of(needle, 3) == example.find_last_of(needle, 3));
+            CHECK(haystack.find_last_of(needle)
+                  == example.find_last_of(needle));
+            CHECK(haystack.find_last_of(needle, 3)
+                  == example.find_last_of(needle, 3));
         }
         {
             const char needle = 'x';
-            CHECK(haystack.find_last_of(needle) == example.find_last_of(needle));
-            CHECK(haystack.find_last_of(needle, 3) == example.find_last_of(needle, 3));
+            CHECK(haystack.find_last_of(needle)
+                  == example.find_last_of(needle));
+            CHECK(haystack.find_last_of(needle, 3)
+                  == example.find_last_of(needle, 3));
         }
     }
 }
 
 TEST_CASE("BasicString::find_first_not_of", "[SWS_CORE], [SWS_CORE_03000]")
 {
-     /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+   Comparing results to the std::string's equivalents due to SWS_CORE_03000
+   requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+   "All members of this class and supporting constructs (such as global
+   relational operators) shall behave identical to those of std::basic_string in
+   header <string> from [5, the C++11 standard] section 21.3, except that the
+   default value for the Allocator template argument is
+   implementation-defined.""
+   */
 
     using core::BasicString;
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
-    BasicString haystack(sample);
-    std::string example(sample);
+    BasicString    haystack(sample);
+    std::string    example(sample);
 
-    SECTION("BasicString::find_first_not_of(const BasicString&, size_type = 0) const noexcept")
+    SECTION(
+      "BasicString::find_first_not_of(const BasicString&, size_type = 0) const noexcept")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_first_not_of(BasicString(needle)) == example.find_first_not_of(std::string(needle)));
-            CHECK(haystack.find_first_not_of(BasicString(needle), 3) == example.find_first_not_of(std::string(needle), 3));
+            CHECK(haystack.find_first_not_of(BasicString(needle))
+                  == example.find_first_not_of(std::string(needle)));
+            CHECK(haystack.find_first_not_of(BasicString(needle), 3)
+                  == example.find_first_not_of(std::string(needle), 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_first_not_of(BasicString(needle)) == example.find_first_not_of(std::string(needle)));
-            CHECK(haystack.find_first_not_of(BasicString(needle), 3) == example.find_first_not_of(std::string(needle), 3));
+            CHECK(haystack.find_first_not_of(BasicString(needle))
+                  == example.find_first_not_of(std::string(needle)));
+            CHECK(haystack.find_first_not_of(BasicString(needle), 3)
+                  == example.find_first_not_of(std::string(needle), 3));
         }
     }
 
-    SECTION("BasicString::find_first_not_of(const char*, size_type, size_type) const")
+    SECTION(
+      "BasicString::find_first_not_of(const char*, size_type, size_type) const")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_first_not_of(needle, 0, 3) == example.find_first_not_of(needle, 0, 3));
-            CHECK(haystack.find_first_not_of(needle, 3, 3) == example.find_first_not_of(needle, 3, 3));
+            CHECK(haystack.find_first_not_of(needle, 0, 3)
+                  == example.find_first_not_of(needle, 0, 3));
+            CHECK(haystack.find_first_not_of(needle, 3, 3)
+                  == example.find_first_not_of(needle, 3, 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_first_not_of(needle, 3, 3) == example.find_first_not_of(needle, 3, 3));
-            CHECK(haystack.find_first_not_of(needle, 0, 3) == example.find_first_not_of(needle, 0, 3));
+            CHECK(haystack.find_first_not_of(needle, 3, 3)
+                  == example.find_first_not_of(needle, 3, 3));
+            CHECK(haystack.find_first_not_of(needle, 0, 3)
+                  == example.find_first_not_of(needle, 0, 3));
         }
     }
 
@@ -951,13 +1057,17 @@ TEST_CASE("BasicString::find_first_not_of", "[SWS_CORE], [SWS_CORE_03000]")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_first_not_of(needle) == example.find_first_not_of(needle));
-            CHECK(haystack.find_first_not_of(needle, 3) == example.find_first_not_of(needle, 3));
+            CHECK(haystack.find_first_not_of(needle)
+                  == example.find_first_not_of(needle));
+            CHECK(haystack.find_first_not_of(needle, 3)
+                  == example.find_first_not_of(needle, 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_first_not_of(needle) == example.find_first_not_of(needle));
-            CHECK(haystack.find_first_not_of(needle, 3) == example.find_first_not_of(needle, 3));
+            CHECK(haystack.find_first_not_of(needle)
+                  == example.find_first_not_of(needle));
+            CHECK(haystack.find_first_not_of(needle, 3)
+                  == example.find_first_not_of(needle, 3));
         }
     }
 
@@ -965,56 +1075,74 @@ TEST_CASE("BasicString::find_first_not_of", "[SWS_CORE], [SWS_CORE_03000]")
     {
         {
             const char needle = 't';
-            CHECK(haystack.find_first_not_of(needle) == example.find_first_not_of(needle));
-            CHECK(haystack.find_first_not_of(needle, 3) == example.find_first_not_of(needle, 3));
+            CHECK(haystack.find_first_not_of(needle)
+                  == example.find_first_not_of(needle));
+            CHECK(haystack.find_first_not_of(needle, 3)
+                  == example.find_first_not_of(needle, 3));
         }
         {
             const char needle = 'x';
-            CHECK(haystack.find_first_not_of(needle) == example.find_first_not_of(needle));
-            CHECK(haystack.find_first_not_of(needle, 3) == example.find_first_not_of(needle, 3));
+            CHECK(haystack.find_first_not_of(needle)
+                  == example.find_first_not_of(needle));
+            CHECK(haystack.find_first_not_of(needle, 3)
+                  == example.find_first_not_of(needle, 3));
         }
     }
 }
 
 TEST_CASE("BasicString::find_last_not_of", "[SWS_CORE], [SWS_CORE_03000]")
 {
- /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+       Comparing results to the std::string's equivalents due to SWS_CORE_03000
+       requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+       "All members of this class and supporting constructs (such as global
+       relational operators) shall behave identical to those of
+       std::basic_string in header <string> from [5, the C++11 standard]
+       section 21.3, except that the default value for the Allocator template
+       argument is implementation-defined.""
+       */
 
     using core::BasicString;
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
-    BasicString haystack(sample);
-    std::string example(sample);
+    BasicString    haystack(sample);
+    std::string    example(sample);
 
-    SECTION("BasicString::find_last_not_of(const BasicString&, size_type = 0) const noexcept")
+    SECTION(
+      "BasicString::find_last_not_of(const BasicString&, size_type = 0) const noexcept")
     {
-        CHECK(haystack.find_last_not_of(BasicString("the quick brown fox jumps over the lazy d")) == example.find_last_not_of(std::string("the quick brown fox jumps over the lazy d")));
-        CHECK(haystack.find_last_not_of(BasicString("the"), 3) == example.find_last_not_of(std::string("the"), 3));
+        CHECK(haystack.find_last_not_of(
+                BasicString("the quick brown fox jumps over the lazy d"))
+              == example.find_last_not_of(
+                std::string("the quick brown fox jumps over the lazy d")));
+        CHECK(haystack.find_last_not_of(BasicString("the"), 3)
+              == example.find_last_not_of(std::string("the"), 3));
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_last_not_of(BasicString(needle)) == example.find_last_not_of(std::string(needle)));
-            CHECK(haystack.find_last_not_of(BasicString(needle), 3) == example.find_last_not_of(std::string(needle), 3));
+            CHECK(haystack.find_last_not_of(BasicString(needle))
+                  == example.find_last_not_of(std::string(needle)));
+            CHECK(haystack.find_last_not_of(BasicString(needle), 3)
+                  == example.find_last_not_of(std::string(needle), 3));
         }
     }
 
-    SECTION("BasicString::find_last_not_of(const char*, size_type, size_type) const")
+    SECTION(
+      "BasicString::find_last_not_of(const char*, size_type, size_type) const")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_last_not_of(needle, 45, 3) == example.find_last_not_of(needle, 45, 3));
-            CHECK(haystack.find_last_not_of(needle,  3, 3) == example.find_last_not_of(needle,  3, 3));
+            CHECK(haystack.find_last_not_of(needle, 45, 3)
+                  == example.find_last_not_of(needle, 45, 3));
+            CHECK(haystack.find_last_not_of(needle, 3, 3)
+                  == example.find_last_not_of(needle, 3, 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_last_not_of(needle,  3, 3) == example.find_last_not_of(needle,  3, 3));
-            CHECK(haystack.find_last_not_of(needle, 32, 3) == example.find_last_not_of(needle, 32, 3));
+            CHECK(haystack.find_last_not_of(needle, 3, 3)
+                  == example.find_last_not_of(needle, 3, 3));
+            CHECK(haystack.find_last_not_of(needle, 32, 3)
+                  == example.find_last_not_of(needle, 32, 3));
         }
     }
 
@@ -1022,13 +1150,17 @@ TEST_CASE("BasicString::find_last_not_of", "[SWS_CORE], [SWS_CORE_03000]")
     {
         {
             constexpr char needle[] = "the";
-            CHECK(haystack.find_last_not_of(needle) == example.find_last_not_of(needle));
-            CHECK(haystack.find_last_not_of(needle, 3) == example.find_last_not_of(needle, 3));
+            CHECK(haystack.find_last_not_of(needle)
+                  == example.find_last_not_of(needle));
+            CHECK(haystack.find_last_not_of(needle, 3)
+                  == example.find_last_not_of(needle, 3));
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find_last_not_of(needle) == example.find_last_not_of(needle));
-            CHECK(haystack.find_last_not_of(needle, 3) == example.find_last_not_of(needle, 3));
+            CHECK(haystack.find_last_not_of(needle)
+                  == example.find_last_not_of(needle));
+            CHECK(haystack.find_last_not_of(needle, 3)
+                  == example.find_last_not_of(needle, 3));
         }
     }
 
@@ -1036,27 +1168,33 @@ TEST_CASE("BasicString::find_last_not_of", "[SWS_CORE], [SWS_CORE_03000]")
     {
         {
             const char needle = 't';
-            CHECK(haystack.find_last_not_of(needle) == example.find_last_not_of(needle));
-            CHECK(haystack.find_last_not_of(needle, 3) == example.find_last_not_of(needle, 3));
+            CHECK(haystack.find_last_not_of(needle)
+                  == example.find_last_not_of(needle));
+            CHECK(haystack.find_last_not_of(needle, 3)
+                  == example.find_last_not_of(needle, 3));
         }
         {
             const char needle = 'x';
-            CHECK(haystack.find_last_not_of(needle) == example.find_last_not_of(needle));
-            CHECK(haystack.find_last_not_of(needle, 3) == example.find_last_not_of(needle, 3));
+            CHECK(haystack.find_last_not_of(needle)
+                  == example.find_last_not_of(needle));
+            CHECK(haystack.find_last_not_of(needle, 3)
+                  == example.find_last_not_of(needle, 3));
         }
     }
 }
 
 TEST_CASE("BasicString::append", "[SWS_CORE], [SWS_CORE_03000]")
 {
- /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+       Comparing results to the std::string's equivalents due to SWS_CORE_03000
+       requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+       "All members of this class and supporting constructs (such as global
+       relational operators) shall behave identical to those of
+       std::basic_string in header <string> from [5, the C++11 standard]
+       section 21.3, except that the default value for the Allocator template
+       argument is implementation-defined.""
+       */
 
     using core::BasicString;
 
@@ -1093,7 +1231,7 @@ TEST_CASE("BasicString::append", "[SWS_CORE], [SWS_CORE_03000]")
         BasicString bs("qwe");
         std::string str("qwe");
 
-        constexpr char rty[] = "   rty   ";
+        constexpr char rty[]  = "   rty   ";
         constexpr char asdf[] = " asdf ";
 
         bs.assign(BasicString(rty), 3, 3).append(BasicString(asdf), 1, 4);
@@ -1149,18 +1287,34 @@ TEST_CASE("BasicString::append", "[SWS_CORE], [SWS_CORE_03000]")
 
         CHECK(bs == str.c_str());
     }
+    /*
+        SECTION("BasicString::append(InputIterator, InputIterator)")
+        {
+            BasicString bs("qwe");
+            std::string str("qwe");
+            const std::string rty("rty");
+            const std::string asdf("asdf");
+
+            bs.append(rty.begin(), rty.end()).append(asdf.begin(), asdf.end());
+            str.append(rty.begin(), rty.end()).append(asdf.begin(), asdf.end());
+
+            CHECK(bs == str.c_str());
+        }
+    //*/
 }
 
 TEST_CASE("BasicString::assign", "[SWS_CORE], [SWS_CORE_03000]")
 {
- /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+       Comparing results to the std::string's equivalents due to SWS_CORE_03000
+       requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+       "All members of this class and supporting constructs (such as global
+       relational operators) shall behave identical to those of
+       std::basic_string in header <string> from [5, the C++11 standard]
+       section 21.3, except that the default value for the Allocator template
+       argument is implementation-defined.""
+       */
 
     using core::BasicString;
 
@@ -1219,7 +1373,7 @@ TEST_CASE("BasicString::assign", "[SWS_CORE], [SWS_CORE_03000]")
         REQUIRE(str.empty());
 
         auto begin = example.begin();
-        auto end = example.begin();
+        auto end   = example.begin();
         std::advance(begin, 1);
         std::advance(end, 4);
 
@@ -1233,32 +1387,34 @@ TEST_CASE("BasicString::assign", "[SWS_CORE], [SWS_CORE_03000]")
         BasicString str;
 
         REQUIRE(str.empty());
-        str.assign( { 'q', 'w', 'e', 'r', 't', 'y' } );
+        str.assign({'q', 'w', 'e', 'r', 't', 'y'});
         CHECK(str == "qwerty");
     }
 }
 
 TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
 {
- /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+       Comparing results to the std::string's equivalents due to SWS_CORE_03000
+       requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+       "All members of this class and supporting constructs (such as global
+       relational operators) shall behave identical to those of
+       std::basic_string in header <string> from [5, the C++11 standard]
+       section 21.3, except that the default value for the Allocator template
+       argument is implementation-defined.""
+       */
 
     using core::BasicString;
 
     SECTION("BasicString::insert(size_type, const BasicString&)")
     {
         constexpr char text[] = "lorum";
-        constexpr char ins[] = "em ips";
-        BasicString bs_text(text);
-        std::string str_text(text);
-        BasicString bs_ins(ins);
-        std::string str_ins(ins);
+        constexpr char ins[]  = "em ips";
+        BasicString    bs_text(text);
+        std::string    str_text(text);
+        BasicString    bs_ins(ins);
+        std::string    str_ins(ins);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1270,14 +1426,15 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK(bs_text == "lorem ipsum");
     }
 
-    SECTION("BasicString::insert(size_type, const BasicString&, size_type, size_type)")
+    SECTION(
+      "BasicString::insert(size_type, const BasicString&, size_type, size_type)")
     {
         constexpr char text[] = "lorum";
-        constexpr char ins[] = "eem ipsil";
-        BasicString bs_text(text);
-        std::string str_text(text);
-        BasicString bs_ins(ins);
-        std::string str_ins(ins);
+        constexpr char ins[]  = "eem ipsil";
+        BasicString    bs_text(text);
+        std::string    str_text(text);
+        BasicString    bs_ins(ins);
+        std::string    str_ins(ins);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1292,8 +1449,8 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
     SECTION("BasicString::insert(size_type, const char*, size_type)")
     {
         constexpr char text[] = "lorum";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
         constexpr char ins[] = "em ips ";
 
         REQUIRE(bs_text == "lorum");
@@ -1309,8 +1466,8 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
     SECTION("BasicString::insert(size_type, const char*)")
     {
         constexpr char text[] = "lorum";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
         constexpr char ins[] = "em ips";
 
         REQUIRE(bs_text == "lorum");
@@ -1326,8 +1483,8 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
     SECTION("BasicString::insert(size_type, const char*, size_type)")
     {
         constexpr char text[] = "lorum";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
         constexpr char ins[] = "em ips ";
 
         REQUIRE(bs_text == "lorum");
@@ -1345,8 +1502,8 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
         typedef std::size_t size_type;
 
         constexpr char text[] = "qwerty";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == "qwerty");
         REQUIRE(str_text == "qwerty");
@@ -1361,13 +1518,13 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
     SECTION("BasicString::insert(const_iterator, char)")
     {
         constexpr char text[] = "qerty";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
 
-        auto bs_iter = bs_text.cbegin();
+        auto bs_iter  = bs_text.cbegin();
         auto str_iter = str_text.cbegin();
         std::advance(bs_iter, 1);
         std::advance(str_iter, 1);
@@ -1382,13 +1539,13 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
     SECTION("BasicString::insert(const_iterator, size_type, char)")
     {
         constexpr char text[] = "qwerty";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
 
-        auto bs_iter = bs_text.cbegin();
+        auto bs_iter  = bs_text.cbegin();
         auto str_iter = str_text.cbegin();
         std::advance(bs_iter, 3);
         std::advance(str_iter, 3);
@@ -1403,28 +1560,28 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
     SECTION("BasicString::insert(const_iterator, InputIterator, InputIterator)")
     {
         constexpr char text[] = "qy";
-        constexpr char ins[] = "qwerty";
-        BasicString bs_text(text);
-        std::string str_text(text);
-        BasicString bs_ins(ins);
-        std::string str_ins(ins);
+        constexpr char ins[]  = "qwerty";
+        BasicString    bs_text(text);
+        std::string    str_text(text);
+        BasicString    bs_ins(ins);
+        std::string    str_ins(ins);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
         REQUIRE(bs_ins == ins);
         REQUIRE(str_ins == ins);
 
-        auto bs_iter = bs_text.cbegin();
+        auto bs_iter  = bs_text.cbegin();
         auto str_iter = str_text.cbegin();
         std::advance(bs_iter, 1);
         std::advance(str_iter, 1);
 
-        auto bs_begin = bs_ins.begin();
+        auto bs_begin  = bs_ins.begin();
         auto str_begin = str_ins.begin();
         std::advance(bs_begin, 1);
         std::advance(str_begin, 1);
 
-        auto bs_end = bs_ins.begin();
+        auto bs_end  = bs_ins.begin();
         auto str_end = str_ins.begin();
         std::advance(bs_end, 5);
         std::advance(str_end, 5);
@@ -1439,19 +1596,19 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
     SECTION("BasicString::insert(const_iterator, std::initializer_list<char>)")
     {
         constexpr char text[] = "lorum";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
 
-        auto bs_iter = bs_text.cbegin();
+        auto bs_iter  = bs_text.cbegin();
         auto str_iter = str_text.cbegin();
         std::advance(bs_iter, 3);
         std::advance(str_iter, 3);
 
-        bs_text.insert(bs_iter, {'e', 'm', ' ', 'i', 'p', 's' });
-        str_text.insert(str_iter, {'e', 'm', ' ', 'i', 'p', 's' });
+        bs_text.insert(bs_iter, {'e', 'm', ' ', 'i', 'p', 's'});
+        str_text.insert(str_iter, {'e', 'm', ' ', 'i', 'p', 's'});
 
         CHECK(bs_text == str_text.c_str());
         CHECK(bs_text == "lorem ipsum");
@@ -1460,22 +1617,24 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
 
 TEST_CASE("BasicString::erase", "[SWS_CORE], [SWS_CORE_03000]")
 {
- /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+       Comparing results to the std::string's equivalents due to SWS_CORE_03000
+       requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+       "All members of this class and supporting constructs (such as global
+       relational operators) shall behave identical to those of
+       std::basic_string in header <string> from [5, the C++11 standard]
+       section 21.3, except that the default value for the Allocator template
+       argument is implementation-defined.""
+       */
 
     using core::BasicString;
 
     SECTION("BasicString::erase(size_type, size_type = npos)")
     {
         constexpr char text[] = "qweasdrty";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1490,13 +1649,13 @@ TEST_CASE("BasicString::erase", "[SWS_CORE], [SWS_CORE_03000]")
     SECTION("BasicString::erase(const_iterator)")
     {
         constexpr char text[] = "qwertyy";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
 
-        auto bs_iter = bs_text.cbegin();
+        auto bs_iter  = bs_text.cbegin();
         auto str_iter = str_text.cbegin();
         std::advance(bs_iter, 6);
         std::advance(str_iter, 6);
@@ -1511,23 +1670,23 @@ TEST_CASE("BasicString::erase", "[SWS_CORE], [SWS_CORE_03000]")
     SECTION("BasicString::erase(const_iterator, const_iterator)")
     {
         constexpr char text[] = "qweasdfrty";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
 
-        auto bs_begin = bs_text.cbegin();
+        auto bs_begin  = bs_text.cbegin();
         auto str_begin = str_text.cbegin();
 
         std::advance(bs_begin, 3);
         std::advance(str_begin, 3);
 
-        auto bs_end = bs_text.cbegin();
+        auto bs_end  = bs_text.cbegin();
         auto str_end = str_text.cbegin();
 
-        std::advance(bs_end, 3+4);
-        std::advance(str_end, 3+4);
+        std::advance(bs_end, 3 + 4);
+        std::advance(str_end, 3 + 4);
 
         bs_text.erase(bs_begin, bs_end);
         str_text.erase(str_begin, str_end);
@@ -1539,14 +1698,16 @@ TEST_CASE("BasicString::erase", "[SWS_CORE], [SWS_CORE_03000]")
 
 TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
 {
- /*
-    Comparing results to the std::string's equivalents due to SWS_CORE_03000 requirement:
+    /*
+       Comparing results to the std::string's equivalents due to SWS_CORE_03000
+       requirement:
 
-    "All members of this class and supporting constructs (such as global relational operators)
-    shall behave identical to those of std::basic_string in header <string>
-    from [5, the C++11 standard] section 21.3, except that the default value for the Allocator
-    template argument is implementation-defined.""
-    */
+       "All members of this class and supporting constructs (such as global
+       relational operators) shall behave identical to those of
+       std::basic_string in header <string> from [5, the C++11 standard]
+       section 21.3, except that the default value for the Allocator template
+       argument is implementation-defined.""
+       */
 
     using core::BasicString;
 
@@ -1554,10 +1715,10 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
     {
         constexpr char text[] = "the quick silvery fox jumps over the lazy dog";
         constexpr char replacement[] = "brown";
-        BasicString bs_text(text);
-        std::string str_text(text);
-        BasicString bs_replacement(replacement);
-        std::string str_replacement(replacement);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
+        BasicString    bs_replacement(replacement);
+        std::string    str_replacement(replacement);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1571,14 +1732,15 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK(bs_text == "the quick brown fox jumps over the lazy dog");
     }
 
-    SECTION("BasicString::replace(size_type, size_type, const BasicString&, size_type, size_type)")
+    SECTION(
+      "BasicString::replace(size_type, size_type, const BasicString&, size_type, size_type)")
     {
         constexpr char text[] = "the quick silvery fox jumps over the lazy dog";
         constexpr char replacement[] = "debrowning agent";
-        BasicString bs_text(text);
-        std::string str_text(text);
-        BasicString bs_replacement(replacement);
-        std::string str_replacement(replacement);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
+        BasicString    bs_replacement(replacement);
+        std::string    str_replacement(replacement);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1592,12 +1754,13 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK(bs_text == "the quick brown fox jumps over the lazy dog");
     }
 
-    SECTION("BasicString::replace(size_type, size_type, const char*, size_type)")
+    SECTION(
+      "BasicString::replace(size_type, size_type, const char*, size_type)")
     {
         constexpr char text[] = "the quick silvery fox jumps over the lazy dog";
         constexpr char replacement[] = "browning";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1613,8 +1776,8 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
     {
         constexpr char text[] = "the quick silvery fox jumps over the lazy dog";
         constexpr char replacement[] = "brown";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1630,10 +1793,10 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
     {
         typedef std::size_t size_type;
 
-        constexpr char text[] = "wuud";
+        constexpr char text[]      = "wuud";
         constexpr char replacement = 'o';
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1645,14 +1808,15 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK(bs_text == "wood");
     }
 
-    SECTION("BasicString::replace(const_iterator, const_iterator, const BasicString&)")
+    SECTION(
+      "BasicString::replace(const_iterator, const_iterator, const BasicString&)")
     {
         constexpr char text[] = "the quick silvery fox jumps over the lazy dog";
         constexpr char replacement[] = "brown";
-        BasicString bs_text(text);
-        std::string str_text(text);
-        BasicString bs_replacement(replacement);
-        std::string str_replacement(replacement);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
+        BasicString    bs_replacement(replacement);
+        std::string    str_replacement(replacement);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1660,11 +1824,11 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
         REQUIRE(str_replacement == replacement);
 
         auto bs_begin = bs_text.cbegin();
-        auto bs_end = bs_text.cbegin();
+        auto bs_end   = bs_text.cbegin();
         std::advance(bs_begin, 10);
         std::advance(bs_end, 17);
         auto str_begin = str_text.cbegin();
-        auto str_end = str_text.cbegin();
+        auto str_end   = str_text.cbegin();
         std::advance(str_begin, 10);
         std::advance(str_end, 17);
 
@@ -1675,22 +1839,23 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK(bs_text == "the quick brown fox jumps over the lazy dog");
     }
 
-    SECTION("BasicString::replace(const_iterator, const_iterator, const char*, size_type)")
+    SECTION(
+      "BasicString::replace(const_iterator, const_iterator, const char*, size_type)")
     {
         constexpr char text[] = "the quick silvery fox jumps over the lazy dog";
         constexpr char replacement[] = "browning agent";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
 
         auto bs_begin = bs_text.cbegin();
-        auto bs_end = bs_text.cbegin();
+        auto bs_end   = bs_text.cbegin();
         std::advance(bs_begin, 10);
         std::advance(bs_end, 17);
         auto str_begin = str_text.cbegin();
-        auto str_end = str_text.cbegin();
+        auto str_end   = str_text.cbegin();
         std::advance(str_begin, 10);
         std::advance(str_end, 17);
 
@@ -1705,18 +1870,18 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
     {
         constexpr char text[] = "the quick silvery fox jumps over the lazy dog";
         constexpr char replacement[] = "brown";
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
 
         auto bs_begin = bs_text.cbegin();
-        auto bs_end = bs_text.cbegin();
+        auto bs_end   = bs_text.cbegin();
         std::advance(bs_begin, 10);
         std::advance(bs_end, 17);
         auto str_begin = str_text.cbegin();
-        auto str_end = str_text.cbegin();
+        auto str_end   = str_text.cbegin();
         std::advance(str_begin, 10);
         std::advance(str_end, 17);
 
@@ -1727,22 +1892,23 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK(bs_text == "the quick brown fox jumps over the lazy dog");
     }
 
-    SECTION("BasicString::replace(const_iterator, const_iterator, size_type, char)")
+    SECTION(
+      "BasicString::replace(const_iterator, const_iterator, size_type, char)")
     {
-        constexpr char text[] = "wuud";
+        constexpr char text[]      = "wuud";
         constexpr char replacement = 'o';
-        BasicString bs_text(text);
-        std::string str_text(text);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
 
         auto bs_begin = bs_text.cbegin();
-        auto bs_end = bs_text.cbegin();
+        auto bs_end   = bs_text.cbegin();
         std::advance(bs_begin, 1);
         std::advance(bs_end, 3);
         auto str_begin = str_text.cbegin();
-        auto str_end = str_text.cbegin();
+        auto str_end   = str_text.cbegin();
         std::advance(str_begin, 1);
         std::advance(str_end, 3);
 
@@ -1753,14 +1919,15 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK(bs_text == "wood");
     }
 
-    SECTION("BasicString::replace(const_iterator, const_iterator, InputIterator, InputIterator)")
+    SECTION(
+      "BasicString::replace(const_iterator, const_iterator, InputIterator, InputIterator)")
     {
         constexpr char text[] = "the quick silvery fox jumps over the lazy dog";
         constexpr char replacement[] = "debrowning agent";
-        BasicString bs_text(text);
-        std::string str_text(text);
-        BasicString bs_replacement(replacement);
-        std::string str_replacement(replacement);
+        BasicString    bs_text(text);
+        std::string    str_text(text);
+        BasicString    bs_replacement(replacement);
+        std::string    str_replacement(replacement);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
@@ -1768,46 +1935,53 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
         REQUIRE(str_replacement == replacement);
 
         auto bs_begin = bs_text.cbegin();
-        auto bs_end = bs_text.cbegin();
+        auto bs_end   = bs_text.cbegin();
         std::advance(bs_begin, 10);
         std::advance(bs_end, 17);
         auto str_begin = str_text.cbegin();
-        auto str_end = str_text.cbegin();
+        auto str_end   = str_text.cbegin();
         std::advance(str_begin, 10);
         std::advance(str_end, 17);
 
         auto bs_replacement_begin = bs_replacement.cbegin();
-        auto bs_replacement_end = bs_replacement.cbegin();
+        auto bs_replacement_end   = bs_replacement.cbegin();
         std::advance(bs_replacement_begin, 2);
         std::advance(bs_replacement_end, 7);
         auto str_replacement_begin = str_replacement.cbegin();
-        auto str_replacement_end = str_replacement.cbegin();
+        auto str_replacement_end   = str_replacement.cbegin();
         std::advance(str_replacement_begin, 2);
         std::advance(str_replacement_end, 7);
 
-        bs_text.replace(bs_begin, bs_end, bs_replacement_begin, bs_replacement_end);
-        str_text.replace(str_begin, str_end, str_replacement_begin, str_replacement_end);
+        bs_text.replace(bs_begin,
+                        bs_end,
+                        bs_replacement_begin,
+                        bs_replacement_end);
+        str_text.replace(str_begin,
+                         str_end,
+                         str_replacement_begin,
+                         str_replacement_end);
 
         CHECK(bs_text == str_text.c_str());
         CHECK(bs_text == "the quick brown fox jumps over the lazy dog");
     }
 
-    SECTION("BasicString::replace(const_iterator, const_iterator, std::initialize_list<char>)")
+    SECTION(
+      "BasicString::replace(const_iterator, const_iterator, std::initialize_list<char>)")
     {
         constexpr char text[] = "the quick silvery fox jumps over the lazy dog";
-        std::initializer_list<char> replacement = { 'b', 'r', 'o', 'w', 'n' };
-        BasicString bs_text(text);
-        std::string str_text(text);
+        std::initializer_list<char> replacement = {'b', 'r', 'o', 'w', 'n'};
+        BasicString                 bs_text(text);
+        std::string                 str_text(text);
 
         REQUIRE(bs_text == text);
         REQUIRE(str_text == text);
 
         auto bs_begin = bs_text.cbegin();
-        auto bs_end = bs_text.cbegin();
+        auto bs_end   = bs_text.cbegin();
         std::advance(bs_begin, 10);
         std::advance(bs_end, 17);
         auto str_begin = str_text.cbegin();
-        auto str_end = str_text.cbegin();
+        auto str_end   = str_text.cbegin();
         std::advance(str_begin, 10);
         std::advance(str_end, 17);
 
@@ -1840,7 +2014,7 @@ TEST_CASE("BasicString::copy", "[SWS_CORE], [SWS_CORE_03000]")
     using core::BasicString;
 
     BasicString str("qwerty");
-    char cpy[7] = { '\0' };
+    char        cpy[7] = {'\0'};
 
     REQUIRE(str == "qwerty");
     REQUIRE(str != cpy);
@@ -1933,7 +2107,7 @@ TEST_CASE("BasicString::get_allocator", "[SWS_CORE], [SWS_CORE_03000]")
     using core::BasicString;
 
     core::Allocator<char> alloc;
-    BasicString bs_text(alloc);
+    BasicString           bs_text(alloc);
 
     CHECK(bs_text.get_allocator() == alloc);
 }
