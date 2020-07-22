@@ -12,8 +12,8 @@ TEST_CASE("BasicString: Implicit conversion to StringView (nothrow)", "[SWS_CORE
     using core::BasicString;
     using core::StringView;
 
-    CHECK(std::is_convertible<class BasicString<>, struct StringView>::value);
-    CHECK(std::is_nothrow_convertible<class BasicString<>, struct StringView>::value);
+    CHECK(std::is_convertible<BasicString<>, StringView >::value);
+    CHECK(std::is_nothrow_convertible<BasicString<>, StringView >::value);
 
 }
 
@@ -22,8 +22,8 @@ TEST_CASE("BasicString: Constructor from StringView (explicit)", "[SWS_CORE], [S
     using core::BasicString;
     using core::StringView;
 
-    CHECK(std::is_constructible<class BasicString<>, struct StringView>::value);
-    CHECK_FALSE(std::is_convertible<struct StringView, class BasicString<> >::value);
+    CHECK(std::is_constructible<BasicString<>, StringView>::value);
+    CHECK_FALSE(std::is_convertible<StringView, BasicString<> >::value);
 
 }
 
@@ -34,7 +34,7 @@ TEST_CASE("BasicString: Constructor from implicit StringView", "[SWS_CORE], [SWS
 
     typedef BasicString<>::size_type size_type;
 
-    CHECK(std::is_constructible<class BasicString<>, struct StringView, size_type, size_type>::value);
+    CHECK(std::is_constructible<BasicString<>, StringView, size_type, size_type>::value);
 
 }
 
@@ -43,7 +43,7 @@ TEST_CASE("BasicString: operator= from StringView", "[SWS_CORE], [SWS_CORE_03304
     using core::BasicString;
     using core::StringView;
 
-    CHECK(std::is_assignable<class BasicString<>, struct StringView>::value);
+    CHECK(std::is_assignable<BasicString<>, StringView>::value);
 }
 
 TEST_CASE("BasicString: String type", "[SWS_CORE], [SWS_CORE_03001]")
@@ -72,11 +72,11 @@ TEST_CASE("BasicString::operator=", "[SWS_CORE], [SWS_CORE_03000]")
 {
     using core::BasicString;
 
-    REQUIRE(std::is_copy_assignable<class BasicString<> >::value);
-    REQUIRE(std::is_move_assignable<class BasicString<> >::value);
-    REQUIRE(std::is_assignable<class BasicString<>, const char*>::value);
-    REQUIRE(std::is_assignable<class BasicString<>, char>::value);
-    REQUIRE(std::is_assignable<class BasicString<>, class std::initializer_list<char> >::value);
+    REQUIRE(std::is_copy_assignable<BasicString<> >::value);
+    REQUIRE(std::is_move_assignable<BasicString<> >::value);
+    REQUIRE(std::is_assignable<BasicString<>, const char*>::value);
+    REQUIRE(std::is_assignable<BasicString<>, char>::value);
+    REQUIRE(std::is_assignable<BasicString<>, std::initializer_list<char> >::value);
 
     BasicString str;
     REQUIRE(str.empty());
@@ -115,31 +115,31 @@ TEST_CASE("BasicString::BasicString", "[SWS_CORE], [SWS_CORE_03000]")
     typedef core::BasicString<>::size_type size_type;
     typedef core::Allocator<char> Alloc;
 
-    REQUIRE(std::is_constructible<class BasicString<>, Alloc>::value);
+    REQUIRE(std::is_constructible<BasicString<>, Alloc>::value);
 
-    REQUIRE(std::is_copy_constructible<class BasicString<> >::value);
+    REQUIRE(std::is_copy_constructible<BasicString<> >::value);
 
-    REQUIRE(std::is_nothrow_move_constructible<class BasicString<> >::value);
+    REQUIRE(std::is_nothrow_move_constructible<BasicString<> >::value);
 
-    REQUIRE(std::is_constructible<class BasicString<>, class BasicString<>&, size_type, size_type, const Alloc&>::value);
-    REQUIRE(std::is_constructible<class BasicString<>, class BasicString<>&, size_type, size_type>::value);
+    REQUIRE(std::is_constructible<BasicString<>, BasicString<>&, size_type, size_type, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString<>, BasicString<>&, size_type, size_type>::value);
 
-    REQUIRE(std::is_constructible<class BasicString<>, const char*, size_type, const Alloc&>::value);
-    REQUIRE(std::is_constructible<class BasicString<>, const char*, size_type>::value);
+    REQUIRE(std::is_constructible<BasicString<>, const char*, size_type, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString<>, const char*, size_type>::value);
 
-    REQUIRE(std::is_constructible<class BasicString<>, const char*, const Alloc&>::value);
-    REQUIRE(std::is_constructible<class BasicString<>, const char*>::value);
+    REQUIRE(std::is_constructible<BasicString<>, const char*, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString<>, const char*>::value);
 
-    REQUIRE(std::is_constructible<class BasicString<>, size_type, char, const Alloc&>::value);
-    REQUIRE(std::is_constructible<class BasicString<>, size_type, char>::value);
+    REQUIRE(std::is_constructible<BasicString<>, size_type, char, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString<>, size_type, char>::value);
 
-    REQUIRE(std::is_constructible<class BasicString<>, char*, char*, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString<>, char*, char*, const Alloc&>::value);
 
-    REQUIRE(std::is_constructible<class BasicString<>, class std::initializer_list<char>, const Alloc&>::value);
-    REQUIRE(std::is_constructible<class BasicString<>, class std::initializer_list<char> >::value);
+    REQUIRE(std::is_constructible<BasicString<>, std::initializer_list<char>, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString<>, std::initializer_list<char> >::value);
 
-    REQUIRE(std::is_constructible<class BasicString<>, const class BasicString<>&, const Alloc&>::value);
-    REQUIRE(std::is_constructible<class BasicString<>, class BasicString<>&, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString<>, const BasicString<>&, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString<>, BasicString<>&, const Alloc&>::value);
 
 }
 
