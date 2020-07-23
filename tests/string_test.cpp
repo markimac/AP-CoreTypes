@@ -1284,20 +1284,6 @@ TEST_CASE("BasicString::append", "[SWS_CORE], [SWS_CORE_03000]")
 
         CHECK(bs == str.c_str());
     }
-    /*
-        SECTION("BasicString::append(InputIterator, InputIterator)")
-        {
-            BasicString bs("qwe");
-            std::string str("qwe");
-            const std::string rty("rty");
-            const std::string asdf("asdf");
-
-            bs.append(rty.begin(), rty.end()).append(asdf.begin(), asdf.end());
-            str.append(rty.begin(), rty.end()).append(asdf.begin(), asdf.end());
-
-            CHECK(bs == str.c_str());
-        }
-    //*/
 }
 
 TEST_CASE("BasicString::assign", "[SWS_CORE], [SWS_CORE_03000]")
