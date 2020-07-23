@@ -2108,3 +2108,369 @@ TEST_CASE("BasicString::get_allocator", "[SWS_CORE], [SWS_CORE_03000]")
 
     CHECK(bs_text.get_allocator() == alloc);
 }
+
+TEST_CASE("BasicString::begin", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE(str == "abc");
+    REQUIRE(cstr == "abc");
+    REQUIRE(str == cstr);
+
+    SECTION("BasicString::begin() noexcept")
+    {
+        auto i = str.begin();
+        auto j = str.begin();
+
+        CHECK(i == j);
+        CHECK(*i == 'a');
+        CHECK(*j == 'a');
+
+        i++;
+
+        CHECK(i != j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'a');
+
+        j++;
+
+        CHECK(i == j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'b');
+
+        *i = ' ';
+
+        CHECK(i == j);
+        CHECK(*i == ' ');
+        CHECK(*j == ' ');
+    }
+
+    SECTION("BasicString::begin() const noexcept")
+    {
+        auto i = cstr.begin();
+        auto j = cstr.begin();
+
+        CHECK(i == j);
+        CHECK(*i == 'a');
+        CHECK(*j == 'a');
+
+        i++;
+
+        CHECK(i != j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'a');
+
+        j++;
+
+        CHECK(i == j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'b');
+    }
+}
+
+TEST_CASE("BasicString::cbegin", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE(str == "abc");
+    REQUIRE(cstr == "abc");
+    REQUIRE(str == cstr);
+
+    SECTION("BasicString::cbegin() const noexcept")
+    {
+        auto i = cstr.cbegin();
+        auto j = cstr.cbegin();
+
+        CHECK(i == j);
+        CHECK(*i == 'a');
+        CHECK(*j == 'a');
+
+        i++;
+
+        CHECK(i != j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'a');
+
+        j++;
+
+        CHECK(i == j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'b');
+    }
+}
+
+TEST_CASE("BasicString::end", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE(str == "abc");
+    REQUIRE(cstr == "abc");
+    REQUIRE(str == cstr);
+
+    SECTION("BasicString::end() noexcept")
+    {
+        auto i = str.end();
+        auto j = str.end();
+
+        CHECK(i == j);
+
+        i--;
+
+        CHECK(i != j);
+        CHECK(*i == 'c');
+
+        j--;
+
+        CHECK(i == j);
+        CHECK(*i == 'c');
+        CHECK(*j == 'c');
+
+        *i = ' ';
+
+        CHECK(i == j);
+        CHECK(*i == ' ');
+        CHECK(*j == ' ');
+    }
+
+    SECTION("BasicString::end() const noexcept")
+    {
+        auto i = cstr.end();
+        auto j = cstr.end();
+
+        CHECK(i == j);
+
+        i--;
+
+        CHECK(i != j);
+        CHECK(*i == 'c');
+
+        j--;
+
+        CHECK(i == j);
+        CHECK(*i == 'c');
+        CHECK(*j == 'c');
+    }
+}
+
+TEST_CASE("BasicString::cend", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE(str == "abc");
+    REQUIRE(cstr == "abc");
+    REQUIRE(str == cstr);
+
+    SECTION("BasicString::cend() const noexcept")
+    {
+        auto i = cstr.cend();
+        auto j = cstr.cend();
+
+        CHECK(i == j);
+
+        i--;
+
+        CHECK(i != j);
+        CHECK(*i == 'c');
+
+        j--;
+
+        CHECK(i == j);
+        CHECK(*i == 'c');
+        CHECK(*j == 'c');
+    }
+}
+
+TEST_CASE("BasicString::rbegin", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE(str == "abc");
+    REQUIRE(cstr == "abc");
+    REQUIRE(str == cstr);
+
+    SECTION("BasicString::rbegin() noexcept")
+    {
+        auto i = str.rbegin();
+        auto j = str.rbegin();
+
+        CHECK(i == j);
+        CHECK(*i == 'c');
+        CHECK(*j == 'c');
+
+        i++;
+
+        CHECK(i != j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'c');
+
+        j++;
+
+        CHECK(i == j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'b');
+
+        *i = ' ';
+
+        CHECK(i == j);
+        CHECK(*i == ' ');
+        CHECK(*j == ' ');
+    }
+
+    SECTION("BasicString::rbegin() const noexcept")
+    {
+        auto i = cstr.rbegin();
+        auto j = cstr.rbegin();
+
+        CHECK(i == j);
+        CHECK(*i == 'c');
+        CHECK(*j == 'c');
+
+        i++;
+
+        CHECK(i != j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'c');
+
+        j++;
+
+        CHECK(i == j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'b');
+    }
+}
+
+TEST_CASE("BasicString::rend", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE(str == "abc");
+    REQUIRE(cstr == "abc");
+    REQUIRE(str == cstr);
+
+    SECTION("BasicString::rend() noexcept")
+    {
+        auto i = str.rend();
+        auto j = str.rend();
+
+        CHECK(i == j);
+
+        i--;
+
+        CHECK(i != j);
+        CHECK(*i == 'a');
+
+        j--;
+
+        CHECK(i == j);
+        CHECK(*i == 'a');
+        CHECK(*j == 'a');
+
+        *i = ' ';
+
+        CHECK(i == j);
+        CHECK(*i == ' ');
+        CHECK(*j == ' ');
+    }
+
+    SECTION("BasicString::rend() const noexcept")
+    {
+        auto i = cstr.rend();
+        auto j = cstr.rend();
+
+        CHECK(i == j);
+
+        i--;
+
+        CHECK(i != j);
+        CHECK(*i == 'a');
+
+        j--;
+
+        CHECK(i == j);
+        CHECK(*i == 'a');
+        CHECK(*j == 'a');
+    }
+}
+
+TEST_CASE("BasicString::crbegin", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE(str == "abc");
+    REQUIRE(cstr == "abc");
+    REQUIRE(str == cstr);
+
+    SECTION("BasicString::crbegin() const noexcept")
+    {
+        auto i = cstr.crbegin();
+        auto j = cstr.crbegin();
+
+        CHECK(i == j);
+        CHECK(*i == 'c');
+        CHECK(*j == 'c');
+
+        i++;
+
+        CHECK(i != j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'c');
+
+        j++;
+
+        CHECK(i == j);
+        CHECK(*i == 'b');
+        CHECK(*j == 'b');
+    }
+}
+
+TEST_CASE("BasicString::crend", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE(str == "abc");
+    REQUIRE(cstr == "abc");
+    REQUIRE(str == cstr);
+
+    SECTION("BasicString::crend() const noexcept")
+    {
+        auto i = cstr.crend();
+        auto j = cstr.crend();
+
+        CHECK(i == j);
+
+        i--;
+
+        CHECK(i != j);
+        CHECK(*i == 'a');
+
+        j--;
+
+        CHECK(i == j);
+        CHECK(*i == 'a');
+        CHECK(*j == 'a');
+    }
+}
