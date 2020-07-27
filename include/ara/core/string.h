@@ -895,6 +895,94 @@ operator>=(const char* s, const BasicString<AllocatorT>& bs)
 {
     return bs.compare(s) <= 0;
 }
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(const BasicString<AllocatorT>& lhs,
+          const BasicString<AllocatorT>& rhs)
+{
+    BasicString<AllocatorT> ret(lhs);
+    return ret += rhs;
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(BasicString<AllocatorT>&& lhs, const BasicString<AllocatorT>& rhs)
+{
+    BasicString<AllocatorT> ret{std::forward<BasicString<AllocatorT>>(lhs)};
+    return ret += rhs;
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(const BasicString<AllocatorT>& lhs, BasicString<AllocatorT>&& rhs)
+{
+    BasicString<AllocatorT> ret(lhs);
+    return ret += std::forward<BasicString<AllocatorT>>(rhs);
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(BasicString<AllocatorT>&& lhs, BasicString<AllocatorT>&& rhs)
+{
+    BasicString<AllocatorT> ret{std::forward<BasicString<AllocatorT>>(lhs)};
+    return ret += std::forward<BasicString<AllocatorT>>(rhs);
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(const char* lhs, const BasicString<AllocatorT>& rhs)
+{
+    BasicString<AllocatorT> ret(lhs, rhs.get_allocator());
+    return ret += rhs;
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(const char* lhs, BasicString<AllocatorT>&& rhs)
+{
+    BasicString<AllocatorT> ret(lhs, rhs.get_allocator());
+    return ret += rhs;
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(char lhs, const BasicString<AllocatorT>& rhs)
+{
+    using size_type = typename BasicString<AllocatorT>::size_type;
+    BasicString<AllocatorT> ret(size_type(1), lhs, rhs.get_allocator());
+    return ret += rhs;
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(char lhs, BasicString<AllocatorT>&& rhs)
+{
+    using size_type = typename BasicString<AllocatorT>::size_type;
+    BasicString<AllocatorT> ret(size_type(1), lhs, rhs.get_allocator());
+    return ret += rhs;
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(const BasicString<AllocatorT>& lhs, const char* rhs)
+{
+    BasicString<AllocatorT> ret(lhs);
+    return ret += rhs;
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(BasicString<AllocatorT>&& lhs, const char* rhs)
+{
+    BasicString<AllocatorT> ret{std::forward<BasicString<AllocatorT>>(lhs)};
+    return ret += rhs;
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(const BasicString<AllocatorT>& lhs, char rhs)
+{
+    BasicString<AllocatorT> ret(lhs);
+    return ret += rhs;
+}
+
+template<class AllocatorT> BasicString<AllocatorT>
+operator+(BasicString<AllocatorT>&& lhs, char rhs)
+{
+    BasicString<AllocatorT> ret{std::forward<BasicString<AllocatorT>>(lhs)};
+    return ret += rhs;
+}
+
 }  // namespace ara::core
 
 #endif  // ARA_CORE_STRING_H_

@@ -2460,3 +2460,161 @@ TEST_CASE("BasicString::crend", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK(*j == 'a');
     }
 }
+
+TEST_CASE("BasicString::operator+", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    SECTION("operator+(const BasicString&, const BasicString&)")
+    {
+        const BasicString l = "qwe";
+        const BasicString r = "rty";
+
+        REQUIRE("qwe" == l);
+        REQUIRE("rty" == r);
+
+        BasicString qwerty = l + r;
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(BasicString&&, const BasicString&)")
+    {
+        BasicString       l = "qw";
+        BasicString       m = "er";
+        const BasicString r = "ty";
+
+        REQUIRE("qw" == l);
+        REQUIRE("er" == m);
+        REQUIRE("ty" == r);
+
+        BasicString qwerty = (l + m) + r;
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(const BasicString&, BasicString&&)")
+    {
+        BasicString       l = "qw";
+        BasicString       m = "er";
+        const BasicString r = "ty";
+
+        REQUIRE("qw" == l);
+        REQUIRE("er" == m);
+        REQUIRE("ty" == r);
+
+        BasicString qwerty = l + (m + r);
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(BasicString&&, BasicString&&)")
+    {
+        BasicString l = "qw";
+        BasicString r = "ty";
+
+        REQUIRE("qw" == l);
+        REQUIRE("ty" == r);
+
+        BasicString qwerty = (l + 'e') + ('r' + r);
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(const char*, const BasicString&)")
+    {
+        const BasicString str = "rty";
+
+        REQUIRE("rty" == str);
+
+        BasicString qwerty = "qwe" + str;
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(const char*, BasicString&&)")
+    {
+        BasicString l = "er";
+        BasicString r = "ty";
+
+        REQUIRE("er" == l);
+        REQUIRE("ty" == r);
+
+        BasicString qwerty = "qw" + (l + r);
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(char, const BasicString&)")
+    {
+        const BasicString str = "werty";
+
+        REQUIRE("werty" == str);
+
+        BasicString qwerty = 'q' + str;
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(char, BasicString&&)")
+    {
+        BasicString l = "wer";
+        BasicString r = "ty";
+
+        REQUIRE("wer" == l);
+        REQUIRE("ty" == r);
+
+        BasicString qwerty = 'q' + (l + r);
+
+        CHECK("qwerty" == qwerty);
+
+    }
+
+    SECTION("operator+(const BasicString&, const char*)")
+    {
+        const BasicString str = "qwe";
+
+        REQUIRE("qwe" == str);
+
+        BasicString qwerty = str + "rty";
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(BasicString&&, const char*)")
+    {
+        BasicString l = "qw";
+        BasicString r = "er";
+
+        REQUIRE("qw" == l);
+        REQUIRE("er" == r);
+
+        BasicString qwerty = (l + r) + "ty";
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(const BasicString&, char)")
+    {
+        const BasicString str = "qwert";
+
+        REQUIRE("qwert" == str);
+
+        BasicString qwerty = str + 'y';
+
+        CHECK("qwerty" == qwerty);
+    }
+
+    SECTION("operator+(BasicString&&, char)")
+    {
+        BasicString l = "qwe";
+        BasicString r = "rt";
+
+        REQUIRE("qwe" == l);
+        REQUIRE("rt" == r);
+
+        BasicString qwerty = (l + r) + 'y';
+
+        CHECK("qwerty" == qwerty);
+    }
+}
