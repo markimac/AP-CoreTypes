@@ -8,7 +8,8 @@
 #ifndef ARA_CORE_STRING_H_
 #define ARA_CORE_STRING_H_
 
-#include <string>  // std::basic_string
+#include <string>   // std::basic_string
+#include <utility>  // std::forward, std::move, std::swap
 
 #include "ara/core/allocator.h"
 
@@ -54,43 +55,88 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     static constexpr size_type npos = std::basic_string<char>::npos;
 
     // constructors from STL
-    explicit BasicString(const AllocatorT& a = AllocatorT()) : __data(a) {}
-    BasicString(const BasicString& bs) : __data(bs.__data) {}
-    BasicString(BasicString&&) noexcept = default;
-    BasicString(const BasicString& str,
-                size_type          pos,
-                size_type          n = npos,
-                const AllocatorT&  a = AllocatorT())
+    explicit BasicString(const AllocatorT& a = AllocatorT()) noexcept(
+      std::is_nothrow_constructible<std::string, const AllocatorT&>::value)
+      : __data(a)
+    {}
+    BasicString(const BasicString& bs) noexcept(
+      std::is_nothrow_copy_constructible<std::string>::value)
+      : __data(bs.__data)
+    {}
+    BasicString(BasicString&& bs) noexcept : __data(std::move(bs.__data)){};
+    BasicString(
+      const BasicString& str,
+      size_type          pos,
+      size_type          n = npos,
+      const AllocatorT&  a =
+        AllocatorT()) noexcept(std::is_nothrow_constructible<std::string,
+                                                             const std::string&,
+                                                             size_type,
+                                                             size_type,
+                                                             const AllocatorT&>::
+                                 value)
       : __data(str.__data, pos, n, a)
     {}
-    BasicString(const char* s, size_type n, const AllocatorT& a = AllocatorT())
+    BasicString(
+      const char*       s,
+      size_type         n,
+      const AllocatorT& a =
+        AllocatorT()) noexcept(std::is_nothrow_constructible<std::string,
+                                                             const char*,
+                                                             size_type,
+                                                             const AllocatorT&>::
+                                 value)
       : __data(s, n, a)
     {}
-    BasicString(const char* s, const AllocatorT& a = AllocatorT())
+    BasicString(const char* s, const AllocatorT& a = AllocatorT()) noexcept(
+      std::is_nothrow_constructible<std::string,
+                                    const char*,
+                                    const AllocatorT&>::value)
       : __data(s, a)
     {}
-    BasicString(size_type n, char c, const AllocatorT& a = AllocatorT())
+    BasicString(size_type n, char c, const AllocatorT& a = AllocatorT()) noexcept(
+      std::is_nothrow_constructible<std::string,
+                                    size_type,
+                                    char,
+                                    const AllocatorT&>::value)
       : __data(n, c, a)
     {}
-    template<class InputIterator>
-    BasicString(InputIterator     begin,
-                InputIterator     end,
-                const AllocatorT& a = AllocatorT())
+    template<class InputIterator> BasicString(
+      InputIterator     begin,
+      InputIterator     end,
+      const AllocatorT& a =
+        AllocatorT()) noexcept(std::is_nothrow_constructible<std::string,
+                                                             InputIterator,
+                                                             InputIterator,
+                                                             const AllocatorT&>::
+                                 value)
       : __data(begin, end, a)
     {}
     BasicString(std::initializer_list<char> i,
-                const AllocatorT&           a = AllocatorT())
+                const AllocatorT&           a =
+                  AllocatorT()) noexcept(std::
+                                           is_nothrow_constructible<
+                                             std::string,
+                                             std::initializer_list<char>,
+                                             const AllocatorT&>::value)
       : __data(i, a)
     {}
-    BasicString(const BasicString& bs, const AllocatorT& a)
+    BasicString(const BasicString& bs, const AllocatorT& a) noexcept(
+      std::is_nothrow_constructible<std::string,
+                                    const std::string&,
+                                    const AllocatorT&>::value)
       : __data(bs.__data, a)
     {}
-    BasicString(BasicString&& bs, const AllocatorT& a)
+    BasicString(BasicString&& bs, const AllocatorT& a) noexcept(
+      std::is_nothrow_constructible<std::string,
+                                    std::string&&,
+                                    const AllocatorT&>::value)
       : __data(std::move(bs.__data), a)
     {}
 
     // assignment operator= from STL
-    BasicString& operator=(const BasicString& str)
+    BasicString& operator=(const BasicString& str) noexcept(
+      std::is_nothrow_assignable<std::string, const std::string&>::value)
     {
         __data = str.__data;
         return *this;
@@ -100,17 +146,21 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         __data = std::move(str.__data);
         return *this;
     }
-    BasicString& operator=(const char* s)
+    BasicString& operator=(const char* s) noexcept(
+      std::is_nothrow_assignable<std::string, const char*&>::value)
     {
         __data = s;
         return *this;
     }
-    BasicString& operator=(char c)
+    BasicString& operator=(char c) noexcept(
+      std::is_nothrow_assignable<std::string, char>::value)
     {
         __data = c;
         return *this;
     }
-    BasicString& operator=(std::initializer_list<char> i)
+    BasicString& operator=(std::initializer_list<char> i) noexcept(
+      std::is_nothrow_assignable<std::string,
+                                 std::initializer_list<char>>::value)
     {
         __data = i;
         return *this;
