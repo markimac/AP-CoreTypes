@@ -2567,7 +2567,6 @@ TEST_CASE("BasicString::operator+", "[SWS_CORE], [SWS_CORE_03000]")
         BasicString qwerty = 'q' + (l + r);
 
         CHECK("qwerty" == qwerty);
-
     }
 
     SECTION("operator+(const BasicString&, const char*)")
