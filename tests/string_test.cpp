@@ -2729,3 +2729,170 @@ TEST_CASE("BasicString::operator+", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK("qwerty" == qwerty);
     }
 }
+
+TEST_CASE("BasicString::substr", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    /*
+       Comparing results to the std::string's equivalents due to SWS_CORE_03000
+       requirement:
+
+       "All members of this class and supporting constructs (such as global
+       relational operators) shall behave identical to those of
+       std::basic_string in header <string> from [5, the C++11 standard]
+       section 21.3, except that the default value for the Allocator template
+       argument is implementation-defined.""
+       */
+
+    using core::BasicString;
+
+    SECTION("BasicString::substr(size_type = 0, size_type = npos)")
+    {
+        constexpr char sample[]   = "qwerty";
+        BasicString    bs_sample  = sample;
+        std::string    str_sample = sample;
+
+        REQUIRE(sample == bs_sample);
+        REQUIRE(sample == str_sample);
+
+        BasicString bs_result  = bs_sample.substr();
+        std::string str_result = str_sample.substr();
+
+        CHECK(sample == bs_result);
+        CHECK(sample == bs_sample);
+        CHECK(sample == str_result);
+        CHECK(sample == str_sample);
+    }
+
+    SECTION("BasicString::substr(size_type, size_type = npos)")
+    {
+        constexpr char sample[]   = "asdfqwerty";
+        BasicString    bs_sample  = sample;
+        std::string    str_sample = sample;
+
+        REQUIRE(sample == bs_sample);
+        REQUIRE(sample == str_sample);
+
+        BasicString bs_result  = bs_sample.substr(4);
+        std::string str_result = str_sample.substr(4);
+
+        CHECK("qwerty" == bs_result);
+        CHECK(sample == bs_sample);
+        CHECK("qwerty" == str_result);
+        CHECK(sample == str_sample);
+    }
+
+    SECTION("BasicString::substr(size_type, size_type)")
+    {
+        constexpr char sample[]   = "asdfqwertyuiop";
+        BasicString    bs_sample  = sample;
+        std::string    str_sample = sample;
+
+        REQUIRE(sample == bs_sample);
+        REQUIRE(sample == str_sample);
+
+        BasicString bs_result  = bs_sample.substr(4, 6);
+        std::string str_result = str_sample.substr(4, 6);
+
+        CHECK("qwerty" == bs_result);
+        CHECK(sample == bs_sample);
+        CHECK("qwerty" == str_result);
+        CHECK(sample == str_sample);
+    }
+}
+
+TEST_CASE("BasicString::front", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "az";
+    const BasicString<>& cstr = str;
+
+    REQUIRE("az" == str);
+    REQUIRE(&cstr == &str);
+
+    SECTION("BasicString::front() const")
+    {
+        CHECK('a' == cstr.front());
+        CHECK(*cstr.begin() == cstr.front());
+    }
+
+    SECTION("BasicString::front()")
+    {
+        CHECK('a' == str.front());
+        CHECK(*str.begin() == str.front());
+    }
+
+    SECTION("BasicString::back() const")
+    {
+        CHECK('z' == cstr.back());
+        auto end = cstr.begin();
+        std::advance(end, 1);
+        CHECK(*end == cstr.back());
+    }
+
+    SECTION("BasicString::back()")
+    {
+        CHECK('z' == str.back());
+        auto end = str.begin();
+        std::advance(end, 1);
+        CHECK(*end == str.back());
+    }
+}
+
+TEST_CASE("BasicString::at", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE("abc" == str);
+    REQUIRE(&cstr == &str);
+
+    SECTION("BasicString::at(size_type) const")
+    {
+        CHECK('a' == cstr.at(0));
+        CHECK(&cstr.front() == &cstr.at(0));
+        CHECK('b' == cstr.at(1));
+        CHECK('c' == cstr.at(2));
+        CHECK(&cstr.back() == &cstr.at(2));
+    }
+
+    SECTION("BasicString::at(size_type)")
+    {
+        CHECK('a' == str.at(0));
+        CHECK(&str.front() == &str.at(0));
+        CHECK('b' == str.at(1));
+        CHECK('c' == str.at(2));
+        CHECK(&str.back() == &str.at(2));
+    }
+}
+
+TEST_CASE("BasicString::operator[]", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString          str  = "abc";
+    const BasicString<>& cstr = str;
+
+    REQUIRE("abc" == str);
+    REQUIRE(&cstr == &str);
+
+    SECTION("BasicString::operator[](size_type) const")
+    {
+        CHECK('a' == cstr[0]);
+        CHECK(&cstr.front() == &cstr[0]);
+        CHECK('b' == cstr[1]);
+        CHECK('c' == cstr[2]);
+        CHECK(&cstr.back() == &cstr[2]);
+    }
+
+    SECTION("BasicString::operator[](size_type)")
+    {
+        CHECK('a' == str[0]);
+        CHECK(&str.front() == &str[0]);
+        CHECK('b' == str[1]);
+        CHECK('c' == str[2]);
+        CHECK(&str.back() == &str[2]);
+    }
+}
