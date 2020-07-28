@@ -115,6 +115,39 @@ TEST_CASE("BasicString::operator=", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
+TEST_CASE("BasicString::operator+=", "[SWS_CORE], [SWS_CORE_03000]")
+{
+    using core::BasicString;
+
+    BasicString str = "qwerty";
+
+    REQUIRE(str == "qwerty");
+
+    SECTION("BasicString::operator+=(const BasicString&)")
+    {
+        str += BasicString("uiop");
+        CHECK(str == "qwertyuiop");
+    }
+
+    SECTION("BasicString::operator+=(const char*)")
+    {
+        str += "uiop";
+        CHECK(str == "qwertyuiop");
+    }
+
+    SECTION("BasicString::operator+=(char)")
+    {
+        str += 'u';
+        CHECK(str == "qwertyu");
+    }
+
+    SECTION("BasicString::operator+=(std::initializer_list<char>)")
+    {
+        str += {'u', 'i', 'o', 'p'};
+        CHECK(str == "qwertyuiop");
+    }
+}
+
 TEST_CASE("BasicString::BasicString", "[SWS_CORE], [SWS_CORE_03000]")
 {
     using core::BasicString;
@@ -164,6 +197,85 @@ TEST_CASE("BasicString::BasicString", "[SWS_CORE], [SWS_CORE_03000]")
                                   const Alloc&>::value);
     REQUIRE(
       std::is_constructible<BasicString<>, BasicString<>&, const Alloc&>::value);
+
+    constexpr char sample[] = "qwerty";
+
+    SECTION("BasicString::BasicString(const BasicString&)")
+    {
+        BasicString bs1 = sample;
+
+        REQUIRE(sample == bs1);
+
+        BasicString bs2 = bs1;
+
+        CHECK(bs1 == bs2);
+        CHECK(sample == bs2);
+    }
+
+    SECTION("BasicString::BasicString(BasicString&&, const Allocator&)")
+    {
+        BasicString example = BasicString(sample);
+        BasicString bs(std::move(example), example.get_allocator());
+
+        CHECK(sample == bs);
+    }
+
+    SECTION("BasicString::BasicString(BasicString&&)")
+    {
+        BasicString example = BasicString(sample);
+        BasicString bs(std::move(example));
+
+        CHECK(sample == bs);
+    }
+
+    SECTION("BasicString::BasicString(const BasicString&, const Allocator&)")
+    {
+        BasicString example = BasicString(sample);
+        BasicString bs(example, example.get_allocator());
+
+        CHECK(sample == bs);
+    }
+
+    SECTION(
+      "BasicString::BasicString(const BasicString&, size_type, size_type)")
+    {
+        BasicString bs1 = "123";
+        bs1 += sample;
+        BasicString bs2 = BasicString(bs1, 3);
+
+        CHECK(sample == bs2);
+    }
+
+    SECTION("BasicString::BasicString(std::initializer_list<char>)")
+    {
+        BasicString bs = {'q', 'w', 'e', 'r', 't', 'y'};
+        CHECK(bs == "qwerty");
+    }
+
+    SECTION("BasicString::BasicString(size_type, char)")
+    {
+        BasicString bs = BasicString(size_type(3), '.');
+        CHECK(bs == "...");
+    }
+
+    SECTION("BasicString::BasicString(char*, size_type)")
+    {
+        BasicString bs = BasicString(sample, size_type(5));
+        CHECK(bs == "qwert");
+    }
+
+    SECTION("BasicString::BasicString(InputIterator, InputIterator)")
+    {
+        BasicString bs1 = "123";
+        bs1 += sample;
+
+        auto bs1_begin = bs1.begin();
+        std::advance(bs1_begin, 3);
+
+        BasicString bs2 = BasicString(bs1_begin, bs1.end());
+
+        CHECK(sample == bs2);
+    }
 }
 
 TEST_CASE("BasicString::operator==", "[SWS_CORE], [SWS_CORE_03000]")
