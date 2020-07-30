@@ -30,11 +30,13 @@ namespace ara::core.
 */
 template<class AllocatorT = ara::core::Allocator<char>> class BasicString
 {
-    std::basic_string<char, std::char_traits<char>, AllocatorT> __data;
+    using string_t =
+      std::basic_string<char, std::char_traits<char>, AllocatorT>;
+    string_t __data;
 
  public:
     // types from STL
-    using traits_type    = std::basic_string<char>::traits_type;
+    using traits_type    = typename string_t::traits_type;
     using value_type     = typename traits_type::char_type;
     using allocator_type = AllocatorT;
     using size_type = typename std::allocator_traits<AllocatorT>::size_type;
@@ -47,20 +49,20 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     using const_pointer =
       typename std::allocator_traits<AllocatorT>::const_pointer;
 
-    using iterator               = std::basic_string<char>::iterator;
-    using const_iterator         = std::basic_string<char>::const_iterator;
+    using iterator               = typename string_t::iterator;
+    using const_iterator         = typename string_t::const_iterator;
     using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    static constexpr size_type npos = std::basic_string<char>::npos;
+    static constexpr size_type npos = string_t::npos;
 
     // constructors from STL
     explicit BasicString(const AllocatorT& a = AllocatorT()) noexcept(
-      std::is_nothrow_constructible<std::string, const AllocatorT&>::value)
+      std::is_nothrow_constructible<string_t, const AllocatorT&>::value)
       : __data(a)
     {}
     BasicString(const BasicString& bs) noexcept(
-      std::is_nothrow_copy_constructible<std::string>::value)
+      std::is_nothrow_copy_constructible<string_t>::value)
       : __data(bs.__data)
     {}
     BasicString(BasicString&& bs) noexcept : __data(std::move(bs.__data)){};
@@ -69,8 +71,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
       size_type          pos,
       size_type          n = npos,
       const AllocatorT&  a =
-        AllocatorT()) noexcept(std::is_nothrow_constructible<std::string,
-                                                             const std::string&,
+        AllocatorT()) noexcept(std::is_nothrow_constructible<string_t,
+                                                             const string_t&,
                                                              size_type,
                                                              size_type,
                                                              const AllocatorT&>::
@@ -81,7 +83,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
       const char*       s,
       size_type         n,
       const AllocatorT& a =
-        AllocatorT()) noexcept(std::is_nothrow_constructible<std::string,
+        AllocatorT()) noexcept(std::is_nothrow_constructible<string_t,
                                                              const char*,
                                                              size_type,
                                                              const AllocatorT&>::
@@ -89,13 +91,12 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
       : __data(s, n, a)
     {}
     BasicString(const char* s, const AllocatorT& a = AllocatorT()) noexcept(
-      std::is_nothrow_constructible<std::string,
-                                    const char*,
-                                    const AllocatorT&>::value)
+      std::is_nothrow_constructible<string_t, const char*, const AllocatorT&>::
+        value)
       : __data(s, a)
     {}
     BasicString(size_type n, char c, const AllocatorT& a = AllocatorT()) noexcept(
-      std::is_nothrow_constructible<std::string,
+      std::is_nothrow_constructible<string_t,
                                     size_type,
                                     char,
                                     const AllocatorT&>::value)
@@ -105,7 +106,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
       InputIterator     begin,
       InputIterator     end,
       const AllocatorT& a =
-        AllocatorT()) noexcept(std::is_nothrow_constructible<std::string,
+        AllocatorT()) noexcept(std::is_nothrow_constructible<string_t,
                                                              InputIterator,
                                                              InputIterator,
                                                              const AllocatorT&>::
@@ -116,27 +117,26 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                 const AllocatorT&           a =
                   AllocatorT()) noexcept(std::
                                            is_nothrow_constructible<
-                                             std::string,
+                                             string_t,
                                              std::initializer_list<char>,
                                              const AllocatorT&>::value)
       : __data(i, a)
     {}
     BasicString(const BasicString& bs, const AllocatorT& a) noexcept(
-      std::is_nothrow_constructible<std::string,
-                                    const std::string&,
+      std::is_nothrow_constructible<string_t,
+                                    const string_t&,
                                     const AllocatorT&>::value)
       : __data(bs.__data, a)
     {}
     BasicString(BasicString&& bs, const AllocatorT& a) noexcept(
-      std::is_nothrow_constructible<std::string,
-                                    std::string&&,
-                                    const AllocatorT&>::value)
+      std::is_nothrow_constructible<string_t, string_t&&, const AllocatorT&>::
+        value)
       : __data(std::move(bs.__data), a)
     {}
 
     // assignment operator= from STL
     BasicString& operator=(const BasicString& str) noexcept(
-      std::is_nothrow_assignable<std::string, const std::string&>::value)
+      std::is_nothrow_assignable<string_t, const string_t&>::value)
     {
         __data = str.__data;
         return *this;
@@ -147,20 +147,19 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
     BasicString& operator=(const char* s) noexcept(
-      std::is_nothrow_assignable<std::string, const char*&>::value)
+      std::is_nothrow_assignable<string_t, const char*&>::value)
     {
         __data = s;
         return *this;
     }
-    BasicString& operator=(char c) noexcept(
-      std::is_nothrow_assignable<std::string, char>::value)
+    BasicString&
+    operator=(char c) noexcept(std::is_nothrow_assignable<string_t, char>::value)
     {
         __data = c;
         return *this;
     }
     BasicString& operator=(std::initializer_list<char> i) noexcept(
-      std::is_nothrow_assignable<std::string,
-                                 std::initializer_list<char>>::value)
+      std::is_nothrow_assignable<string_t, std::initializer_list<char>>::value)
     {
         __data = i;
         return *this;
@@ -574,7 +573,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
 
     BasicString substr(size_type pos = 0, size_type n = npos) const
     {
-        BasicString retval;
+        BasicString retval(__data.get_allocator());
         retval.__data = __data.substr(pos, n);
         return retval;
     }
