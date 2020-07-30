@@ -889,6 +889,17 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     {
         return __data.compare(pos1, n1, t, pos2, n2);
     }
+
+    // comparision operators from STL
+    friend bool operator==(const char* s, const BasicString& bs)
+    {
+        return bs == s;
+    }
+
+    friend bool operator!=(const char* s, const BasicString& bs)
+    {
+        return bs != s;
+    }
 };
 
 // [SWS_CORE_03001] String type
@@ -907,19 +918,6 @@ template<typename Allocator> void
 swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs)
 {
     lhs.swap(rhs);
-}
-
-// comparision operators from STL
-template<class AllocatorT> bool
-operator==(const char* s, const BasicString<AllocatorT>& bs)
-{
-    return bs == s;
-}
-
-template<class AllocatorT> bool
-operator!=(const char* s, const BasicString<AllocatorT>& bs)
-{
-    return bs != s;
 }
 
 template<class AllocatorT> bool
