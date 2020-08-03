@@ -7,46 +7,138 @@
 
 namespace core = ara::core;
 
-TEST_CASE("BasicString: Implicit conversion to StringView (nothrow)",
-          "[SWS_CORE], [SWS_CORE_03301]")
+template<typename T, std::size_t _size = 256, std::size_t _slots = 16>
+class TestAllocator
 {
-    using core::BasicString;
+ public:
+    static T    _storage[_slots][_size];
+    static bool _allocated[_slots];
+
+    using type               = T;
+    using value_type         = type;
+    using pointer            = value_type*;
+    using const_pointer      = const type*;
+    using void_pointer       = void*;
+    using const_void_pointer = const void*;
+    using size_type          = std::size_t;
+    using difference_type    = std::ptrdiff_t;
+
+    template<typename U> struct rebind
+    {
+        using other = TestAllocator<U, _size, _slots>;
+    };
+
+    TestAllocator()                     = default;
+    TestAllocator(const TestAllocator&) = default;
+
+    pointer allocate(std::size_t, const void* = nullptr) noexcept
+    {
+        constexpr std::size_t end_position = _slots;
+        auto                  begin        = &_allocated[0];
+        auto                  end          = &_allocated[end_position];
+
+        pointer ptr = nullptr;
+
+        auto free_slot = std::find(begin, end, false);
+        auto slot_idx  = std::distance(begin, free_slot);
+
+        if (end == free_slot)
+        {
+            ptr = &_storage[_slots - 1][0];
+        }
+        else
+        {
+            _allocated[slot_idx] = true;
+            ptr                  = &_storage[slot_idx][0];
+        }
+
+        return ptr;
+    }
+
+    void deallocate(pointer ptr, std::size_t) noexcept
+    {
+        auto slot = std::distance(&_storage[0][0], ptr);
+        slot /= static_cast<decltype(slot)>(_size);
+
+        if (std::size_t(slot) < _slots)
+        {
+            _allocated[slot] = false;
+        }
+    }
+
+    static void reset(const T value = T()) noexcept
+    {
+        std::fill(&_storage[0][0], &_storage[_slots][_size], value);
+        for (unsigned int i = 0; i < _slots; i++)
+        { _storage[i][_size - 1] = 0; }
+        std::fill(&_allocated[0], &_allocated[_slots], false);
+    }
+
+    friend bool operator==(const TestAllocator& lhs, const TestAllocator& rhs)
+    {
+        return lhs._storage == rhs._storage;
+    }
+
+    friend bool operator!=(const TestAllocator& lhs, const TestAllocator& rhs)
+    {
+        return lhs._storage != rhs._storage;
+    }
+};
+
+template<typename T, std::size_t _size, std::size_t _slots>
+T TestAllocator<T, _size, _slots>::_storage[_slots][_size];
+
+template<typename T, std::size_t _size, std::size_t _slots>
+bool TestAllocator<T, _size, _slots>::_allocated[_slots] = {false};
+
+template<typename T> using TestAlloc = TestAllocator<T, 128, 16>;
+
+using Allocators = std::tuple<core::Allocator<char>, TestAlloc<char>>;
+
+TEMPLATE_LIST_TEST_CASE(
+  "BasicString: Implicit conversion to StringView (nothrow)",
+  "[SWS_CORE], [SWS_CORE_03301]",
+  Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
     using core::StringView;
 
-    CHECK(std::is_convertible<BasicString<>, StringView>::value);
-    CHECK(std::is_nothrow_convertible<BasicString<>, StringView>::value);
+    CHECK(std::is_convertible<BasicString, StringView>::value);
+    CHECK(std::is_nothrow_convertible<BasicString, StringView>::value);
 }
 
-TEST_CASE("BasicString: Constructor from StringView (explicit)",
-          "[SWS_CORE], [SWS_CORE_03302]")
+TEMPLATE_LIST_TEST_CASE("BasicString: Constructor from StringView (explicit)",
+                        "[SWS_CORE], [SWS_CORE_03302]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
     using core::StringView;
 
-    CHECK(std::is_constructible<BasicString<>, StringView>::value);
-    CHECK_FALSE(std::is_convertible<StringView, BasicString<>>::value);
+    CHECK(std::is_constructible<BasicString, StringView>::value);
+    CHECK_FALSE(std::is_convertible<StringView, BasicString>::value);
 }
 
-TEST_CASE("BasicString: Constructor from implicit StringView",
-          "[SWS_CORE], [SWS_CORE_03303]")
+TEMPLATE_LIST_TEST_CASE("BasicString: Constructor from implicit StringView",
+                        "[SWS_CORE], [SWS_CORE_03303]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
     using core::StringView;
 
-    typedef BasicString<>::size_type size_type;
+    typedef typename BasicString::size_type size_type;
 
-    CHECK(
-      std::is_constructible<BasicString<>, StringView, size_type, size_type>::
+    CHECK(std::is_constructible<BasicString, StringView, size_type, size_type>::
         value);
 }
 
-TEST_CASE("BasicString: operator= from StringView",
-          "[SWS_CORE], [SWS_CORE_03304]")
+TEMPLATE_LIST_TEST_CASE("BasicString: operator= from StringView",
+                        "[SWS_CORE], [SWS_CORE_03304]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
     using core::StringView;
 
-    CHECK(std::is_assignable<BasicString<>, StringView>::value);
+    CHECK(std::is_assignable<BasicString, StringView>::value);
 }
 
 TEST_CASE("BasicString: String type", "[SWS_CORE], [SWS_CORE_03001]")
@@ -55,11 +147,13 @@ TEST_CASE("BasicString: String type", "[SWS_CORE], [SWS_CORE_03001]")
       std::is_same<class core::BasicString<>, typename core::String>::value);
 }
 
-TEST_CASE("BasicString: swap overload for BasicString",
-          "[SWS_CORE], [SWS_CORE_03296]")
+TEMPLATE_LIST_TEST_CASE("BasicString: swap overload for BasicString",
+                        "[SWS_CORE], [SWS_CORE_03296]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
     using core::swap;
+    TestAlloc<char>::reset();
 
     BasicString a("a");
     BasicString b("b");
@@ -73,16 +167,19 @@ TEST_CASE("BasicString: swap overload for BasicString",
     CHECK(b == "a");
 }
 
-TEST_CASE("BasicString::operator=", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator=",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    REQUIRE(std::is_copy_assignable<BasicString<>>::value);
-    REQUIRE(std::is_move_assignable<BasicString<>>::value);
-    REQUIRE(std::is_assignable<BasicString<>, const char*>::value);
-    REQUIRE(std::is_assignable<BasicString<>, char>::value);
+    REQUIRE(std::is_copy_assignable<BasicString>::value);
+    REQUIRE(std::is_move_assignable<BasicString>::value);
+    REQUIRE(std::is_assignable<BasicString, const char*>::value);
+    REQUIRE(std::is_assignable<BasicString, char>::value);
     REQUIRE(
-      std::is_assignable<BasicString<>, std::initializer_list<char>>::value);
+      std::is_assignable<BasicString, std::initializer_list<char>>::value);
 
     BasicString str;
     REQUIRE(str.empty());
@@ -115,9 +212,12 @@ TEST_CASE("BasicString::operator=", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::operator+=", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator+=",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString str = "qwerty";
 
@@ -148,55 +248,58 @@ TEST_CASE("BasicString::operator+=", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::BasicString", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::BasicString",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
-    typedef core::BasicString<>::size_type size_type;
-    typedef core::Allocator<char>          Alloc;
+    using BasicString = core::BasicString<TestType>;
+    typedef typename BasicString::size_type size_type;
+    typedef TestType                        Alloc;
 
-    REQUIRE(std::is_constructible<BasicString<>, Alloc>::value);
+    TestAlloc<char>::reset();
 
-    REQUIRE(std::is_copy_constructible<BasicString<>>::value);
+    REQUIRE(std::is_constructible<BasicString, Alloc>::value);
 
-    REQUIRE(std::is_nothrow_move_constructible<BasicString<>>::value);
+    REQUIRE(std::is_copy_constructible<BasicString>::value);
 
-    REQUIRE(std::is_constructible<BasicString<>,
-                                  BasicString<>&,
+    REQUIRE(std::is_nothrow_move_constructible<BasicString>::value);
+
+    REQUIRE(std::is_constructible<BasicString,
+                                  BasicString&,
                                   size_type,
                                   size_type,
                                   const Alloc&>::value);
     REQUIRE(
-      std::is_constructible<BasicString<>, BasicString<>&, size_type, size_type>::
+      std::is_constructible<BasicString, BasicString&, size_type, size_type>::
         value);
 
     REQUIRE(
-      std::is_constructible<BasicString<>, const char*, size_type, const Alloc&>::
+      std::is_constructible<BasicString, const char*, size_type, const Alloc&>::
         value);
-    REQUIRE(
-      std::is_constructible<BasicString<>, const char*, size_type>::value);
+    REQUIRE(std::is_constructible<BasicString, const char*, size_type>::value);
 
     REQUIRE(
-      std::is_constructible<BasicString<>, const char*, const Alloc&>::value);
-    REQUIRE(std::is_constructible<BasicString<>, const char*>::value);
+      std::is_constructible<BasicString, const char*, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString, const char*>::value);
 
     REQUIRE(
-      std::is_constructible<BasicString<>, size_type, char, const Alloc&>::value);
-    REQUIRE(std::is_constructible<BasicString<>, size_type, char>::value);
+      std::is_constructible<BasicString, size_type, char, const Alloc&>::value);
+    REQUIRE(std::is_constructible<BasicString, size_type, char>::value);
 
     REQUIRE(
-      std::is_constructible<BasicString<>, char*, char*, const Alloc&>::value);
+      std::is_constructible<BasicString, char*, char*, const Alloc&>::value);
 
-    REQUIRE(std::is_constructible<BasicString<>,
+    REQUIRE(std::is_constructible<BasicString,
                                   std::initializer_list<char>,
                                   const Alloc&>::value);
     REQUIRE(
-      std::is_constructible<BasicString<>, std::initializer_list<char>>::value);
+      std::is_constructible<BasicString, std::initializer_list<char>>::value);
 
-    REQUIRE(std::is_constructible<BasicString<>,
-                                  const BasicString<>&,
+    REQUIRE(std::is_constructible<BasicString,
+                                  const BasicString&,
                                   const Alloc&>::value);
     REQUIRE(
-      std::is_constructible<BasicString<>, BasicString<>&, const Alloc&>::value);
+      std::is_constructible<BasicString, BasicString&, const Alloc&>::value);
 
     constexpr char sample[] = "qwerty";
 
@@ -278,9 +381,12 @@ TEST_CASE("BasicString::BasicString", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::operator==", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator==",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString qwerty1("QWERTY");
     BasicString qwerty2("QWERTY");
@@ -307,9 +413,12 @@ TEST_CASE("BasicString::operator==", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::operator!=", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator!=",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString qwerty1("QWERTY");
     BasicString qwerty2("QWERTY");
@@ -336,9 +445,12 @@ TEST_CASE("BasicString::operator!=", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::operator<", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator<",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString abc("abc");
 
@@ -371,9 +483,12 @@ TEST_CASE("BasicString::operator<", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::operator>", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator>",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString abc("abc");
     SECTION("operator>(const char*, const BasicString&)")
@@ -405,9 +520,12 @@ TEST_CASE("BasicString::operator>", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::operator<=", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator<=",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString abc("abc");
 
@@ -443,9 +561,12 @@ TEST_CASE("BasicString::operator<=", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::operator>=", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator>=",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString abc("abc");
     SECTION("operator>=(const char*, const BasicString&)")
@@ -480,9 +601,12 @@ TEST_CASE("BasicString::operator>=", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::compare",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString abc("abc");
     SECTION("BasicString::compare(const BasicString&) >= 0")
@@ -750,7 +874,9 @@ TEST_CASE("BasicString::compare", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::find", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::find",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
     Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -763,7 +889,8 @@ TEST_CASE("BasicString::find", "[SWS_CORE], [SWS_CORE_03000]")
     implementation-defined.""
     */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
     BasicString    haystack(sample);
@@ -831,7 +958,9 @@ TEST_CASE("BasicString::find", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::rfind", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::rfind",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
    Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -844,7 +973,8 @@ TEST_CASE("BasicString::rfind", "[SWS_CORE], [SWS_CORE_03000]")
    implementation-defined.""
    */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
     BasicString    haystack(sample);
@@ -917,7 +1047,9 @@ TEST_CASE("BasicString::rfind", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::find_first_of", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::find_first_of",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
        Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -930,7 +1062,8 @@ TEST_CASE("BasicString::find_first_of", "[SWS_CORE], [SWS_CORE_03000]")
        argument is implementation-defined.""
        */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
     BasicString    haystack(sample);
@@ -1011,7 +1144,9 @@ TEST_CASE("BasicString::find_first_of", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::find_last_of", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::find_last_of",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
        Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -1024,7 +1159,8 @@ TEST_CASE("BasicString::find_last_of", "[SWS_CORE], [SWS_CORE_03000]")
        argument is implementation-defined.""
        */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
     BasicString    haystack(sample);
@@ -1105,7 +1241,9 @@ TEST_CASE("BasicString::find_last_of", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::find_first_not_of", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::find_first_not_of",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
    Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -1118,7 +1256,8 @@ TEST_CASE("BasicString::find_first_not_of", "[SWS_CORE], [SWS_CORE_03000]")
    implementation-defined.""
    */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
     BasicString    haystack(sample);
@@ -1199,7 +1338,9 @@ TEST_CASE("BasicString::find_first_not_of", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::find_last_not_of", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::find_last_not_of",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
        Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -1212,7 +1353,8 @@ TEST_CASE("BasicString::find_last_not_of", "[SWS_CORE], [SWS_CORE_03000]")
        argument is implementation-defined.""
        */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
     BasicString    haystack(sample);
@@ -1292,7 +1434,9 @@ TEST_CASE("BasicString::find_last_not_of", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::append", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::append",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
        Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -1305,7 +1449,8 @@ TEST_CASE("BasicString::append", "[SWS_CORE], [SWS_CORE_03000]")
        argument is implementation-defined.""
        */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     SECTION("BasicString::append(const BasicString&)")
     {
@@ -1398,7 +1543,9 @@ TEST_CASE("BasicString::append", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::assign", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::assign",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
        Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -1411,7 +1558,8 @@ TEST_CASE("BasicString::assign", "[SWS_CORE], [SWS_CORE_03000]")
        argument is implementation-defined.""
        */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     SECTION("BasicString::assign(const BasicString&)")
     {
@@ -1487,7 +1635,9 @@ TEST_CASE("BasicString::assign", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::insert",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
        Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -1500,7 +1650,8 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
        argument is implementation-defined.""
        */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     SECTION("BasicString::insert(size_type, const BasicString&)")
     {
@@ -1710,7 +1861,9 @@ TEST_CASE("BasicString::insert", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::erase", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::erase",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
        Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -1723,7 +1876,8 @@ TEST_CASE("BasicString::erase", "[SWS_CORE], [SWS_CORE_03000]")
        argument is implementation-defined.""
        */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     SECTION("BasicString::erase(size_type, size_type = npos)")
     {
@@ -1790,8 +1944,9 @@ TEST_CASE("BasicString::erase", "[SWS_CORE], [SWS_CORE_03000]")
         CHECK(bs_text == "qwerty");
     }
 }
-
-TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::replace",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
        Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -1804,7 +1959,8 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
        argument is implementation-defined.""
        */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     SECTION("BasicString::replace(size_type, size_type, const BasicString&)")
     {
@@ -2088,9 +2244,12 @@ TEST_CASE("BasicString::replace", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::swap", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::swap",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString a("a");
     BasicString b("b");
@@ -2104,9 +2263,12 @@ TEST_CASE("BasicString::swap", "[SWS_CORE], [SWS_CORE_03000]")
     CHECK(b == "a");
 }
 
-TEST_CASE("BasicString::copy", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::copy",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString str("qwerty");
     char        cpy[7] = {'\0'};
@@ -2119,9 +2281,12 @@ TEST_CASE("BasicString::copy", "[SWS_CORE], [SWS_CORE_03000]")
     CHECK(str == cpy);
 }
 
-TEST_CASE("BasicString::pop_back", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::pop_back",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString bs_text("qwerty");
 
@@ -2132,9 +2297,12 @@ TEST_CASE("BasicString::pop_back", "[SWS_CORE], [SWS_CORE_03000]")
     CHECK(bs_text == "qwert");
 }
 
-TEST_CASE("BasicString::push_back", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::push_back",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString bs_text("qwert");
 
@@ -2145,9 +2313,12 @@ TEST_CASE("BasicString::push_back", "[SWS_CORE], [SWS_CORE_03000]")
     CHECK(bs_text == "qwerty");
 }
 
-TEST_CASE("BasicString::c_str", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::c_str",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString bs_text("qwerty");
 
@@ -2158,9 +2329,12 @@ TEST_CASE("BasicString::c_str", "[SWS_CORE], [SWS_CORE_03000]")
     CHECK(std::strcmp(bs_text.c_str(), "qwerty") == 0);
 }
 
-TEST_CASE("BasicString::data", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::data",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString bs_text("qwerty");
 
@@ -2171,9 +2345,12 @@ TEST_CASE("BasicString::data", "[SWS_CORE], [SWS_CORE_03000]")
     CHECK(std::strcmp(bs_text.data(), "qwerty") == 0);
 }
 
-TEST_CASE("BasicString::clear", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::clear",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString bs_text("qwerty");
 
@@ -2184,9 +2361,12 @@ TEST_CASE("BasicString::clear", "[SWS_CORE], [SWS_CORE_03000]")
     CHECK(bs_text.empty());
 }
 
-TEST_CASE("BasicString::empty", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::empty",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     BasicString bs_text;
 
@@ -2197,22 +2377,29 @@ TEST_CASE("BasicString::empty", "[SWS_CORE], [SWS_CORE_03000]")
     CHECK_FALSE(bs_text.empty());
 }
 
-TEST_CASE("BasicString::get_allocator", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::get_allocator",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    typedef TestType AllocType;
+    using BasicString = typename core::BasicString<AllocType>;
+    TestAlloc<char>::reset();
 
-    core::Allocator<char> alloc;
-    BasicString           bs_text(alloc);
+    AllocType   alloc;
+    BasicString bs_text(alloc);
 
     CHECK(bs_text.get_allocator() == alloc);
 }
 
-TEST_CASE("BasicString::begin", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::begin",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE(str == "abc");
     REQUIRE(cstr == "abc");
@@ -2269,12 +2456,15 @@ TEST_CASE("BasicString::begin", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::cbegin", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::cbegin",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE(str == "abc");
     REQUIRE(cstr == "abc");
@@ -2303,12 +2493,15 @@ TEST_CASE("BasicString::cbegin", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::end", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::end",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE(str == "abc");
     REQUIRE(cstr == "abc");
@@ -2359,12 +2552,15 @@ TEST_CASE("BasicString::end", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::cend", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::cend",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE(str == "abc");
     REQUIRE(cstr == "abc");
@@ -2390,12 +2586,15 @@ TEST_CASE("BasicString::cend", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::rbegin", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::rbegin",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE(str == "abc");
     REQUIRE(cstr == "abc");
@@ -2452,12 +2651,15 @@ TEST_CASE("BasicString::rbegin", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::rend", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::rend",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE(str == "abc");
     REQUIRE(cstr == "abc");
@@ -2508,12 +2710,15 @@ TEST_CASE("BasicString::rend", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::crbegin", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::crbegin",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE(str == "abc");
     REQUIRE(cstr == "abc");
@@ -2542,12 +2747,15 @@ TEST_CASE("BasicString::crbegin", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::crend", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::crend",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE(str == "abc");
     REQUIRE(cstr == "abc");
@@ -2573,9 +2781,12 @@ TEST_CASE("BasicString::crend", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::operator+", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator+",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     SECTION("operator+(const BasicString&, const BasicString&)")
     {
@@ -2730,7 +2941,9 @@ TEST_CASE("BasicString::operator+", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::substr", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::substr",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
     /*
        Comparing results to the std::string's equivalents due to SWS_CORE_03000
@@ -2743,7 +2956,8 @@ TEST_CASE("BasicString::substr", "[SWS_CORE], [SWS_CORE_03000]")
        argument is implementation-defined.""
        */
 
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
     SECTION("BasicString::substr(size_type = 0, size_type = npos)")
     {
@@ -2800,12 +3014,15 @@ TEST_CASE("BasicString::substr", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::front", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::front",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "az";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "az";
+    const BasicString& cstr = str;
 
     REQUIRE("az" == str);
     REQUIRE(&cstr == &str);
@@ -2839,12 +3056,15 @@ TEST_CASE("BasicString::front", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::at", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::at",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE("abc" == str);
     REQUIRE(&cstr == &str);
@@ -2868,12 +3088,15 @@ TEST_CASE("BasicString::at", "[SWS_CORE], [SWS_CORE_03000]")
     }
 }
 
-TEST_CASE("BasicString::operator[]", "[SWS_CORE], [SWS_CORE_03000]")
+TEMPLATE_LIST_TEST_CASE("BasicString::operator[]",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
 {
-    using core::BasicString;
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
 
-    BasicString          str  = "abc";
-    const BasicString<>& cstr = str;
+    BasicString        str  = "abc";
+    const BasicString& cstr = str;
 
     REQUIRE("abc" == str);
     REQUIRE(&cstr == &str);
