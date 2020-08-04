@@ -72,7 +72,7 @@ class TestAllocator
         {
             std::fill(&_storage[i][0], &_storage[i][_size], value);
             _storage[i][_size - 1] = 0;
-            _allocated[i] = false;
+            _allocated[i]          = false;
         }
     }
 
@@ -130,7 +130,7 @@ TEMPLATE_LIST_TEST_CASE("BasicString: Constructor from implicit StringView",
     typedef typename BasicString::size_type size_type;
 
     CHECK(std::is_constructible<BasicString, StringView, size_type, size_type>::
-        value);
+            value);
 }
 
 TEMPLATE_LIST_TEST_CASE("BasicString: operator= from StringView",
