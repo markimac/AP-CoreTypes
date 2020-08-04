@@ -68,10 +68,12 @@ class TestAllocator
 
     static void reset(const T value = T()) noexcept
     {
-        std::fill(&_storage[0][0], &_storage[_slots][_size], value);
         for (unsigned int i = 0; i < _slots; i++)
-        { _storage[i][_size - 1] = 0; }
-        std::fill(&_allocated[0], &_allocated[_slots], false);
+        {
+            std::fill(&_storage[i][0], &_storage[i][_size], value);
+            _storage[i][_size - 1] = 0;
+            _allocated[i] = false;
+        }
     }
 
     friend bool operator==(const TestAllocator& lhs, const TestAllocator& rhs)
