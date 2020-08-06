@@ -910,9 +910,9 @@ TEMPLATE_LIST_TEST_CASE("BasicString::find",
         }
         {
             constexpr char needle[] = "fox";
-            CHECK(haystack.find(BasicString("fox"))
+            CHECK(haystack.find(BasicString(needle))
                   == example.find(std::string(needle)));
-            CHECK(haystack.find(BasicString("fox"), 3)
+            CHECK(haystack.find(BasicString(needle), 3)
                   == example.find(std::string(needle), 3));
         }
     }
