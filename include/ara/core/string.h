@@ -629,8 +629,10 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     implicitly convertible to StringView. This function shall behave the same as
     the corresponding std::basic_string function from [6, the C++17 standard].
     */
-    template<typename T> BasicString(T const& t, size_type pos, size_type n)
-      : __data(t, pos, n)
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString(T const& t, size_type pos, size_type n) : __data(t, pos, n)
     {}
 
     // [SWS_CORE_03304] operator= from StringView
@@ -702,8 +704,10 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     shall behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
-    template<typename T> BasicString&
-    append(T const& t, size_type pos, size_type n = npos)
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString& append(T const& t, size_type pos, size_type n = npos)
     {
         __data.append(t, pos, n);
         return *this;
@@ -728,7 +732,10 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
-    template<typename T> BasicString&
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString&
     insert(size_type pos1, T const& t, size_type pos2, size_type n = npos)
     {
         __data.insert(pos1, t, pos2, n);
@@ -755,11 +762,14 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     convertible to StringView. This function shall behave the same as the
     corresponding std::basic_string function from [6, the C++17 standard].
     */
-    template<typename T> BasicString& replace(size_type pos1,
-                                              size_type n1,
-                                              T const&  t,
-                                              size_type pos2,
-                                              size_type n2 = npos)
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString& replace(size_type pos1,
+                         size_type n1,
+                         T const&  t,
+                         size_type pos2,
+                         size_type n2 = npos)
     {
         __data.replace(pos1, n1, t, pos2, n2);
         return *this;
@@ -880,11 +890,14 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
-    template<typename T> int compare(size_type pos1,
-                                     size_type n1,
-                                     T const&  t,
-                                     size_type pos2,
-                                     size_type n2 = npos) const
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    int compare(size_type pos1,
+                size_type n1,
+                T const&  t,
+                size_type pos2,
+                size_type n2 = npos) const
     {
         return __data.compare(pos1, n1, t, pos2, n2);
     }

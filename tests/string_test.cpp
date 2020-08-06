@@ -7,6 +7,18 @@
 
 namespace core = ara::core;
 
+struct SvConvertible
+{
+    using sv_t = core::StringView;
+    sv_t _data;
+
+    SvConvertible(const sv_t& sv) : _data(sv) {}
+    template<typename T> SvConvertible(const core::BasicString<T>& sv)
+      : _data(static_cast<sv_t>(sv))
+    {}
+    operator sv_t() const { return _data; }
+};
+
 template<typename T, std::size_t _size = 256, std::size_t _slots = 16>
 class TestAllocator
 {
@@ -105,8 +117,15 @@ TEMPLATE_LIST_TEST_CASE(
     using BasicString = typename core::BasicString<TestType>;
     using core::StringView;
 
-    CHECK(std::is_convertible<BasicString, StringView>::value);
-    CHECK(std::is_nothrow_convertible<BasicString, StringView>::value);
+    STATIC_REQUIRE(std::is_convertible<BasicString, StringView>::value);
+    STATIC_REQUIRE(std::is_nothrow_convertible<BasicString, StringView>::value);
+
+    constexpr char sample[] = "qwerty";
+    BasicString    str      = sample;
+    StringView     sv       = str;
+
+    REQUIRE(sample == str);
+    CHECK(sample == sv);
 }
 
 TEMPLATE_LIST_TEST_CASE("BasicString: Constructor from StringView (explicit)",
@@ -116,8 +135,19 @@ TEMPLATE_LIST_TEST_CASE("BasicString: Constructor from StringView (explicit)",
     using BasicString = typename core::BasicString<TestType>;
     using core::StringView;
 
-    CHECK(std::is_constructible<BasicString, StringView>::value);
-    CHECK_FALSE(std::is_convertible<StringView, BasicString>::value);
+    STATIC_REQUIRE(std::is_constructible<BasicString, StringView>::value);
+    STATIC_REQUIRE_FALSE(std::is_convertible<StringView, BasicString>::value);
+
+    constexpr char sample[] = "qwerty";
+    BasicString    original = sample;
+    StringView     sv       = original;
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv);
+
+    BasicString sv_constructed = BasicString(sv);
+
+    CHECK(sample == sv_constructed);
 }
 
 TEMPLATE_LIST_TEST_CASE("BasicString: Constructor from implicit StringView",
@@ -127,10 +157,22 @@ TEMPLATE_LIST_TEST_CASE("BasicString: Constructor from implicit StringView",
     using BasicString = typename core::BasicString<TestType>;
     using core::StringView;
 
-    typedef typename BasicString::size_type size_type;
+    using size_type = typename BasicString::size_type;
 
-    CHECK(std::is_constructible<BasicString, StringView, size_type, size_type>::
-            value);
+    STATIC_REQUIRE(
+      std::is_constructible<BasicString, StringView, size_type, size_type>::
+        value);
+    STATIC_REQUIRE(std::is_convertible<SvConvertible, StringView>::value);
+
+    constexpr char sample[]  = "the quick brown fox jumps over a lazy dog";
+    BasicString    bs_sample = sample;
+    SvConvertible  sv        = bs_sample;
+
+    REQUIRE(sample == sv._data);
+
+    BasicString bs = BasicString(sv, size_type(16), size_type(3));
+
+    CHECK("fox" == bs);
 }
 
 TEMPLATE_LIST_TEST_CASE("BasicString: operator= from StringView",
@@ -140,7 +182,704 @@ TEMPLATE_LIST_TEST_CASE("BasicString: operator= from StringView",
     using BasicString = typename core::BasicString<TestType>;
     using core::StringView;
 
-    CHECK(std::is_assignable<BasicString, StringView>::value);
+    STATIC_REQUIRE(std::is_assignable<BasicString, StringView>::value);
+
+    constexpr char sample[] = "qwerty";
+    BasicString    original = sample;
+    StringView     sv       = original;
+    BasicString    str;
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv);
+
+    str = sv;
+
+    CHECK(sample == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Assignment from StringView",
+                        "[SWS_CORE], [SWS_CORE_03305]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+
+    constexpr char sample[] = "qwerty";
+    BasicString    original = sample;
+    StringView     sv       = original;
+    BasicString    str;
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv);
+
+    str.assign(sv);
+
+    CHECK(sample == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Assignment from implicit StringView",
+                        "[SWS_CORE], [SWS_CORE_03306]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    using size_type = typename BasicString::size_type;
+
+    STATIC_REQUIRE(std::is_convertible<SvConvertible, StringView>::value);
+
+    constexpr char sample[] = "the quick brown fox jumps over a lazy dog";
+    BasicString    original = sample;
+    SvConvertible  sv       = original;
+    BasicString    str;
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv._data);
+
+    str.assign(sv, size_type(16), size_type(3));
+
+    CHECK("fox" == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: operator+= from StringView",
+                        "[SWS_CORE], [SWS_CORE_03307]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+
+    constexpr char sample[] = "rty";
+    BasicString    original = sample;
+    StringView     sv       = original;
+    BasicString    str      = "qwe";
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv);
+    REQUIRE("qwe" == str);
+
+    str += sv;
+
+    CHECK("qwerty" == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Concatenation of StringView",
+                        "[SWS_CORE], [SWS_CORE_03308]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+
+    constexpr char sample[] = "rty";
+    BasicString    original = sample;
+    StringView     sv       = original;
+    BasicString    str      = "qwe";
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv);
+    REQUIRE("qwe" == str);
+
+    str.append(sv);
+
+    CHECK("qwerty" == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Concatenation of implicit StringView",
+                        "[SWS_CORE], [SWS_CORE_03309]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    using size_type = typename BasicString::size_type;
+
+    STATIC_REQUIRE(std::is_convertible<SvConvertible, StringView>::value);
+
+    constexpr char sample[] = "asrtydf";
+    BasicString    original = sample;
+    SvConvertible  sv       = original;
+    BasicString    str      = "qwe";
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv._data);
+    REQUIRE("qwe" == str);
+
+    str.append(sv, size_type(2), size_type(3));
+
+    CHECK("qwerty" == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Insertion of StringView",
+                        "[SWS_CORE], [SWS_CORE_03310]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    using size_type = typename BasicString::size_type;
+
+    constexpr char sample[] = "er";
+    BasicString    original = sample;
+    StringView     sv       = original;
+    BasicString    str      = "qwty";
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv);
+    REQUIRE("qwty" == str);
+
+    str.insert(size_type(2), sv);
+
+    CHECK("qwerty" == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Insertion of implicit StringView",
+                        "[SWS_CORE], [SWS_CORE_03311]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    using size_type = typename BasicString::size_type;
+
+    STATIC_REQUIRE(std::is_convertible<SvConvertible, StringView>::value);
+
+    constexpr char sample[] = "..er..";
+    BasicString    original = sample;
+    SvConvertible  sv       = original;
+    BasicString    str      = "qwty";
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv._data);
+    REQUIRE("qwty" == str);
+
+    str.insert(size_type(2), sv, size_type(2), size_type(2));
+
+    CHECK("qwerty" == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Replacement with StringView",
+                        "[SWS_CORE], [SWS_CORE_03312]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    using size_type = typename BasicString::size_type;
+
+    constexpr char sample[] = "er";
+    BasicString    original = sample;
+    StringView     sv       = original;
+    BasicString    str      = "qwasdfty";
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv);
+    REQUIRE("qwasdfty" == str);
+
+    str.replace(size_type(2), size_type(4), sv);
+
+    CHECK("qwerty" == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Replacement with implicit StringView",
+                        "[SWS_CORE], [SWS_CORE_03313]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    using size_type = typename BasicString::size_type;
+
+    STATIC_REQUIRE(std::is_convertible<SvConvertible, StringView>::value);
+
+    constexpr char sample[] = "..er..";
+    BasicString    original = sample;
+    SvConvertible  sv       = original;
+    BasicString    str      = "qwasdfty";
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv._data);
+    REQUIRE("qwasdfty" == str);
+
+    str.replace(size_type(2), size_type(4), sv, size_type(2), size_type(2));
+
+    CHECK("qwerty" == str);
+}
+
+TEMPLATE_LIST_TEST_CASE(
+  "BasicString: Replacement of iterator range with StringView",
+  "[SWS_CORE], [SWS_CORE_03314]",
+  Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+
+    constexpr char sample[] = "er";
+    BasicString    original = sample;
+    StringView     sv       = original;
+    BasicString    str      = "qwasdfty";
+
+    REQUIRE(sample == original);
+    REQUIRE(sample == sv);
+    REQUIRE("qwasdfty" == str);
+
+    auto begin = str.begin();
+    auto end   = str.begin();
+
+    std::advance(begin, 2);
+    std::advance(end, 6);
+
+    str.replace(begin, end, sv);
+
+    CHECK("qwerty" == str);
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Forward-find a StringView",
+                        "[SWS_CORE], [SWS_CORE_03315]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    TestAlloc<char>::reset();
+
+    constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
+    BasicString    haystack(sample);
+    std::string    example(sample);
+
+    SECTION("BasicString::find(StringView, size_type = 0) const noexcept")
+    {
+        {
+            constexpr char needle[]  = "the";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find(StringView(bs_needle))
+                  == example.find(std::string(needle)));
+            CHECK(haystack.find(StringView(bs_needle), 3)
+                  == example.find(std::string(needle), 3));
+        }
+        {
+            constexpr char needle[]  = "fox";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find(StringView(bs_needle))
+                  == example.find(std::string(needle)));
+            CHECK(haystack.find(StringView(bs_needle), 3)
+                  == example.find(std::string(needle), 3));
+        }
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Reverse-find a StringView",
+                        "[SWS_CORE], [SWS_CORE_03316]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    TestAlloc<char>::reset();
+
+    constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
+    BasicString    haystack(sample);
+    std::string    example(sample);
+
+    SECTION("BasicString::rfind(StringView, size_type = npos) const noexcept")
+    {
+        {
+            constexpr char needle[]  = "the";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.rfind(StringView(bs_needle))
+                  == example.rfind(std::string(needle)));
+            CHECK(haystack.rfind(StringView(bs_needle), 1)
+                  == example.rfind(std::string(needle), 1));
+            CHECK(haystack.rfind(StringView(bs_needle), 0)
+                  == example.rfind(std::string(needle), 0));
+        }
+        {
+            constexpr char needle[]  = "fox";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.rfind(StringView(bs_needle))
+                  == example.rfind(std::string(needle)));
+            CHECK(haystack.rfind(StringView(bs_needle), 17)
+                  == example.rfind(std::string(needle), 17));
+            CHECK(haystack.rfind(StringView(bs_needle), 16)
+                  == example.rfind(std::string(needle), 16));
+        }
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE(
+  "BasicString: Forward-find of character set within a StringView",
+  "[SWS_CORE], [SWS_CORE_03317]",
+  Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    TestAlloc<char>::reset();
+
+    constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
+    BasicString    haystack(sample);
+    std::string    example(sample);
+
+    SECTION(
+      "BasicString::find_first_of(StringView, size_type = 0) const noexcept")
+    {
+        {
+            constexpr char needle[]  = "the";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find_first_of(StringView(bs_needle))
+                  == example.find_first_of(std::string(needle)));
+            CHECK(haystack.find_first_of(StringView(bs_needle), 3)
+                  == example.find_first_of(std::string(needle), 3));
+        }
+        {
+            constexpr char needle[]  = "fox";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find_first_of(StringView(bs_needle))
+                  == example.find_first_of(std::string(needle)));
+            CHECK(haystack.find_first_of(StringView(bs_needle), 3)
+                  == example.find_first_of(std::string(needle), 3));
+        }
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE(
+  "BasicString: Reverse-find of character set within a StringView",
+  "[SWS_CORE], [SWS_CORE_03318]",
+  Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    TestAlloc<char>::reset();
+
+    constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
+    BasicString    haystack(sample);
+    std::string    example(sample);
+
+    SECTION(
+      "BasicString::find_last_of(StringView, size_type = 0) const noexcept")
+    {
+        {
+            constexpr char needle[]  = "the";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find_last_of(StringView(bs_needle))
+                  == example.find_last_of(std::string(needle)));
+            CHECK(haystack.find_last_of(StringView(bs_needle), 3)
+                  == example.find_last_of(std::string(needle), 3));
+        }
+        {
+            constexpr char needle[]  = "fox";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find_last_of(StringView(bs_needle))
+                  == example.find_last_of(std::string(needle)));
+            CHECK(haystack.find_last_of(StringView(bs_needle), 3)
+                  == example.find_last_of(std::string(needle), 3));
+        }
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE(
+  "BasicString: Forward-find of character set not within a StringView",
+  "[SWS_CORE], [SWS_CORE_03319]",
+  Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    TestAlloc<char>::reset();
+
+    constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
+    BasicString    haystack(sample);
+    std::string    example(sample);
+
+    SECTION(
+      "BasicString::find_first_not_of(StringView, size_type = 0) const noexcept")
+    {
+        {
+            constexpr char needle[]  = "the";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find_first_not_of(StringView(bs_needle))
+                  == example.find_first_not_of(std::string(needle)));
+            CHECK(haystack.find_first_not_of(StringView(bs_needle), 3)
+                  == example.find_first_not_of(std::string(needle), 3));
+        }
+        {
+            constexpr char needle[]  = "fox";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find_first_not_of(StringView(bs_needle))
+                  == example.find_first_not_of(std::string(needle)));
+            CHECK(haystack.find_first_not_of(StringView(bs_needle), 3)
+                  == example.find_first_not_of(std::string(needle), 3));
+        }
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE(
+  "BasicString: Reverse-find of character set not within a StringView",
+  "[SWS_CORE], [SWS_CORE_03320]",
+  Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    TestAlloc<char>::reset();
+
+    constexpr char sample[] = " the quick brown fox jumps over the lazy dog";
+    BasicString    haystack(sample);
+    std::string    example(sample);
+
+    SECTION(
+      "BasicString::find_last_not_of(const BasicString&, size_type = 0) const noexcept")
+    {
+        {
+            constexpr char needle[] =
+              "the quick brown fox jumps over the lazy d";
+            BasicString bs_needle = needle;
+            CHECK(haystack.find_last_not_of(StringView(bs_needle))
+                  == example.find_last_not_of(std::string(bs_needle)));
+        }
+        {
+            constexpr char needle[]  = "the";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find_last_not_of(StringView(bs_needle), 3)
+                  == example.find_last_not_of(std::string(needle), 3));
+        }
+        {
+            constexpr char needle[]  = "fox";
+            BasicString    bs_needle = needle;
+            CHECK(haystack.find_last_not_of(StringView(bs_needle))
+                  == example.find_last_not_of(std::string(needle)));
+            CHECK(haystack.find_last_not_of(StringView(bs_needle), 3)
+                  == example.find_last_not_of(std::string(needle), 3));
+        }
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString: Comparison with a StringView",
+                        "[SWS_CORE], [SWS_CORE_03321]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    TestAlloc<char>::reset();
+
+    BasicString abc("abc");
+    SECTION("BasicString::compare(StringView) >= 0")
+    {
+        BasicString ab = "ab";
+        CHECK(abc.compare(StringView(ab)) >= 0);
+        BasicString abb = "abb";
+        CHECK(abc.compare(StringView(abb)) >= 0);
+        BasicString abc = "abc";
+        CHECK(abc.compare(StringView(abc)) >= 0);
+        BasicString abab = "abab";
+        CHECK(abc.compare(StringView(abab)) >= 0);
+        BasicString ac = "ac";
+        CHECK_FALSE(abc.compare(StringView(ac)) >= 0);
+        BasicString acb = "acb";
+        CHECK_FALSE(abc.compare(StringView(acb)) >= 0);
+        BasicString abcb = "abcb";
+        CHECK_FALSE(abc.compare(StringView(abcb)) >= 0);
+    }
+
+    SECTION("BasicString::compare(StringView) > 0")
+    {
+        BasicString ab = "ab";
+        CHECK(abc.compare(StringView(ab)) > 0);
+        BasicString abb = "abb";
+        CHECK(abc.compare(StringView(abb)) > 0);
+        BasicString abab = "abab";
+        CHECK(abc.compare(StringView(abab)) > 0);
+        BasicString ac = "ac";
+        CHECK_FALSE(abc.compare(StringView(ac)) > 0);
+        BasicString acb = "acb";
+        CHECK_FALSE(abc.compare(StringView(acb)) > 0);
+        BasicString abcb = "abcb";
+        CHECK_FALSE(abc.compare(StringView(abcb)) > 0);
+    }
+
+    SECTION("BasicString::compare(StringView) <= 0")
+    {
+        BasicString ad = "ad";
+        CHECK(abc.compare(StringView(ad)) <= 0);
+        BasicString abc = "abc";
+        CHECK(abc.compare(StringView(abc)) <= 0);
+        BasicString abd = "abd";
+        CHECK(abc.compare(StringView(abd)) <= 0);
+        BasicString abca = "abca";
+        CHECK(abc.compare(StringView(abca)) <= 0);
+        BasicString ab = "ab";
+        CHECK_FALSE(abc.compare(StringView(ab)) <= 0);
+        BasicString aba = "aba";
+        CHECK_FALSE(abc.compare(StringView(aba)) <= 0);
+        BasicString abab = "abab";
+        CHECK_FALSE(abc.compare(StringView(abab)) <= 0);
+    }
+
+    SECTION("BasicString::compare(StringView) < 0")
+    {
+        BasicString ad = "ad";
+        CHECK(abc.compare(StringView(ad)) < 0);
+        BasicString abd = "abd";
+        CHECK(abc.compare(StringView(abd)) < 0);
+        BasicString abca = "abca";
+        CHECK(abc.compare(StringView(abca)) < 0);
+        BasicString ab = "ab";
+        CHECK_FALSE(abc.compare(StringView(ab)) < 0);
+        BasicString aba = "aba";
+        CHECK_FALSE(abc.compare(StringView(aba)) < 0);
+        BasicString abab = "abab";
+        CHECK_FALSE(abc.compare(StringView(abab)) < 0);
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE(
+  "BasicString: Comparison of subsequence with a StringView",
+  "[SWS_CORE], [SWS_CORE_03322]",
+  Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    TestAlloc<char>::reset();
+
+    BasicString abc("abc");
+    SECTION("BasicString::compare(size_type, size_type, StringView) >= 0")
+    {
+        BasicString ab = "ab";
+        CHECK(abc.compare(0, 3, StringView(ab)) >= 0);
+        BasicString abb = "abb";
+        CHECK(abc.compare(0, 3, StringView(abb)) >= 0);
+        BasicString abc = "abc";
+        CHECK(abc.compare(0, 3, StringView(abc)) >= 0);
+        BasicString abab = "abab";
+        CHECK(abc.compare(0, 3, StringView(abab)) >= 0);
+        BasicString ac = "ac";
+        CHECK_FALSE(abc.compare(0, 3, StringView(ac)) >= 0);
+        BasicString acb = "acb";
+        CHECK_FALSE(abc.compare(0, 3, StringView(acb)) >= 0);
+        BasicString abcb = "abcb";
+        CHECK_FALSE(abc.compare(0, 3, StringView(abcb)) >= 0);
+    }
+
+    SECTION("BasicString::compare(size_type, size_type, StringView) > 0")
+    {
+        BasicString ab = "ab";
+        CHECK(abc.compare(0, 3, StringView(ab)) > 0);
+        BasicString abb = "abb";
+        CHECK(abc.compare(0, 3, StringView(abb)) > 0);
+        BasicString abab = "abab";
+        CHECK(abc.compare(0, 3, StringView(abab)) > 0);
+        BasicString ac = "ac";
+        CHECK_FALSE(abc.compare(0, 3, StringView(ac)) > 0);
+        BasicString acb = "acb";
+        CHECK_FALSE(abc.compare(0, 3, StringView(acb)) > 0);
+        BasicString abcb = "abcb";
+        CHECK_FALSE(abc.compare(0, 3, StringView(abcb)) > 0);
+    }
+
+    SECTION("BasicString::compare(size_type, size_type, StringView) <= 0")
+    {
+        BasicString ad = "ad";
+        CHECK(abc.compare(0, 3, StringView(ad)) <= 0);
+        BasicString abc = "abc";
+        CHECK(abc.compare(0, 3, StringView(abc)) <= 0);
+        BasicString abd = "abd";
+        CHECK(abc.compare(0, 3, StringView(abd)) <= 0);
+        BasicString abca = "abca";
+        CHECK(abc.compare(0, 3, StringView(abca)) <= 0);
+        BasicString ab = "ab";
+        CHECK_FALSE(abc.compare(0, 3, StringView(ab)) <= 0);
+        BasicString aba = "aba";
+        CHECK_FALSE(abc.compare(0, 3, StringView(aba)) <= 0);
+        BasicString abab = "abab";
+        CHECK_FALSE(abc.compare(0, 3, StringView(abab)) <= 0);
+    }
+
+    SECTION("BasicString::compare(size_type, size_type, StringView) < 0")
+    {
+        BasicString ad = "ad";
+        CHECK(abc.compare(0, 3, StringView(ad)) < 0);
+        BasicString abd = "abd";
+        CHECK(abc.compare(0, 3, StringView(abd)) < 0);
+        BasicString abca = "abca";
+        CHECK(abc.compare(0, 3, StringView(abca)) < 0);
+        BasicString ab = "ab";
+        CHECK_FALSE(abc.compare(0, 3, StringView(ab)) < 0);
+        BasicString aba = "aba";
+        CHECK_FALSE(abc.compare(0, 3, StringView(aba)) < 0);
+        BasicString abab = "abab";
+        CHECK_FALSE(abc.compare(0, 3, StringView(abab)) < 0);
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE(
+  "BasicString: Comparison of subsequence with a subsequence of a StringView",
+  "[SWS_CORE], [SWS_CORE_03323]",
+  Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    using core::StringView;
+    TestAlloc<char>::reset();
+
+    BasicString abc("abc");
+
+    SECTION(
+      "template <typename T> BasicString::compare(size_type, size_type, T const&, size_type, size_type) >= 0")
+    {
+        BasicString ab = "ab";
+        CHECK(abc.compare(0, 3, SvConvertible(ab), 0, 2) >= 0);
+        BasicString abb = "abb";
+        CHECK(abc.compare(0, 3, SvConvertible(abb), 0, 3) >= 0);
+        BasicString abc = "abc";
+        CHECK(abc.compare(0, 3, SvConvertible(abc), 0, 3) >= 0);
+        BasicString abab = "abab";
+        CHECK(abc.compare(0, 3, SvConvertible(abab), 0, 4) >= 0);
+        BasicString ac = "ac";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(ac), 0, 2) >= 0);
+        BasicString acb = "acb";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(acb), 0, 3) >= 0);
+        BasicString abcb = "abcb";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(abcb), 0, 4) >= 0);
+    }
+
+    SECTION(
+      "template <typename T> BasicString::compare(size_type, size_type, T const&, size_type, size_type) > 0")
+    {
+        BasicString ab = "ab";
+        CHECK(abc.compare(0, 3, SvConvertible(ab), 0, 2) > 0);
+        BasicString abb = "abb";
+        CHECK(abc.compare(0, 3, SvConvertible(abb), 0, 3) > 0);
+        BasicString abab = "abab";
+        CHECK(abc.compare(0, 3, SvConvertible(abab), 0, 4) > 0);
+        BasicString ac = "ac";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(ac), 0, 2) > 0);
+        BasicString acb = "acb";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(acb), 0, 3) > 0);
+        BasicString abcb = "abcb";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(abcb), 0, 4) > 0);
+    }
+
+    SECTION(
+      "template <typename T> BasicString::compare(size_type, size_type, T const&, size_type, size_type) <= 0")
+    {
+        BasicString ad = "ad";
+        CHECK(abc.compare(0, 3, SvConvertible(ad), 0, 2) <= 0);
+        BasicString abc = "abc";
+        CHECK(abc.compare(0, 3, SvConvertible(abc), 0, 3) <= 0);
+        BasicString abd = "abd";
+        CHECK(abc.compare(0, 3, SvConvertible(abd), 0, 3) <= 0);
+        BasicString abca = "abca";
+        CHECK(abc.compare(0, 3, SvConvertible(abca), 0, 4) <= 0);
+        BasicString ab = "ab";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(ab), 0, 2) <= 0);
+        BasicString aba = "aba";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(aba), 0, 3) <= 0);
+        BasicString abab = "abab";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(abab), 0, 4) <= 0);
+    }
+
+    SECTION(
+      "template <typename T> BasicString::compare(size_type, size_type, T const&, size_type, size_type) < 0")
+    {
+        BasicString ad = "ad";
+        CHECK(abc.compare(0, 3, SvConvertible(ad), 0, 2) < 0);
+        BasicString abd = "abd";
+        CHECK(abc.compare(0, 3, SvConvertible(abd), 0, 3) < 0);
+        BasicString abca = "abca";
+        CHECK(abc.compare(0, 3, SvConvertible(abca), 0, 4) < 0);
+        BasicString ab = "ab";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(ab), 0, 2) < 0);
+        BasicString aba = "aba";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(aba), 0, 3) < 0);
+        BasicString abab = "abab";
+        CHECK_FALSE(abc.compare(0, 3, SvConvertible(abab), 0, 4) < 0);
+    }
 }
 
 TEST_CASE("BasicString: String type", "[SWS_CORE], [SWS_CORE_03001]")
@@ -176,11 +915,11 @@ TEMPLATE_LIST_TEST_CASE("BasicString::operator=",
     using BasicString = typename core::BasicString<TestType>;
     TestAlloc<char>::reset();
 
-    REQUIRE(std::is_copy_assignable<BasicString>::value);
-    REQUIRE(std::is_move_assignable<BasicString>::value);
-    REQUIRE(std::is_assignable<BasicString, const char*>::value);
-    REQUIRE(std::is_assignable<BasicString, char>::value);
-    REQUIRE(
+    STATIC_REQUIRE(std::is_copy_assignable<BasicString>::value);
+    STATIC_REQUIRE(std::is_move_assignable<BasicString>::value);
+    STATIC_REQUIRE(std::is_assignable<BasicString, const char*>::value);
+    STATIC_REQUIRE(std::is_assignable<BasicString, char>::value);
+    STATIC_REQUIRE(
       std::is_assignable<BasicString, std::initializer_list<char>>::value);
 
     BasicString str;
@@ -1946,6 +2685,7 @@ TEMPLATE_LIST_TEST_CASE("BasicString::erase",
         CHECK(bs_text == "qwerty");
     }
 }
+
 TEMPLATE_LIST_TEST_CASE("BasicString::replace",
                         "[SWS_CORE], [SWS_CORE_03000]",
                         Allocators)
@@ -3119,5 +3859,145 @@ TEMPLATE_LIST_TEST_CASE("BasicString::operator[]",
         CHECK('b' == str[1]);
         CHECK('c' == str[2]);
         CHECK(&str.back() == &str[2]);
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString::length",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
+
+    SECTION("0 < BasicString::length() const noexcept")
+    {
+        constexpr char sample[] = "the quick brown fox jumps over a lazy dog";
+
+        BasicString bs_text  = sample;
+        std::string str_text = sample;
+
+        REQUIRE(sample == bs_text);
+        REQUIRE(sample == str_text);
+
+        CHECK(bs_text.length() == str_text.length());
+        CHECK(bs_text.length() == bs_text.size());
+        CHECK(str_text.length() == str_text.size());
+    }
+
+    SECTION("0 == BasicString::length() const noexcept")
+    {
+        BasicString bs_text;
+        std::string str_text;
+
+        REQUIRE(bs_text.empty());
+        REQUIRE(str_text.empty());
+
+        CHECK(bs_text.length() == str_text.length());
+        CHECK(bs_text.length() == bs_text.size());
+        CHECK(str_text.length() == str_text.size());
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString::max_size",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
+
+    BasicString bs;
+    std::string str;
+
+    CHECK(bs.max_size() == str.max_size());
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString::reserve",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
+
+    BasicString bs;
+
+    REQUIRE(bs.empty());
+
+    bs.reserve(32);
+
+    CHECK(bs.capacity() == 32);
+    CHECK(bs.size() <= bs.capacity());
+    CHECK(bs.length() <= bs.capacity());
+}
+
+TEMPLATE_LIST_TEST_CASE("BasicString::shrink_to_fit",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
+
+    BasicString str = "the quick brown fox jumps over a lazy dog";
+
+    REQUIRE_FALSE(str.empty());
+
+    auto original_size     = str.size();
+    auto original_capacity = str.capacity();
+
+    str = "the quick brown fox";
+    str.shrink_to_fit();
+
+    CHECK(str.size() <= original_size);
+    CHECK(str.capacity() <= original_capacity);
+}
+
+
+TEMPLATE_LIST_TEST_CASE("BasicString::resize",
+                        "[SWS_CORE], [SWS_CORE_03000]",
+                        Allocators)
+{
+    using BasicString = typename core::BasicString<TestType>;
+    TestAlloc<char>::reset();
+
+    constexpr char sample[] = "the quick brown fox jumps over a lazy dog";
+    BasicString    bs       = sample;
+    std::string    str      = sample;
+
+    REQUIRE(sample == bs);
+    REQUIRE(sample == str);
+    REQUIRE_FALSE(bs.empty());
+    REQUIRE_FALSE(str.empty());
+
+    SECTION("BasicString::resize(size_type)")
+    {
+        bs.resize(19);
+        str.resize(19);
+
+        CHECK(std::equal(str.begin(), str.end(), bs.begin(), bs.end()));
+        CHECK(bs.size() == 19);
+        CHECK(str.size() == 19);
+
+        bs.resize(40);
+        str.resize(40);
+
+        CHECK(std::equal(str.begin(), str.end(), bs.begin(), bs.end()));
+        CHECK(bs.size() == 40);
+        CHECK(str.size() == 40);
+    }
+
+    SECTION("BasicString::resize(size_type, char)")
+    {
+        bs.resize(19, '@');
+        str.resize(19, '@');
+
+        CHECK(std::equal(str.begin(), str.end(), bs.begin(), bs.end()));
+        CHECK(bs.size() == 19);
+        CHECK(str.size() == 19);
+
+        bs.resize(40, '@');
+        str.resize(40, '@');
+
+        CHECK(std::equal(str.begin(), str.end(), bs.begin(), bs.end()));
+        CHECK(bs.size() == 40);
+        CHECK(str.size() == 40);
     }
 }
