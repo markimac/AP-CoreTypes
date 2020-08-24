@@ -28,6 +28,13 @@ character type is fixed to char, and the traits type is fixed to
 std::char_traits<char>. All supporting symbols shall be contained within
 namespace ara::core.
 */
+/**
+ * @brief Template class implementing string type.
+ *
+ * @tparam AllocatorT allocator type.
+ *
+ * @req {SWS_CORE_03000}
+ */
 template<class AllocatorT = ara::core::Allocator<char>> class BasicString
 {
     using string_t =
@@ -57,16 +64,41 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     static constexpr size_type npos = string_t::npos;
 
     // constructors from STL
+    /**
+     * @brief Constructs an empty string with optionally given allocator.
+     */
     explicit BasicString(const AllocatorT& a = AllocatorT()) noexcept(
       std::is_nothrow_constructible<string_t, const AllocatorT&>::value)
       : _data(a)
     {}
+
+    /**
+     * @brief Copy constructor. Constructs the string with the copy of the
+     * contents of another.
+     *
+     * @param bs another string to be used as the source of the content.
+     */
     BasicString(const BasicString& bs) noexcept(
       std::is_nothrow_copy_constructible<string_t>::value)
       : _data(bs._data)
     {}
 
+    /**
+     * @brief Move constructor. Constructs the string with the contents of
+     * another using move semantics.
+     *
+     * @param bs another string to be used as the source of the content.
+     */
     BasicString(BasicString&& bs) noexcept : _data(std::move(bs._data)){};
+
+    /**
+     * @brief Constructs using a substring from given string.
+     *
+     * @param str the original string.
+     * @param pos the beginning position of the substring.
+     * @param n the ending position of the substring.
+     * @param a the allocator.
+     */
     BasicString(
       const BasicString& str,
       size_type          pos,
@@ -80,6 +112,14 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                                  value)
       : _data(str._data, pos, n, a)
     {}
+
+    /**
+     * @brief Constructs using const char* string.
+     *
+     * @param s the string.
+     * @param n the length of the string.
+     * @param a the allocator.
+     */
     BasicString(
       const char*       s,
       size_type         n,
@@ -91,11 +131,27 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                                  value)
       : _data(s, n, a)
     {}
+
+    /**
+     * @brief Constructs using zero-terminated const char* string.
+     *
+     * @param s the string.
+     * @param a the allocator.
+     */
     BasicString(const char* s, const AllocatorT& a = AllocatorT()) noexcept(
       std::is_nothrow_constructible<string_t, const char*, const AllocatorT&>::
         value)
       : _data(s, a)
     {}
+
+    /**
+     * @brief Constructs a string filled with specified character, with
+     * specified length.
+     *
+     * @param n the length of the resulting string.
+     * @param c the char to fill the string.
+     * @param a the allocator.
+     */
     BasicString(size_type n, char c, const AllocatorT& a = AllocatorT()) noexcept(
       std::is_nothrow_constructible<string_t,
                                     size_type,
@@ -103,6 +159,14 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                                     const AllocatorT&>::value)
       : _data(n, c, a)
     {}
+
+    /**
+     * @brief Constructs a string using a substring defined by 2 iterators.
+     *
+     * @param begin the iterator pointing to the begin of the substring.
+     * @param end the iterator pointing to the end of the substring.
+     * @param a the allocator.
+     */
     template<class InputIterator> BasicString(
       InputIterator     begin,
       InputIterator     end,
@@ -114,6 +178,13 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                                  value)
       : _data(begin, end, a)
     {}
+
+    /**
+     * @brief Constructs the string using provided initialization list.
+     *
+     * @param i the initialization list.
+     * @param a the allocator.
+     */
     BasicString(std::initializer_list<char> i,
                 const AllocatorT&           a =
                   AllocatorT()) noexcept(std::
@@ -123,18 +194,39 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                                              const AllocatorT&>::value)
       : _data(i, a)
     {}
+
+    /**
+     * @brief Copy constructs a string with explicit allocator.
+     *
+     * @param bs a string to copy.
+     * @param a the allocator.
+     */
     BasicString(const BasicString& bs, const AllocatorT& a) noexcept(
       std::is_nothrow_constructible<string_t,
                                     const string_t&,
                                     const AllocatorT&>::value)
       : _data(bs._data, a)
     {}
+
+    /**
+     * @brief Move constructs a string with explicit allocator.
+     *
+     * @param bs a string to move.
+     * @param a the allocator.
+     */
     BasicString(BasicString&& bs, const AllocatorT& a) noexcept(
       std::is_nothrow_constructible<string_t, string_t&&, const AllocatorT&>::
         value)
       : _data(std::move(bs._data), a)
     {}
 
+    /**
+     * @brief Copy assignment operator.
+     *
+     * @param str another string to use as data source.
+     *
+     * @return reference to string instance.
+     */
     // assignment operator= from STL
     BasicString& operator=(const BasicString& str) noexcept(
       std::is_nothrow_assignable<string_t, const string_t&>::value)
@@ -142,23 +234,55 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         _data = str._data;
         return *this;
     }
+
+    /**
+     * @brief Move assignment operator.
+     *
+     * @param str another string to use as data source.
+     *
+     * @return reference to string instance.
+     */
     BasicString& operator=(BasicString&& str) noexcept
     {
         _data = std::move(str._data);
         return *this;
     }
+
+    /**
+     * @brief Assignment operator from null-terminated const char* string.
+     *
+     * @param other zero-terminated const char* string to use as data source.
+     *
+     * @return reference to string instance.
+     */
     BasicString& operator=(const char* s) noexcept(
       std::is_nothrow_assignable<string_t, const char*&>::value)
     {
         _data = s;
         return *this;
     }
+
+    /**
+     * @brief Assigns a single char.
+     *
+     * @param c a character to be assigned as content of the string.
+     *
+     * @return reference to string instance.
+     */
     BasicString&
     operator=(char c) noexcept(std::is_nothrow_assignable<string_t, char>::value)
     {
         _data = c;
         return *this;
     }
+
+    /**
+     * @brief Assigns an initializing list.
+     *
+     * @param i an initialization list to use as data source.
+     *
+     * @return reference to string instance.
+     */
     BasicString& operator=(std::initializer_list<char> i) noexcept(
       std::is_nothrow_assignable<string_t, std::initializer_list<char>>::value)
     {
@@ -168,72 +292,354 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
 
     // iterator methods from STL
 
-    iterator       begin() noexcept { return _data.begin(); }
+    /**
+     * @brief Gets iterator pointing at begin of the string.
+     *
+     * @return iterator to the first character.
+     */
+    iterator begin() noexcept { return _data.begin(); }
+
+    /**
+     * @brief Gets constant iterator pointing at begin of the constant string.
+     *
+     * @return constant iterator to the first character.
+     */
+    const_iterator begin() const noexcept { return _data.begin(); }
+
+    /**
+     * @brief Gets iterator pointing at end of the string.
+     *
+     * @return iterator pointing to next position after the last character of
+     * string.
+     */
+    iterator end() noexcept { return _data.end(); }
+
+    /**
+     * @brief Gets constant iterator pointing at end of the constant string.
+     *
+     * @return constant iterator pointing to next position after the last
+     * character of string.
+     */
+    const_iterator end() const noexcept { return _data.end(); }
+
+    /**
+     * @brief Gets reverse iterator pointing at reversed begin of the string.
+     *
+     * @return reverse iterator pointing to the last character of the string.
+     */
+    reverse_iterator rbegin() noexcept { return _data.rbegin(); }
+
+    /**
+     * @brief Gets constant reverse iterator pointing at reversed begin of the
+     * constant string.
+     *
+     * @return constant reverse iterator pointing to the last character of the
+     * string.
+     */
+    const_reverse_iterator rbegin() const noexcept { return _data.rbegin(); }
+
+    /**
+     * @brief Gets reverse iterator pointing at reversed end of the string.
+     *
+     * @return reverse iterator pointing to the position before the first
+     * character of the string.
+     */
+    reverse_iterator rend() noexcept { return _data.rend(); }
+
+    /**
+     * @brief Gets constant reverse iterator pointing at reversed end of the
+     * constant string.
+     *
+     * @return constant reverse iterator pointing to the position before the
+     * first character of the string.
+     */
+    const_reverse_iterator rend() const noexcept { return _data.rend(); }
+
+    /**
+     * @brief Gets constant iterator pointing at begin of the constant string.
+     *
+     * @return constant iterator to the first character.
+     */
+    const_iterator cbegin() const noexcept { return _data.cbegin(); }
+
+    /**
+     * @brief Gets constant iterator pointing at end of the constant string.
+     *
+     * @return constant iterator pointing to next position after the last
+     * character of string.
+     */
+    const_iterator cend() const noexcept { return _data.cend(); }
+
+    /**
+     * @brief Gets constant reverse iterator pointing at begin of the constant
+     * string.
+     *
+     * @return constant reverse iterator pointing to the last character of the
+     * string.
+     */
+    const_reverse_iterator crbegin() const noexcept { return _data.crbegin(); }
+
+    /**
+     * @brief Gets constant reverse iterator pointing at end of the constant
+     * string.
+     *
+     * @return constant reverse iterator pointing to the position before the
+     * first character of the string.
+     */
+    const_reverse_iterator crend() const noexcept { return _data.crend(); }
 
     // capacity methods from STL
+    /**
+     * @brief Gets length of the string.
+     *
+     * @return length of the string
+     */
     size_type size() const noexcept { return _data.size(); }
 
+    /**
+     * @brief Gets length of the string.
+     *
+     * @return length of the string
+     */
     size_type length() const noexcept { return _data.length(); }
+
+    /**
+     * @brief Gets maximal length of the string.
+     *
+     * @return maximal length of the string.
+     */
     size_type max_size() const noexcept { return _data.max_size(); }
-    void      resize(size_type n, char c) { _data.resize(n, c); }
-    void      resize(size_type n) { _data.resize(n); }
+
+    /**
+     * @brief Changes the length of the string: if new size is shorter, then the
+     * string is cropped, if longer then the string is padded by given character.
+     *
+     * @param n the new size.
+     * @param c the character used as padding.
+     */
+    void resize(size_type n, char c) { _data.resize(n, c); }
+
+    /**
+     * @brief Changes the length of the string: if new size is shorter, then the
+     * string is cropped, otherwise the string is extended.
+     *
+     * @param n the new size.
+     */
+    void resize(size_type n) { _data.resize(n); }
+
+    /**
+     * @brief Gets size of the memory allocated by the string.
+     *
+     * @return size of allocated memory.
+     */
     size_type capacity() const noexcept { return _data.capacity(); }
-    void      reserve(size_type res_arg = 0) { _data.reserve(res_arg); }
-    void      shrink_to_fit() { _data.shrink_to_fit(); }
-    void      clear() noexcept { _data.clear(); }
-    bool      empty() const noexcept { return _data.empty(); }
+
+    /**
+     * @brief Reserves a buffer of a given size.
+     */
+    void reserve(size_type res_arg = 0) { _data.reserve(res_arg); }
+
+    /**
+     * @brief Performs reallocation of memory to exactly match capacity and
+     * length of the string.
+     */
+    void shrink_to_fit() { _data.shrink_to_fit(); }
+
+    /**
+     * @brief Empties the string.
+     */
+    void clear() noexcept { _data.clear(); }
+
+    /**
+     * @brief Returns if the string is empty.
+     *
+     * @return true if the string is empty.
+     */
+    bool empty() const noexcept { return _data.empty(); }
+
     // element access methods from STL
+    /**
+     * @brief Access specified element.
+     *
+     * @param pos position of the element to return.
+     *
+     * @return constant reference to the element.
+     */
     const_reference operator[](size_type pos) const { return _data[pos]; }
 
-    reference       operator[](size_type pos) { return _data[pos]; }
+    /**
+     * @brief Access specified element.
+     *
+     * @param pos position of the element to return.
+     *
+     * @return reference to the element.
+     */
+    reference operator[](size_type pos) { return _data[pos]; }
 
+    /**
+     * @brief Access specified element with bounds checking.
+     *
+     * @param pos position of the element to return.
+     *
+     * @return reference to the element.
+     */
     const_reference at(size_type n) const { return _data.at(n); }
-    reference       at(size_type n) { return _data.at(n); }
+
+    /**
+     * @brief Access specified element with bounds checking.
+     *
+     * @param pos position of the element to return.
+     *
+     * @return reference to the element.
+     */
+    reference at(size_type n) { return _data.at(n); }
+
+    /**
+     * @brief Access first element.
+     *
+     * @return constant reference to the first character.
+     */
     const char& front() const { return _data.front(); }
-    char&       front() { return _data.front(); }
+
+    /**
+     * @brief Access first element.
+     *
+     * @return reference to the first character.
+     */
+    char& front() { return _data.front(); }
+
+    /**
+     * @brief Access last element.
+     *
+     * @return constant reference to the last character.
+     */
     const char& back() const { return _data.back(); }
-    char&       back() { return _data.back(); }
+
+    /**
+     * @brief Access last element.
+     *
+     * @return reference to the last character.
+     */
+    char& back() { return _data.back(); }
+
     // modifier methods from STL
+    /**
+     * @brief Appends the string with given string as source of data.
+     *
+     * @param str the appending string.
+     *
+     * @return the instance of appended string.
+     */
     BasicString& operator+=(const BasicString& str)
     {
         _data += str._data;
         return *this;
     }
+
+    /**
+     * @brief Appends the string with given null-terminated const char* string
+     * as source of data.
+     *
+     * @param str the appending string.
+     *
+     * @return the instance of appended string.
+     */
     BasicString& operator+=(const char* s)
     {
         _data += s;
         return *this;
     }
+
+    /**
+     * @brief Appends the string with given character.
+     *
+     * @param str the appending string.
+     *
+     * @return the instance of appended string.
+     */
     BasicString& operator+=(char c)
     {
         _data += c;
         return *this;
     }
+
+    /**
+     * @brief Appends the string with initialization list as source of data.
+     *
+     * @param str the appending string.
+     *
+     * @return the instance of appended string.
+     */
     BasicString& operator+=(std::initializer_list<char> i)
     {
         _data += i;
         return *this;
     }
+
+    /**
+     * @brief Appends the string with given string as source of data.
+     *
+     * @param str the appending string.
+     *
+     * @return the instance of appended string.
+     */
     BasicString& append(const BasicString& str)
     {
         _data.append(str._data);
         return *this;
     }
+
+    /**
+     * @brief Appends the string with the substring as source of data.
+     *
+     * @param str the string being the source of a data.
+     * @param pos position of the begin of the substring.
+     * @param n the length of the substring.
+     *
+     * @return the instance of appended string.
+     */
     BasicString& append(const BasicString& str, size_type pos, size_type n)
     {
         _data.append(str._data, pos, n);
         return *this;
     }
+
+    /**
+     * @brief Appends the string with a const char* string as source of data.
+     *
+     * @param str the appending string.
+     * @param n length of the str string.
+     *
+     * @return the instance of appended string.
+     */
     BasicString& append(const char* s, size_type n)
     {
         _data.append(s, n);
         return *this;
     }
+
+    /**
+     * @brief Appends the string with a null-terminated const char* as source of
+     * data.
+     *
+     * @param str the appending null-terminated const char* string.
+     *
+     * @return the instance of appended string.
+     */
     BasicString& append(const char* s)
     {
         _data.append(s);
         return *this;
     }
+
+    /**
+     * @brief Appends the given with repetitions of a specified character.
+     *
+     * @param n the amount of repetition.
+     * @param c the repeated character.
+     *
+     * @return the instance of appended string.
+     */
     BasicString& append(size_type n, char c)
     {
         _data.append(n, c);
@@ -600,6 +1006,13 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     conversion to StringView: This function shall behave the same as the
     corresponding std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Converts the string to the StringView instance.
+     *
+     * @return the instance of StringView.
+     *
+     * @req {SWS_CORE_03301}
+     */
     operator StringView() const noexcept
     {
         return static_cast<std::basic_string_view<char>>(_data);
@@ -611,6 +1024,14 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     argument by value. This function shall behave the same as the corresponding
     std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Constructs a string using a StringView object as source of the
+     * data.
+     *
+     * @param sv the StringView object used as source of the data.
+     *
+     * @req {SWS_CORE_03302}
+     */
     explicit BasicString(StringView sv) : _data(sv) {}
 
     // [SWS_CORE_03303] Constructor from implicit StringView
@@ -619,6 +1040,16 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     implicitly convertible to StringView. This function shall behave the same as
     the corresponding std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Constructs a string using substring from an object, that is
+     * implicitly convertible to StringView.
+     *
+     * @param t the object being the source of a data.
+     * @param pos position of first character of the substring.
+     * @param n the length of the substring.
+     *
+     * @req {SWS_CORE_03303}
+     */
     template<typename T,
              typename = typename std::
                enable_if<std::is_convertible<T, StringView>::value, void>::type>
@@ -631,6 +1062,15 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     StringView argument by value. This function shall behave the same as the
     corresponding std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Replaces the string with contents of the StringView.
+     *
+     * @param sv the StringView used as source of a data.
+     *
+     * @return the instance of the string.
+     *
+     * @req {SWS_CORE_03304}
+     */
     BasicString& operator=(StringView sv)
     {
         _data = sv;
@@ -643,6 +1083,15 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     from StringView. This function shall behave the same as the corresponding
     std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Replaces the string with contents of the StringView.
+     *
+     * @param sv the StringView used as source of a data.
+     *
+     * @return the instance of the string.
+     *
+     * @req {SWS_CORE_03305}
+     */
     BasicString& assign(StringView sv)
     {
         _data.assign(sv);
@@ -656,6 +1105,18 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     shall behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
+    /**
+     * @brief Replaces the string using usbstring from an object, that is
+     * implicitly convertible to StringView.
+     *
+     * @param t the object being the source of a data.
+     * @param pos position of first character of the substring.
+     * @param n the length of the substring.
+     *
+     * @return the instance of the string.
+     *
+     * @req {SWS_CORE_03306}
+     */
     template<typename T> BasicString&
     assign(T const& t, size_type pos, size_type n = npos)
     {
@@ -669,6 +1130,15 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     a StringView argument by value. This function shall behave the same as the
     corresponding std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Appends the string with given StringView as data source.
+     *
+     * @param sv the StringView instance used as data source.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03307}
+     */
     BasicString& operator+=(StringView sv)
     {
         _data += sv;
@@ -681,6 +1151,15 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     of a StringView. This function shall behave the same as the corresponding
     std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Appends the string with given StringView as data source.
+     *
+     * @param sv the StringView instance used as data source.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03308}
+     */
     BasicString& append(StringView sv)
     {
         _data.append(sv);
@@ -694,6 +1173,19 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     shall behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
+    /**
+     * @brief Appends the string with object convertible to StringView as data
+     * source.
+     *
+     * @param t the instance of object convertible to StringView used as data
+     * source.
+     * @param pos the begining of the substring to be appended.
+     * @param n the length of the substring.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03309}
+     */
     template<typename T,
              typename = typename std::
                enable_if<std::is_convertible<T, StringView>::value, void>::type>
@@ -709,6 +1201,17 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     a StringView: This function shall behave the same as the corresponding
     std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Inserts the substring at specified place using the StringView as
+     * data source.
+     *
+     * @param pos the position where to insert a StringView.
+     * @param sv the StringView used as data source.
+     *
+     * @returns the instance of string.
+     *
+     * @req {SWS_CORE_03310}
+     */
     BasicString& insert(size_type pos, StringView sv)
     {
         _data.insert(pos, sv);
@@ -722,6 +1225,20 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
+    /**
+     * @brief Inserts at specified place a substring from an object convertible
+     * to StringView as data source.
+     *
+     * @param pos1 the positon where to insert a StringView.
+     * @param t the instance of object convertible to StringView used as data
+     * source.
+     * @param pos2 the begin of the substring to be inserted.
+     * @param n the end of the substring to be inserted.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03311}
+     */
     template<typename T,
              typename = typename std::
                enable_if<std::is_convertible<T, StringView>::value, void>::type>
@@ -739,6 +1256,17 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     shall behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
+    /**
+     * @brief Replaces a substring with the StringView as data source.
+     *
+     * @param pos1 start of the substring that is going to be replaced.
+     * @param n length of the substring that is going to be replaced.
+     * @param sv the StringView used as data source.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03312}
+     */
     BasicString& replace(size_type pos1, size_type n1, StringView sv)
     {
         _data.replace(pos1, n1, sv);
@@ -752,6 +1280,21 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     convertible to StringView. This function shall behave the same as the
     corresponding std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Replaces at specified place a substring from an object convertible
+     * to StringView as data source.
+     *
+     * @param pos1 the begin of the replaced substring.
+     * @param n1 the length of the replaced substring.
+     * @param t the instance of object convertible to StringView used as data
+     * source.
+     * @param pos2 the begin of the substring to be inserted.
+     * @param n2 the length of the substring to be inserted.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03313}
+     */
     template<typename T,
              typename = typename std::
                enable_if<std::is_convertible<T, StringView>::value, void>::type>
@@ -772,6 +1315,17 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     StringView. This function shall behave the same as the corresponding
     std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Replaces a substring using StringView instance as data source.
+     *
+     * @param i1 the iterator pointing to the begin of the substring.
+     * @param i2 the iterator pointing to the end of the substring.
+     * @param sv the StringView used as data source.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03314}
+     */
     BasicString& replace(const_iterator i1, const_iterator i2, StringView sv)
     {
         _data.replace(i1, i2, sv);
@@ -785,6 +1339,17 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
+    /**
+     * @brief Finds the first occurence of StringView in string.
+     *
+     * @param sv the StringView instance used as a substring being looked for.
+     * @param pos the assumed begin of the string.
+     *
+     * @return the position of the first character of the found substring or
+     * BasicString::npos if no such substring is found.
+     *
+     * @req {SWS_CORE_03315}
+     */
     size_type find(StringView sv, size_type pos = 0) const noexcept
     {
         return _data.find(sv, pos);
@@ -797,6 +1362,17 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
+    /**
+     * @brief Finds the last occurence of StringView in string.
+     *
+     * @param sv the StringView instance used as a substring being looked for.
+     * @param pos the assumed end of the string.
+     *
+     * @return the position of the first character of the found substring or
+     * BasicString::npos if no such substring is found.
+     *
+     * @req {SWS_CORE_03316}
+     */
     size_type rfind(StringView sv, size_type pos = npos) const noexcept
     {
         return _data.rfind(sv, pos);
@@ -809,6 +1385,18 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     function shall behave the same as the corresponding std::basic_string
     function from [6, the C++17 standard].
     */
+    /**
+     * @brief Finds the first character equal to one of the characters occurring
+     * in the specified string.
+     *
+     * @param sv the StringView instance used as source of data.
+     * @param pos the assumed begin of the string.
+     *
+     * @return the position of the found character or BasicString::npos if no
+     * such character is found.
+     *
+     * @req {SWS_CORE_03317}
+     */
     size_type find_first_of(StringView sv, size_type pos = 0) const noexcept
     {
         return _data.find_first_of(sv, pos);
@@ -821,6 +1409,18 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     function shall behave the same as the corresponding std::basic_string
     function from [6, the C++17 standard].
     */
+    /**
+     * @brief Finds the last character equal to one of the characters occurring
+     * in the specified string.
+     *
+     * @param sv the StringView instance used as source of data.
+     * @param pos the assumed end of the string.
+     *
+     * @return the position of the found character or BasicString::npos if no
+     * such character is found.
+     *
+     * @req {SWS_CORE_03318}
+     */
     size_type find_last_of(StringView sv, size_type pos = npos) const noexcept
     {
         return _data.find_last_of(sv, pos);
@@ -833,6 +1433,18 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     This function shall behave the same as the corresponding std::basic_string
     function from [6, the C++17 standard].
     */
+    /**
+     * @brief Finds the first character not equal to any of the characters
+     * occurring in the specified string.
+     *
+     * @param sv the StringView instance used as source of data.
+     * @param pos the assumed begin of the string.
+     *
+     * @return the position of the found character or BasicString::npos if no
+     * such character is found.
+     *
+     * @req {SWS_CORE_03319}
+     */
     size_type find_first_not_of(StringView sv, size_type pos = 0) const noexcept
     {
         return _data.find_first_not_of(sv, pos);
@@ -845,6 +1457,18 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     This function shall behave the same as the corresponding std::basic_string
     function from [6, the C++17 standard].
     */
+    /**
+     * @brief Finds the last character not equal to any of the characters
+     * occurring in the specified string.
+     *
+     * @param sv the StringView instance used as source of data.
+     * @param pos the assumed begin of the string.
+     *
+     * @return the position of the found character or BasicString::npos if no
+     * such character is found.
+     *
+     * @req {SWS_CORE_03320}
+     */
     size_type
     find_last_not_of(StringView sv, size_type pos = npos) const noexcept
     {
@@ -857,6 +1481,19 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     with the contents of a StringView. This function shall behave the same as
     the corresponding std::basic_string function from [6, the C++17 standard].
     */
+    /**
+     * @brief Lexicographically compares the content of the string with a
+     * content of the StringView.
+     *
+     * @param sv the StringView instace being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified StringView, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the StringView.
+     *
+     * @req {SWS_CORE_03321}
+     */
     int compare(StringView sv) const noexcept { return _data.compare(sv); }
 
     // [SWS_CORE_03322] Comparison of subsequence with a StringView
@@ -866,6 +1503,21 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     shall behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
+    /**
+     * @brief Lexicographically compares a substring with a content of the
+     * StringView instance.
+     *
+     * @param pos1 position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param sv the StringView instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified StringView, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the StringView.
+     *
+     * @req {SWS_CORE_03322}
+     */
     int compare(size_type pos1, size_type n1, StringView sv) const
     {
         return _data.compare(pos1, n1, sv);
@@ -880,6 +1532,23 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     behave the same as the corresponding std::basic_string function from
     [6, the C++17 standard].
     */
+    /**
+     * @brief Lexicographically compares a substring with a content of an object
+     * convertible to StringView.
+     *
+     * @param pos1 the begin the compared substring.
+     * @param n1 the length of the compared substring.
+     * @param t the instance of object convertible to StringView.
+     * @param pos2 the begin of the substring made of a given object.
+     * @param n2 the length of the substring made of a given object.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified StringView, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the StringView.
+     *
+     * @req {SWS_CORE_03323}
+     */
     template<typename T,
              typename = typename std::
                enable_if<std::is_convertible<T, StringView>::value, void>::type>
@@ -893,11 +1562,27 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     }
 
     // comparision operators from STL
+    /**
+     * @brief Checks if two strings are identical.
+     *
+     * @param s the plain null-terminated const char* string instance to compare.
+     * @param bs the BasicString instance to compare.
+     *
+     * @return True if strings are identical, false otherwise.
+     */
     friend bool operator==(const char* s, const BasicString& bs)
     {
         return bs == s;
     }
 
+    /**
+     * @brief Checks if two strings are diffrent.
+     *
+     * @param s the plain null-terminated const char* string instance to compare.
+     * @param bs the BasicString instance to compare.
+     *
+     * @return True if strings are different, false otherwise.
+     */
     friend bool operator!=(const char* s, const BasicString& bs)
     {
         return bs != s;
@@ -905,8 +1590,10 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
 };
 
 // [SWS_CORE_03001] String type
-/*
-The namespace ara::core shall provide a type alias String.
+/**
+ * @brief A type alias for BasicString.
+ *
+ * @req {SWS_CORE_03001}
 */
 using String = BasicString<>;
 
@@ -916,6 +1603,14 @@ There shall be an overload of the swap function within the namespace ara::core
 for arguments of type BasicString. This function shall exchange the state of lhs
 with that of rhs.
 */
+/**
+ * @brief Swaps two instances of BasicString.
+ *
+ * @param lhs an instance of BasicString to swap.
+ * @param rhs an instance of BasicString to swap.
+ *
+ * @req {SWS_CORE_03296}
+ */
 template<typename Allocator> void
 swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs)
 {
