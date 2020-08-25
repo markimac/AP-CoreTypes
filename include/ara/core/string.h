@@ -1594,7 +1594,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
  * @brief A type alias for BasicString.
  *
  * @req {SWS_CORE_03001}
-*/
+ */
 using String = BasicString<>;
 
 // [SWS_CORE_03296] swap overload for BasicString
