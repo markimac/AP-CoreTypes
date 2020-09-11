@@ -56,6 +56,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     using const_pointer =
       typename std::allocator_traits<AllocatorT>::const_pointer;
 
+    // TODO: replace STL iterators with their AUTOSAR equivalents
     using iterator               = typename string_t::iterator;
     using const_iterator         = typename string_t::const_iterator;
     using reverse_iterator       = std::reverse_iterator<iterator>;
@@ -646,109 +647,316 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
+    /**
+     * @brief Appends the given character to the end of the string.
+     *
+     * @param c the character to append.
+     */
     void push_back(char c) { _data.push_back(c); }
 
+    /**
+     * @brief Replaces content of the string with the given string.
+     *
+     * @param str the string being the source of data.
+     *
+     * @return the instance of the string.
+     */
     BasicString& assign(const BasicString& str)
     {
         _data.assign(str._data);
         return *this;
     }
+
+    /**
+     * @brief Replaces content of the string with the given string.
+     *
+     * @param str the string being the source of data.
+     *
+     * @return the instance of the string.
+     */
     BasicString& assign(BasicString&& str) noexcept
     {
         _data.assign(std::move(str._data));
         return *this;
     }
+
+    /**
+     * @brief Replaces content of the string with the given substring.
+     *
+     * @param str the string being the source of data.
+     * @param pos the position of the first character of the substring.
+     * @param n the length of the substring.
+     *
+     * @return the instance of the string.
+     */
     BasicString& assign(const BasicString& str, size_type pos, size_type n)
     {
         _data.assign(str._data, pos, n);
         return *this;
     }
+
+    /**
+     * @brief Replaces content of the string with the specified.
+     *
+     * @param s the null-terminated const char string.
+     * @param n the length of the string.
+     *
+     * @return the instance of the string.
+     */
     BasicString& assign(const char* s, size_type n)
     {
         _data.assign(s, n);
         return *this;
     }
+
+    /**
+     * @brief Replaces content of the string with the given.
+     *
+     * @param s the string being the source of a data.
+     *
+     * @return the instance of the string.
+     */
     BasicString& assign(const char* s)
     {
         _data.assign(s);
         return *this;
     }
+
+    /**
+     * @brief Replaces content of the string with a substring.
+     *
+     * @param first the iterator pointing to the first character of the
+     * substring.
+     * @param last the iterator pointing to the last character of the substring.
+     *
+     * @return the instance of the string.
+     */
     template<class InputIterator> BasicString&
     assign(InputIterator first, InputIterator last)
     {
         _data.assign(first, last);
         return *this;
     }
+
+    /**
+     * @brief Replaces content of the string with a substring.
+     *
+     * @param i the initializer_list being the source of data.
+     *
+     * @return the instance of the string.
+     */
     BasicString& assign(std::initializer_list<char> i)
     {
         _data.assign(i);
         return *this;
     }
 
+    /**
+     * @brief Inserts a given string in the specified place.
+     *
+     * @param str the string being the source of the data.
+     * @param pos1 the position where to insert a string.
+     *
+     * @return the instance of string.
+     */
     BasicString& insert(size_type pos1, const BasicString& str)
     {
         _data.insert(pos1, str._data);
         return *this;
     }
+
+    /**
+     * @brief Inserts a given substring in the specified place.
+     *
+     * @param pos1 the position where to insert a substring.
+     * @param str the string being the source of the data.
+     * @param pos2 the position of the first character of the inserted substring.
+     * @param n the lenght of the inserted substring.
+     *
+     * @return the instance of string.
+     */
     BasicString&
     insert(size_type pos1, const BasicString& str, size_type pos2, size_type n)
     {
         _data.insert(pos1, str._data, pos2, n);
         return *this;
     }
+
+    /**
+     * @brief Inserts a given substring in the specified place.
+     *
+     * @param pos the position where to insert a substring.
+     * @param str the null-terminated const char string being the source of the
+     * data.
+     * @param n the lenght of the inserted substring.
+     *
+     * @return the instance of string.
+     */
     BasicString& insert(size_type pos, const char* str, size_type n)
     {
         _data.insert(pos, str, n);
         return *this;
     }
+
+    /**
+     * @brief Inserts a given string in the specified place.
+     *
+     * @param pos the position where to insert a substring.
+     * @param str the null-terminated const char string being the source of the
+     * data.
+     *
+     * @return the instance of string.
+     */
     BasicString& insert(size_type pos, const char* str)
     {
         _data.insert(pos, str);
         return *this;
     }
+
+    /**
+     * @brief Inserts a given character in the specified place.
+     *
+     * @param pos the position where to insert the characters.
+     * @param n the number of repetition of the character.
+     * @param c the character to insert.
+     *
+     * @return the instance of string.
+     */
     BasicString& insert(size_type pos, size_type n, char c)
     {
         _data.insert(pos, n, c);
         return *this;
     }
+
+    /**
+     * @brief Inserts a given character in the specified place.
+     *
+     * @param p the iterator pointing to the place where to insert the character.
+     * @param c the character to insert.
+     *
+     * @return the instance of string.
+     */
     iterator insert(const_iterator p, char c) { return _data.insert(p, c); }
+
+    /**
+     * @brief Inserts a given character in the specified place.
+     *
+     * @param p the iterator pointing to the place where to insert the character.
+     * @param n the number of character repetition.
+     * @param c the character to insert.
+     *
+     * @return the instance of string.
+     */
     iterator insert(const_iterator p, size_type n, char c)
     {
         return _data.insert(p, n, c);
     }
+
+    /**
+     * @brief Inserts a given string in the specified place.
+     *
+     * @param p the iterator pointing to the place where to insert the character.
+     * @param first the iterator pointing to the first character of the inserted
+     * string.
+     * @param last the iterator pointing to the end of the inserted string.
+     *
+     * @return the instance of string.
+     */
     template<class InputIterator> iterator
     insert(const_iterator p, InputIterator first, InputIterator last)
     {
         return _data.insert(p, first, last);
     }
+
+    /**
+     * @brief Inserts a given string in the specified place.
+     *
+     * @param p the iterator pointing to the place where to insert the character.
+     * @param i the initializer_list serving as the source of data to insert.
+     *
+     * @return the instance of string.
+     */
     iterator insert(const_iterator p, std::initializer_list<char> i)
     {
         return _data.insert(p, i);
     }
 
+    /**
+     * @brief Removes part of the string.
+     *
+     * @param pos the first character of a removed substring.
+     * @param n the length of the removed substring.
+     *
+     * @return the instance of string.
+     */
     BasicString& erase(size_type pos = 0, size_type n = npos)
     {
         _data.erase(pos, n);
         return *this;
     }
+
+    /**
+     * @brief Removes part of the string.
+     *
+     * @param p the iterator pointing to the first character of a removed
+     * substring.
+     *
+     * @return the instance of string.
+     */
     BasicString& erase(const_iterator p)
     {
         _data.erase(p);
         return *this;
     }
+
+    /**
+     * @brief Removes part of the string.
+     *
+     * @param first the iterator pointing to the first character of a removed
+     * substring.
+     * @param last the iterator pointing to the first character of a removed
+     * substring.
+     *
+     * @return the instance of string.
+     */
     BasicString& erase(const_iterator first, const_iterator last)
     {
         _data.erase(first, last);
         return *this;
     }
 
+    /**
+     * @brief Removes the last character from the string.
+     */
     void pop_back() { _data.pop_back(); }
 
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param pos1 the position of the first character of the replaced substring.
+     * @param n1 the length of the replaced substring.
+     * @param str the replacement string.
+     *
+     * @return the instance of string.
+     */
     BasicString& replace(size_type pos1, size_type n1, const BasicString& str)
     {
         _data.replace(pos1, n1, str._data);
         return *this;
     }
+
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param pos1 the position of the first character of the replaced substring.
+     * @param n1 the length of the replaced substring.
+     * @param str the replacement string.
+     * @param pos2 the position of the first character of the replacement
+     * substring.
+     * @param n2 the length of the replacement substring.
+     *
+     * @return the instance of string.
+     */
     BasicString& replace(size_type          pos1,
                          size_type          n1,
                          const BasicString& str,
@@ -758,46 +966,141 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         _data.replace(pos1, n1, str._data, pos2, n2);
         return *this;
     }
+
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param pos the position of the first character of the replaced substring.
+     * @param n1 the length of the replaced substring.
+     * @param s the replacement string.
+     * @param n2 the length of the replacement string.
+     *
+     * @return the instance of string.
+     */
     BasicString&
     replace(size_type pos, size_type n1, const char* s, size_type n2)
     {
         _data.replace(pos, n1, s, n2);
         return *this;
     }
+
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param pos the position of the first character of the replaced substring.
+     * @param n1 the length of the replaced substring.
+     * @param s the replacement string.
+     *
+     * @return the instance of string.
+     */
     BasicString& replace(size_type pos, size_type n1, const char* s)
     {
         _data.replace(pos, n1, s);
         return *this;
     }
+
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param pos the position of the first character of the replaced
+     * substring.
+     * @param n1 the length of the replaced substring.
+     * @param n2 the number of the repetitions.
+     * @param c the replacement character.
+     *
+     * @return the instance of string.
+     */
     BasicString& replace(size_type pos, size_type n1, size_type n2, char c)
     {
         _data.replace(pos, n1, n2, c);
         return *this;
     }
 
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param i1 the iterator pointing to the first character of the replaced
+     * substring.
+     * @param i2 the iterator pointing to the end of the replaced substring.
+     * @param str the replacement string.
+     *
+     * @return the instance of string.
+     */
     BasicString&
     replace(const_iterator i1, const_iterator i2, const BasicString& str)
     {
         _data.replace(i1, i2, str._data);
         return *this;
     }
+
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param i1 the iterator pointing to the first character of the replaced
+     * part of a string.
+     * @param i2 the iterator pointing to the end of the replaced part of a
+     * string.
+     * @param s the replacement string.
+     * @param n the length of the replacement string.
+     *
+     * @return the instance of string.
+     */
     BasicString&
     replace(const_iterator i1, const_iterator i2, const char* s, size_type n)
     {
         _data.replace(i1, i2, s, n);
         return *this;
     }
+
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param i1 the iterator pointing to the first character of the replaced
+     * part of a string.
+     * @param i2 the iterator pointing to the end of the replaced part of a
+     * string.
+     * @param s the replacement string.
+     *
+     * @return the instance of string.
+     */
     BasicString& replace(const_iterator i1, const_iterator i2, const char* s)
     {
         _data.replace(i1, i2, s);
         return *this;
     }
+
+    /**
+     * @brief Replaces part of the string with a repeated character.
+     *
+     * @param i1 the iterator pointing to the first character of the replaced
+     * part of a string.
+     * @param i2 the iterator pointing to the end of the replaced part of a
+     * string.
+     * @param n the number of repetitions.
+     * @param c the replacement character.
+     *
+     * @return the instance of string.
+     */
     BasicString&
     replace(const_iterator i1, const_iterator i2, size_type n, char c)
     {
         _data.replace(i1, i2, n, c);
         return *this;
     }
+
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param i1 the iterator pointing to the first character of the replaced
+     * part of a string.
+     * @param i2 the iterator pointing to the end of the replaced part of a
+     * string.
+     * @param j1 the iterator pointing to the first character of the replacement
+     * string.
+     * @param j2 the iterator pointing to the end of the replacement string.
+     *
+     * @return the instance of string.
+     */
     template<class InputIterator> BasicString& replace(const_iterator i1,
                                                        const_iterator i2,
                                                        InputIterator  j1,
@@ -806,6 +1109,17 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         _data.replace(i1, i2, j1, j2);
         return *this;
     }
+
+    /**
+     * @brief Replaces part of the string with a specified one.
+     *
+     * @param i1 the iterator pointing at the first character of the replaced
+     * part.
+     * @param i2 the iterator pointing at the end of the replaced part.
+     * @param i the initializer_list used as a source of the data.
+     *
+     * @return the instance of string.
+     */
     BasicString&
     replace(const_iterator i1, const_iterator i2, std::initializer_list<char> i)
     {
@@ -813,160 +1127,559 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
+    /**
+     * @brief Copies a substring into specified buffer.
+     *
+     * @param s the buffer.
+     * @param n the substring length.
+     * @param pos the position of the substring's first character.
+     *
+     * @return number of  characters copied.
+     */
     size_type copy(char* s, size_type n, size_type pos = 0) const
     {
         return _data.copy(s, n, pos);
     }
+
+    /**
+     * @brief Exchanges string's contents with the specified one.
+     *
+     * @param str the string to swap.
+     */
     void swap(BasicString& str) { _data.swap(str._data); }
 
     // comparision operators from STL
+    /**
+     * @brief Checks if two strings are identical.
+     *
+     * @param other the BasicString instance to compare.
+     *
+     * @return True if strings are identical, false otherwise.
+     */
     bool operator==(const BasicString& other) const
     {
         return _data == other._data;
     }
+
+    /**
+     * @brief Checks if two strings are identical.
+     *
+     * @param s the plain null-terminated const char* string instance to compare.
+     *
+     * @return True if strings are identical, false otherwise.
+     */
     bool operator==(const char* s) const { return _data == s; }
+
+    /**
+     * @brief Checks if two strings are diffrent.
+     *
+     * @param other the BasicString instance to compare.
+     *
+     * @return True if strings are different, false otherwise.
+     */
     bool operator!=(const BasicString& other) const
     {
         return _data != other._data;
     }
+
+    /**
+     * @brief Checks if two strings are diffrent.
+     *
+     * @param s the plain null-terminated const char* string instance to compare.
+     *
+     * @return True if strings are different, false otherwise.
+     */
     bool operator!=(const char* s) const { return _data != s; }
 
+    /**
+     * @brief Lexicographically compares two strings.
+     *
+     * @param other BasicString instance to compare.
+     *
+     * @return True if this string instance is lexicographically lesser than
+     * other, false otherwise.
+     */
     bool operator<(const BasicString& other) const
     {
         return _data < other._data;
     }
+
+    /**
+     * @brief Lexicographically compares two strings.
+     *
+     * @param s null-terminated const char string to compare.
+     *
+     * @return True if this string instance is lexicographically lesser than s,
+     * false otherwise.
+     */
     bool operator<(const char* s) const { return _data < s; }
 
+    /**
+     * @brief Lexicographically compares two strings.
+     *
+     * @param other BasicString instance to compare.
+     *
+     * @return True if this string instance is lexicographically greater than
+     * other, false otherwise.
+     */
     bool operator>(const BasicString& other) const
     {
         return _data > other._data;
     }
+
+    /**
+     * @brief Lexicographically compares two strings.
+     *
+     * @param s null-terminated const char string to compare.
+     *
+     * @return True if this string instance is lexicographically greater than s,
+     * false otherwise.
+     */
     bool operator>(const char* s) const { return _data > s; }
 
+    /**
+     * @brief Lexicographically compares two strings.
+     *
+     * @param other BasicString instance to compare.
+     *
+     * @return True if this string instance is lexicographically not greater
+     * than other, false otherwise.
+     */
     bool operator<=(const BasicString& other) const
     {
         return _data <= other._data;
     }
+
+    /**
+     * @brief Lexicographically compares two strings.
+     *
+     * @param other BasicString instance to compare.
+     *
+     * @return True if this string instance is lexicographically not greater
+     * than s, false otherwise.
+     */
     bool operator<=(const char* s) const { return _data <= s; }
 
+    /**
+     * @brief Lexicographically compares two strings.
+     *
+     * @param other BasicString instance to compare.
+     *
+     * @return True if this string instance is lexicographically not lesser than
+     * other, false otherwise.
+     */
     bool operator>=(const BasicString& other) const
     {
         return _data >= other._data;
     }
+
+    /**
+     * @brief Lexicographically compares two strings.
+     *
+     * @param s null-terminated const char string to compare.
+     *
+     * @return True if this string instance is lexicographically not lesser than
+     * s, false otherwise.
+     */
     bool operator>=(const char* s) const { return _data >= s; }
 
     // string operations methods from STL
 
-    const char*    c_str() const noexcept { return _data.c_str(); }
-    const char*    data() const noexcept { return _data.data(); }
+    /**
+     * @brief Returns a pointer to a null-terminated const char array with data
+     * equivalent to those in the string.
+     *
+     * @return the pointer to the underlying character storage.
+     */
+    const char* c_str() const noexcept { return _data.c_str(); }
+
+    /**
+     * @brief Returns a pointer to the underlying character storage array.
+     *
+     * @return the pointer to the character storing array.
+     */
+    const char* data() const noexcept { return _data.data(); }
+
+    /**
+     * @brief Returns the allocator associated with the string.
+     *
+     * @return The associated allocator.
+     */
     allocator_type get_allocator() const noexcept
     {
         return _data.get_allocator();
     }
 
+    /**
+     * @brief Finds the first substring equal to the given character sequence.
+     *
+     * @param str the string to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
     size_type find(const BasicString& str, size_type pos = 0) const noexcept
     {
         return _data.find(str._data, pos);
     }
+
+    /**
+     * @brief Finds the first substring equal to the given character sequence.
+     *
+     * @param str the string to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
     size_type find(const char* s, size_type pos, size_type n) const
     {
         return _data.find(s, pos, n);
     }
+
+    /**
+     * @brief Finds the first substring equal to the given character sequence.
+     *
+     * @param str the null-terminated const char string to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
     size_type find(const char* s, size_type pos = 0) const
     {
         return _data.find(s, pos);
     }
+
+    /**
+     * @brief Finds the first substring equal to the given character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
     size_type find(char c, size_type pos = 0) const noexcept
     {
         return _data.find(c, pos);
     }
+
+    /**
+     * @brief Finds the last substring equal to the given character sequence.
+     *
+     * @param str the string to search for.
+     * @param pos the position at which to end the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
     size_type rfind(const BasicString& str, size_type pos = npos) const noexcept
     {
         return _data.rfind(str._data, pos);
     }
+
+    /**
+     * @brief Finds the last substring equal to the given character sequence.
+     *
+     * @param str the string to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
     size_type rfind(const char* s, size_type pos, size_type n) const
     {
         return _data.rfind(s, pos, n);
     }
+
+    /**
+     * @brief Finds the last substring equal to the given character sequence.
+     *
+     * @param str the null-terminated const char string to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
     size_type rfind(const char* s, size_type pos = npos) const
     {
         return _data.rfind(s, pos);
     }
+
+    /**
+     * @brief Finds the last substring equal to the given character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
     size_type rfind(char c, size_type pos = npos) const noexcept
     {
         return _data.rfind(c, pos);
     }
 
+    /**
+     * @brief Finds the first character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type
     find_first_of(const BasicString& str, size_type pos = 0) const noexcept
     {
         return _data.find_first_of(str._data, pos);
     }
+
+    /**
+     * @brief Finds the first character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_first_of(const char* s, size_type pos, size_type n) const
     {
         return _data.find_first_of(s, pos, n);
     }
+
+    /**
+     * @brief Finds the first character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_first_of(const char* s, size_type pos = 0) const
     {
         return _data.find_first_of(s, pos);
     }
+
+    /**
+     * @brief Finds the first character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_first_of(char c, size_type pos = 0) const noexcept
     {
         return _data.find_first_of(c, pos);
     }
+
+    /**
+     * @brief Finds the last character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type
     find_last_of(const BasicString& str, size_type pos = npos) const noexcept
     {
         return _data.find_last_of(str._data, pos);
     }
+
+    /**
+     * @brief Finds the last character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_last_of(const char* s, size_type pos, size_type n) const
     {
         return _data.find_last_of(s, pos, n);
     }
+
+    /**
+     * @brief Finds the last character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_last_of(const char* s, size_type pos = npos) const
     {
         return _data.find_last_of(s, pos);
     }
+
+    /**
+     * @brief Finds the last character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_last_of(char c, size_type pos = npos) const noexcept
     {
         return _data.find_last_of(c, pos);
     }
 
+    /**
+     * @brief Finds the first character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type
     find_first_not_of(const BasicString& str, size_type pos = 0) const noexcept
     {
         return _data.find_first_not_of(str._data, pos);
     }
+
+    /**
+     * @brief Finds the first character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_first_not_of(const char* s, size_type pos, size_type n) const
     {
         return _data.find_first_not_of(s, pos, n);
     }
+
+    /**
+     * @brief Finds the first character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_first_not_of(const char* s, size_type pos = 0) const
     {
         return _data.find_first_not_of(s, pos);
     }
+
+    /**
+     * @brief Finds the first character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_first_not_of(char c, size_type pos = 0) const noexcept
     {
         return _data.find_first_not_of(c, pos);
     }
+
+    /**
+     * @brief Finds the last character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_last_not_of(const BasicString& str,
                                size_type          pos = npos) const noexcept
     {
         return _data.find_last_not_of(str._data, pos);
     }
+
+    /**
+     * @brief Finds the last character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_last_not_of(const char* s, size_type pos, size_type n) const
     {
         return _data.find_last_not_of(s, pos, n);
     }
+
+    /**
+     * @brief Finds the last character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_last_not_of(const char* s, size_type pos = npos) const
     {
         return _data.find_last_not_of(s, pos);
     }
+
+    /**
+     * @brief Finds the last character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
     size_type find_last_not_of(char c, size_type pos = npos) const noexcept
     {
         return _data.find_last_not_of(c, pos);
     }
 
+    /**
+     * @brief Creates a substring from the string.
+     *
+     * @param pos the position of the first substring's character.
+     * @param n the length of the substring.
+     *
+     * @return an instance of the substring.
+     */
     BasicString substr(size_type pos = 0, size_type n = npos) const
     {
         BasicString retval(_data.get_allocator());
@@ -974,14 +1687,53 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return retval;
     }
 
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified one.
+     *
+     * @param str the string instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified string, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the string.
+     */
     int compare(const BasicString& str) const noexcept
     {
         return _data.compare(str._data);
     }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified substring.
+     *
+     * @param pos1 the position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param str the string instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified substring, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the substring.
+     */
     int compare(size_type pos1, size_type n1, const BasicString& str) const
     {
         return _data.compare(pos1, n1, str._data);
     }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified substring.
+     *
+     * @param pos1 the position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param str the string instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified substring, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the substring.
+     */
     int compare(size_type          pos1,
                 size_type          n1,
                 const BasicString& str,
@@ -990,11 +1742,53 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     {
         return _data.compare(pos1, n1, str._data, pos2, n2);
     }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified null-terminated const char* string.
+     *
+     * @param s the null-terminated const char* string instance being compared
+     * with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified string, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the string.
+     */
     int compare(const char* s) const { return _data.compare(s); }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified substring.
+     *
+     * @param pos1 the position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param str the string instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified substring, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the substring.
+     */
     int compare(size_type pos1, size_type n1, const char* s) const
     {
         return _data.compare(pos1, n1, s);
     }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified substring.
+     *
+     * @param pos1 the position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param str the string instance being compared with.
+     * @param n2 the length of the string being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified substring, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the substring.
+     */
     int compare(size_type pos1, size_type n1, const char* s, size_type n2) const
     {
         return _data.compare(pos1, n1, s, n2);
@@ -1106,7 +1900,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     [6, the C++17 standard].
     */
     /**
-     * @brief Replaces the string using usbstring from an object, that is
+     * @brief Replaces the string using substring from an object, that is
      * implicitly convertible to StringView.
      *
      * @param t the object being the source of a data.
@@ -1604,7 +2398,7 @@ for arguments of type BasicString. This function shall exchange the state of lhs
 with that of rhs.
 */
 /**
- * @brief Swaps two instances of BasicString.
+ * @brief Exchanges contents of two BasicString's instances.
  *
  * @param lhs an instance of BasicString to swap.
  * @param rhs an instance of BasicString to swap.
@@ -1617,30 +2411,71 @@ swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs)
     lhs.swap(rhs);
 }
 
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param s null-terminated const char string to compare.
+ * @param bs BasicString instance to compare.
+ *
+ * @return True if s is lexicographically lesser than bs, false otherwise.
+ */
 template<class AllocatorT> bool
 operator<(const char* s, const BasicString<AllocatorT>& bs)
 {
     return bs.compare(s) > 0;
 }
 
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param s null-terminated const char string to compare.
+ * @param bs BasicString instance to compare.
+ *
+ * @return True if s is lexicographically greater than bs, false otherwise.
+ */
 template<class AllocatorT> bool
 operator>(const char* s, const BasicString<AllocatorT>& bs)
 {
     return bs.compare(s) < 0;
 }
 
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param s null-terminated const char string to compare.
+ * @param bs BasicString instance to compare.
+ *
+ * @return True if s is lexicographically not greater than bs, false otherwise.
+ */
 template<class AllocatorT> bool
 operator<=(const char* s, const BasicString<AllocatorT>& bs)
 {
     return bs.compare(s) >= 0;
 }
 
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param s null-terminated const char string to compare.
+ * @param bs BasicString instance to compare.
+ *
+ * @return True if s is lexicographically not lesser than bs, false otherwise.
+ */
 template<class AllocatorT> bool
 operator>=(const char* s, const BasicString<AllocatorT>& bs)
 {
     return bs.compare(s) <= 0;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the string to concatenate.
+ * @param rhs the string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(const BasicString<AllocatorT>& lhs,
           const BasicString<AllocatorT>& rhs)
@@ -1649,6 +2484,15 @@ operator+(const BasicString<AllocatorT>& lhs,
     return ret += rhs;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the string to concatenate.
+ * @param rhs the string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(BasicString<AllocatorT>&& lhs, const BasicString<AllocatorT>& rhs)
 {
@@ -1656,6 +2500,15 @@ operator+(BasicString<AllocatorT>&& lhs, const BasicString<AllocatorT>& rhs)
     return ret += rhs;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the string to concatenate.
+ * @param rhs the string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(const BasicString<AllocatorT>& lhs, BasicString<AllocatorT>&& rhs)
 {
@@ -1663,6 +2516,15 @@ operator+(const BasicString<AllocatorT>& lhs, BasicString<AllocatorT>&& rhs)
     return ret += std::forward<BasicString<AllocatorT>>(rhs);
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the string to concatenate.
+ * @param rhs the string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(BasicString<AllocatorT>&& lhs, BasicString<AllocatorT>&& rhs)
 {
@@ -1670,6 +2532,15 @@ operator+(BasicString<AllocatorT>&& lhs, BasicString<AllocatorT>&& rhs)
     return ret += std::forward<BasicString<AllocatorT>>(rhs);
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the null-terminated const char* string to concatenate.
+ * @param rhs the string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(const char* lhs, const BasicString<AllocatorT>& rhs)
 {
@@ -1677,6 +2548,15 @@ operator+(const char* lhs, const BasicString<AllocatorT>& rhs)
     return ret += rhs;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the null-terminated const char* string to concatenate.
+ * @param rhs the string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(const char* lhs, BasicString<AllocatorT>&& rhs)
 {
@@ -1684,6 +2564,15 @@ operator+(const char* lhs, BasicString<AllocatorT>&& rhs)
     return ret += rhs;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the character to put at the beginning.
+ * @param rhs the string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(char lhs, const BasicString<AllocatorT>& rhs)
 {
@@ -1692,6 +2581,15 @@ operator+(char lhs, const BasicString<AllocatorT>& rhs)
     return ret += rhs;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the character to put at the beginning.
+ * @param rhs the string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(char lhs, BasicString<AllocatorT>&& rhs)
 {
@@ -1700,6 +2598,15 @@ operator+(char lhs, BasicString<AllocatorT>&& rhs)
     return ret += rhs;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the string to concatenate.
+ * @param rhs the null-terminated const char* string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(const BasicString<AllocatorT>& lhs, const char* rhs)
 {
@@ -1707,6 +2614,15 @@ operator+(const BasicString<AllocatorT>& lhs, const char* rhs)
     return ret += rhs;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the string to concatenate.
+ * @param rhs the null-terminated const char* string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(BasicString<AllocatorT>&& lhs, const char* rhs)
 {
@@ -1714,6 +2630,15 @@ operator+(BasicString<AllocatorT>&& lhs, const char* rhs)
     return ret += rhs;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the string to concatenate.
+ * @param rhs the null-terminated const char* string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(const BasicString<AllocatorT>& lhs, char rhs)
 {
@@ -1721,6 +2646,15 @@ operator+(const BasicString<AllocatorT>& lhs, char rhs)
     return ret += rhs;
 }
 
+/**
+ * @brief Concatenates two strings.
+ *
+ * @param lhs the string to concatenate.
+ * @param rhs the null-terminated const char* string to concatenate.
+ *
+ * @return An instance of BasicString containing concatenated content of the
+ * given strings.
+ */
 template<class AllocatorT> BasicString<AllocatorT>
 operator+(BasicString<AllocatorT>&& lhs, char rhs)
 {
