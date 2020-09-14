@@ -1683,7 +1683,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString substr(size_type pos = 0, size_type n = npos) const
     {
         BasicString retval(_data.get_allocator());
-        retval._data = _data.substr(pos, n);
+        retval._data = std::move(_data.substr(pos, n));
         return retval;
     }
 
@@ -1809,7 +1809,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     operator StringView() const noexcept
     {
-        return static_cast<std::basic_string_view<char>>(_data);
+        return StringView(data(), size());
     }
 
     // [SWS_CORE_03302] Constructor from StringView
