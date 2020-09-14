@@ -17,17 +17,6 @@
 
 namespace ara::core {
 
-// [SWS_CORE_03000] String type
-/*
-The namespace ara::core shall provide a template type BasicString.
-All members of this class and supporting constructs (such as global relational
-operators) shall behave identical to those of std::basic_string in header
-<string> from [5, the C++11 standard] section 21.3, except that the default
-value for the Allocator template argument is implementation-defined. The
-character type is fixed to char, and the traits type is fixed to
-std::char_traits<char>. All supporting symbols shall be contained within
-namespace ara::core.
-*/
 /**
  * @brief Template class implementing string type.
  *
@@ -459,6 +448,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     bool empty() const noexcept { return _data.empty(); }
 
     // element access methods from STL
+
     /**
      * @brief Access specified element.
      *
@@ -524,6 +514,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     char& back() { return _data.back(); }
 
     // modifier methods from STL
+
     /**
      * @brief Appends the string with given string as source of data.
      *
@@ -1794,12 +1785,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return _data.compare(pos1, n1, s, n2);
     }
 
-    // [SWS_CORE_03301] Implicit conversion to StringView
-    /*
-    An operator shall be defined for BasicString that provides implicit
-    conversion to StringView: This function shall behave the same as the
-    corresponding std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Converts the string to the StringView instance.
      *
@@ -1812,12 +1797,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return StringView(data(), size());
     }
 
-    // [SWS_CORE_03302] Constructor from StringView
-    /*
-    A constructor shall be defined for BasicString that accepts a StringView
-    argument by value. This function shall behave the same as the corresponding
-    std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Constructs a string using a StringView object as source of the
      * data.
@@ -1828,12 +1807,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     explicit BasicString(StringView sv) : _data(sv.data(), sv.length()) {}
 
-    // [SWS_CORE_03303] Constructor from implicit StringView
-    /*
-    A constructor shall be defined for BasicString that accepts any type that is
-    implicitly convertible to StringView. This function shall behave the same as
-    the corresponding std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Constructs a string using substring from an object, that is
      * implicitly convertible to StringView.
@@ -1850,12 +1823,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString(T const& t, size_type pos, size_type n) : _data(t, pos, n)
     {}
 
-    // [SWS_CORE_03304] operator= from StringView
-    /*
-    An operator= member function shall be defined for BasicString that accepts a
-    StringView argument by value. This function shall behave the same as the
-    corresponding std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Replaces the string with contents of the StringView.
      *
@@ -1871,12 +1838,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03305] Assignment from StringView
-    /*
-    A member function shall be defined for BasicString that allows assignment
-    from StringView. This function shall behave the same as the corresponding
-    std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Replaces the string with contents of the StringView.
      *
@@ -1892,13 +1853,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03306] Assignment from implicit StringView
-    /*
-    A member function shall be defined for BasicString that allows assignment
-    from any type that is implicitly convertible to StringView: This function
-    shall behave the same as the corresponding std::basic_string function from
-    [6, the C++17 standard].
-    */
     /**
      * @brief Replaces the string using substring from an object, that is
      * implicitly convertible to StringView.
@@ -1918,12 +1872,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03307] operator+= from StringView
-    /*
-    An operator+= member function shall be defined for BasicString that accepts
-    a StringView argument by value. This function shall behave the same as the
-    corresponding std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Appends the string with given StringView as data source.
      *
@@ -1939,12 +1887,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03308] Concatenation of StringView
-    /*
-    A member function shall be defined for BasicString that allows concatenation
-    of a StringView. This function shall behave the same as the corresponding
-    std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Appends the string with given StringView as data source.
      *
@@ -1960,13 +1902,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03309] Concatenation of implicit StringView
-    /*
-    A member function shall be defined for BasicString that allows concatenation
-    of any type that is implicitly convertible to StringView. This function
-    shall behave the same as the corresponding std::basic_string function from
-    [6, the C++17 standard].
-    */
     /**
      * @brief Appends the string with object convertible to StringView as data
      * source.
@@ -1989,12 +1924,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03310] Insertion of StringView
-    /*
-    A member function shall be defined for BasicString that allows insertion of
-    a StringView: This function shall behave the same as the corresponding
-    std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Inserts the substring at specified place using the StringView as
      * data source.
@@ -2012,13 +1941,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03311] Insertion of implicit StringView
-    /*
-    A member function shall be defined for BasicString that allows insertion of
-    any type that is implicitly convertible to StringView. This function shall
-    behave the same as the corresponding std::basic_string function from
-    [6, the C++17 standard].
-    */
     /**
      * @brief Inserts at specified place a substring from an object convertible
      * to StringView as data source.
@@ -2043,13 +1965,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03312] Replacement with StringView
-    /*
-    A member function shall be defined for BasicString that allows replacement
-    of a subsequence of *this with the contents of a StringView. This function
-    shall behave the same as the corresponding std::basic_string function from
-    [6, the C++17 standard].
-    */
     /**
      * @brief Replaces a substring with the StringView as data source.
      *
@@ -2067,13 +1982,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03313] Replacement with implicit StringView
-    /*
-    A member function shall be defined for BasicString that allows replacement
-    of a subsequence of *this with the contents of any type that is implicitly
-    convertible to StringView. This function shall behave the same as the
-    corresponding std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Replaces at specified place a substring from an object convertible
      * to StringView as data source.
@@ -2102,13 +2010,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03314] Replacement of iterator range with StringView
-    /*
-    A member function shall be defined for BasicString that allows replacement
-    of an iterator-bounded subsequence of *this with the contents of a
-    StringView. This function shall behave the same as the corresponding
-    std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Replaces a substring using StringView instance as data source.
      *
@@ -2126,13 +2027,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // [SWS_CORE_03315] Forward-find a StringView
-    /*
-    A member function shall be defined for BasicString that allows
-    forward-searching for the contents of a StringView. This function shall
-    behave the same as the corresponding std::basic_string function from
-    [6, the C++17 standard].
-    */
     /**
      * @brief Finds the first occurence of StringView in string.
      *
@@ -2149,13 +2043,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return _data.find(sv, pos);
     }
 
-    // [SWS_CORE_03316] Reverse-find a StringView
-    /*
-    A member function shall be defined for BasicString that allows
-    reverse-searching for the contents of a StringView. This function shall
-    behave the same as the corresponding std::basic_string function from
-    [6, the C++17 standard].
-    */
     /**
      * @brief Finds the last occurence of StringView in string.
      *
@@ -2172,13 +2059,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return _data.rfind(sv, pos);
     }
 
-    // [SWS_CORE_03317] Forward-find of character set within a StringView
-    /*
-    A member function shall be defined for BasicString that allows
-    forward-searching for any of the characters within a StringView: This
-    function shall behave the same as the corresponding std::basic_string
-    function from [6, the C++17 standard].
-    */
     /**
      * @brief Finds the first character equal to one of the characters occurring
      * in the specified string.
@@ -2196,13 +2076,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return _data.find_first_of(sv, pos);
     }
 
-    // [SWS_CORE_03318] Reverse-find of character set within a StringView
-    /*
-    A member function shall be defined for BasicString that allows
-    reverse-searching for any of the characters within a StringView. This
-    function shall behave the same as the corresponding std::basic_string
-    function from [6, the C++17 standard].
-    */
     /**
      * @brief Finds the last character equal to one of the characters occurring
      * in the specified string.
@@ -2220,13 +2093,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return _data.find_last_of(sv, pos);
     }
 
-    // [SWS_CORE_03319] Forward-find of character set not within a StringView
-    /*
-    A member function shall be defined for BasicString that allows
-    forward-searching for any of the characters not contained in a StringView.
-    This function shall behave the same as the corresponding std::basic_string
-    function from [6, the C++17 standard].
-    */
     /**
      * @brief Finds the first character not equal to any of the characters
      * occurring in the specified string.
@@ -2244,13 +2110,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return _data.find_first_not_of(sv, pos);
     }
 
-    // [SWS_CORE_03320] Reverse-find of character set not within a StringView
-    /*
-    A member function shall be defined for BasicString that allows
-    reverse-searching for any of the characters not contained in a StringView.
-    This function shall behave the same as the corresponding std::basic_string
-    function from [6, the C++17 standard].
-    */
     /**
      * @brief Finds the last character not equal to any of the characters
      * occurring in the specified string.
@@ -2269,12 +2128,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return _data.find_last_not_of(sv, pos);
     }
 
-    // [SWS_CORE_03321] Comparison with a StringView
-    /*
-    A member function shall be defined for BasicString that allows comparison
-    with the contents of a StringView. This function shall behave the same as
-    the corresponding std::basic_string function from [6, the C++17 standard].
-    */
     /**
      * @brief Lexicographically compares the content of the string with a
      * content of the StringView.
@@ -2290,13 +2143,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     int compare(StringView sv) const noexcept { return _data.compare(sv); }
 
-    // [SWS_CORE_03322] Comparison of subsequence with a StringView
-    /*
-    A member function shall be defined for BasicString that allows comparison of
-    a subsequence of *this with the contents of a StringView. This function
-    shall behave the same as the corresponding std::basic_string function from
-    [6, the C++17 standard].
-    */
     /**
      * @brief Lexicographically compares a substring with a content of the
      * StringView instance.
@@ -2317,15 +2163,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return _data.compare(pos1, n1, sv);
     }
 
-    // [SWS_CORE_03323] Comparison of subsequence with a subsequence of a
-    // StringView
-    /*
-    A member function shall be defined for BasicString that allows
-    comparison of a subsequence of *this with the contents of a subsequence of
-    any type that is implicitly convertible to StringView. This function shall
-    behave the same as the corresponding std::basic_string function from
-    [6, the C++17 standard].
-    */
     /**
      * @brief Lexicographically compares a substring with a content of an object
      * convertible to StringView.
@@ -2383,7 +2220,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     }
 };
 
-// [SWS_CORE_03001] String type
 /**
  * @brief A type alias for BasicString.
  *
@@ -2391,12 +2227,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
  */
 using String = BasicString<>;
 
-// [SWS_CORE_03296] swap overload for BasicString
-/*
-There shall be an overload of the swap function within the namespace ara::core
-for arguments of type BasicString. This function shall exchange the state of lhs
-with that of rhs.
-*/
 /**
  * @brief Exchanges contents of two BasicString's instances.
  *
