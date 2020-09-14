@@ -1826,7 +1826,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @req {SWS_CORE_03302}
      */
-    explicit BasicString(StringView sv) : _data(sv) {}
+    explicit BasicString(StringView sv) : _data(sv.data(), sv.length()) {}
 
     // [SWS_CORE_03303] Constructor from implicit StringView
     /*
@@ -1867,7 +1867,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     BasicString& operator=(StringView sv)
     {
-        _data = sv;
+        _data.assign(sv.data(), sv.length());
         return *this;
     }
 
@@ -1888,7 +1888,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     BasicString& assign(StringView sv)
     {
-        _data.assign(sv);
+        _data.assign(sv.data(), sv.length());
         return *this;
     }
 
