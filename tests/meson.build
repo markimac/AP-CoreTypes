@@ -8,7 +8,8 @@ srcs = [
     'vector_test.cpp',
     'utility_test.cpp',
     'string_test.cpp',
-    'byte_test.cpp'
+    'byte_test.cpp',
+    'result_test.cpp'
 ]
 
 # Add `include` to include directories
