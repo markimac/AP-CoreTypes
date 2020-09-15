@@ -1792,10 +1792,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @req {SWS_CORE_03301}
      */
-    operator StringView() const noexcept
-    {
-        return StringView(data(), size());
-    }
+    operator StringView() const noexcept { return StringView(data(), size()); }
 
     /**
      * @brief Constructs a string using a StringView object as source of the
