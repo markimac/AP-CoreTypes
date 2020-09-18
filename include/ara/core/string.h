@@ -12,7 +12,6 @@
 #include <utility>  // std::forward, std::move, std::swap
 
 #include "ara/core/allocator.h"
-
 #include "ara/core/string_view.h"
 
 namespace ara::core {
@@ -177,6 +176,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator=(const BasicString& str)
     {
         _data = str._data;
+
         return *this;
     }
 
@@ -190,6 +190,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator=(BasicString&& str) noexcept
     {
         _data = std::move(str._data);
+
         return *this;
     }
 
@@ -203,6 +204,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator=(const char* s)
     {
         _data = s;
+
         return *this;
     }
 
@@ -216,6 +218,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator=(char c)
     {
         _data = c;
+
         return *this;
     }
 
@@ -229,6 +232,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator=(std::initializer_list<char> i)
     {
         _data = i;
+
         return *this;
     }
 
@@ -480,6 +484,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator+=(const BasicString& str)
     {
         _data += str._data;
+
         return *this;
     }
 
@@ -494,6 +499,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator+=(const char* s)
     {
         _data += s;
+
         return *this;
     }
 
@@ -507,6 +513,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator+=(char c)
     {
         _data += c;
+
         return *this;
     }
 
@@ -520,6 +527,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator+=(std::initializer_list<char> i)
     {
         _data += i;
+
         return *this;
     }
 
@@ -533,6 +541,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& append(const BasicString& str)
     {
         _data.append(str._data);
+
         return *this;
     }
 
@@ -548,6 +557,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& append(const BasicString& str, size_type pos, size_type n)
     {
         _data.append(str._data, pos, n);
+
         return *this;
     }
 
@@ -562,6 +572,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& append(const char* s, size_type n)
     {
         _data.append(s, n);
+
         return *this;
     }
 
@@ -576,6 +587,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& append(const char* s)
     {
         _data.append(s);
+
         return *this;
     }
 
@@ -590,6 +602,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& append(size_type n, char c)
     {
         _data.append(n, c);
+
         return *this;
     }
 
@@ -610,6 +623,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& assign(const BasicString& str)
     {
         _data.assign(str._data);
+
         return *this;
     }
 
@@ -623,6 +637,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& assign(BasicString&& str) noexcept
     {
         _data.assign(std::move(str._data));
+
         return *this;
     }
 
@@ -638,6 +653,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& assign(const BasicString& str, size_type pos, size_type n)
     {
         _data.assign(str._data, pos, n);
+
         return *this;
     }
 
@@ -652,6 +668,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& assign(const char* s, size_type n)
     {
         _data.assign(s, n);
+
         return *this;
     }
 
@@ -665,6 +682,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& assign(const char* s)
     {
         _data.assign(s);
+
         return *this;
     }
 
@@ -681,6 +699,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     assign(InputIterator first, InputIterator last)
     {
         _data.assign(first, last);
+
         return *this;
     }
 
@@ -694,6 +713,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& assign(std::initializer_list<char> i)
     {
         _data.assign(i);
+
         return *this;
     }
 
@@ -708,6 +728,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& insert(size_type pos1, const BasicString& str)
     {
         _data.insert(pos1, str._data);
+
         return *this;
     }
 
@@ -725,6 +746,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     insert(size_type pos1, const BasicString& str, size_type pos2, size_type n)
     {
         _data.insert(pos1, str._data, pos2, n);
+
         return *this;
     }
 
@@ -741,6 +763,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& insert(size_type pos, const char* str, size_type n)
     {
         _data.insert(pos, str, n);
+
         return *this;
     }
 
@@ -756,6 +779,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& insert(size_type pos, const char* str)
     {
         _data.insert(pos, str);
+
         return *this;
     }
 
@@ -771,6 +795,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& insert(size_type pos, size_type n, char c)
     {
         _data.insert(pos, n, c);
+
         return *this;
     }
 
@@ -838,6 +863,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& erase(size_type pos = 0, size_type n = npos)
     {
         _data.erase(pos, n);
+
         return *this;
     }
 
@@ -852,6 +878,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& erase(const_iterator p)
     {
         _data.erase(p);
+
         return *this;
     }
 
@@ -868,6 +895,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& erase(const_iterator first, const_iterator last)
     {
         _data.erase(first, last);
+
         return *this;
     }
 
@@ -888,6 +916,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& replace(size_type pos1, size_type n1, const BasicString& str)
     {
         _data.replace(pos1, n1, str._data);
+
         return *this;
     }
 
@@ -910,6 +939,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                          size_type          n2)
     {
         _data.replace(pos1, n1, str._data, pos2, n2);
+
         return *this;
     }
 
@@ -927,6 +957,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     replace(size_type pos, size_type n1, const char* s, size_type n2)
     {
         _data.replace(pos, n1, s, n2);
+
         return *this;
     }
 
@@ -942,6 +973,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& replace(size_type pos, size_type n1, const char* s)
     {
         _data.replace(pos, n1, s);
+
         return *this;
     }
 
@@ -959,6 +991,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& replace(size_type pos, size_type n1, size_type n2, char c)
     {
         _data.replace(pos, n1, n2, c);
+
         return *this;
     }
 
@@ -976,6 +1009,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     replace(const_iterator i1, const_iterator i2, const BasicString& str)
     {
         _data.replace(i1, i2, str._data);
+
         return *this;
     }
 
@@ -995,6 +1029,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     replace(const_iterator i1, const_iterator i2, const char* s, size_type n)
     {
         _data.replace(i1, i2, s, n);
+
         return *this;
     }
 
@@ -1012,6 +1047,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& replace(const_iterator i1, const_iterator i2, const char* s)
     {
         _data.replace(i1, i2, s);
+
         return *this;
     }
 
@@ -1031,6 +1067,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     replace(const_iterator i1, const_iterator i2, size_type n, char c)
     {
         _data.replace(i1, i2, n, c);
+
         return *this;
     }
 
@@ -1053,6 +1090,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                                                        InputIterator  j2)
     {
         _data.replace(i1, i2, j1, j2);
+
         return *this;
     }
 
@@ -1070,6 +1108,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     replace(const_iterator i1, const_iterator i2, std::initializer_list<char> i)
     {
         _data.replace(i1, i2, i);
+
         return *this;
     }
 
@@ -1635,6 +1674,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     {
         BasicString retval(_data.get_allocator());
         retval._data = std::move(_data.substr(pos, n));
+
         return retval;
     }
 
@@ -1794,6 +1834,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator=(StringView sv)
     {
         _data.assign(sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1809,6 +1850,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& assign(StringView sv)
     {
         _data.assign(sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1831,6 +1873,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     {
         StringView sv = static_cast<StringView>(t).substr(pos, n);
         _data.assign(sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1846,6 +1889,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator+=(StringView sv)
     {
         _data.append(sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1861,6 +1905,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& append(StringView sv)
     {
         _data.append(sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1884,6 +1929,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     {
         StringView sv = static_cast<StringView>(t).substr(pos, n);
         _data.append(sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1901,6 +1947,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& insert(size_type pos, StringView sv)
     {
         _data.insert(pos, sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1926,6 +1973,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     {
         StringView sv = static_cast<StringView>(t).substr(pos2, n);
         _data.insert(pos1, sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1943,6 +1991,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& replace(size_type pos1, size_type n1, StringView sv)
     {
         _data.replace(pos1, n1, sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1972,6 +2021,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     {
         StringView sv = static_cast<StringView>(t).substr(pos2, n2);
         _data.replace(pos1, n1, sv.data(), sv.length());
+
         return *this;
     }
 
@@ -1989,6 +2039,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& replace(const_iterator i1, const_iterator i2, StringView sv)
     {
         _data.replace(i1, i2, sv.data(), sv.length());
+
         return *this;
     }
 
@@ -2283,6 +2334,7 @@ operator+(const BasicString<AllocatorT>& lhs,
           const BasicString<AllocatorT>& rhs)
 {
     BasicString<AllocatorT> ret(lhs);
+
     return ret += rhs;
 }
 
@@ -2299,6 +2351,7 @@ template<class AllocatorT> BasicString<AllocatorT>
 operator+(BasicString<AllocatorT>&& lhs, const BasicString<AllocatorT>& rhs)
 {
     BasicString<AllocatorT> ret{std::forward<BasicString<AllocatorT>>(lhs)};
+
     return ret += rhs;
 }
 
@@ -2315,6 +2368,7 @@ template<class AllocatorT> BasicString<AllocatorT>
 operator+(const BasicString<AllocatorT>& lhs, BasicString<AllocatorT>&& rhs)
 {
     BasicString<AllocatorT> ret(lhs);
+
     return ret += std::forward<BasicString<AllocatorT>>(rhs);
 }
 
@@ -2331,6 +2385,7 @@ template<class AllocatorT> BasicString<AllocatorT>
 operator+(BasicString<AllocatorT>&& lhs, BasicString<AllocatorT>&& rhs)
 {
     BasicString<AllocatorT> ret{std::forward<BasicString<AllocatorT>>(lhs)};
+
     return ret += std::forward<BasicString<AllocatorT>>(rhs);
 }
 
@@ -2347,6 +2402,7 @@ template<class AllocatorT> BasicString<AllocatorT>
 operator+(const char* lhs, const BasicString<AllocatorT>& rhs)
 {
     BasicString<AllocatorT> ret(lhs, rhs.get_allocator());
+
     return ret += rhs;
 }
 
@@ -2380,6 +2436,7 @@ operator+(char lhs, const BasicString<AllocatorT>& rhs)
 {
     using size_type = typename BasicString<AllocatorT>::size_type;
     BasicString<AllocatorT> ret(size_type(1), lhs, rhs.get_allocator());
+
     return ret += rhs;
 }
 
@@ -2413,6 +2470,7 @@ template<class AllocatorT> BasicString<AllocatorT>
 operator+(const BasicString<AllocatorT>& lhs, const char* rhs)
 {
     BasicString<AllocatorT> ret(lhs);
+
     return ret += rhs;
 }
 
@@ -2429,6 +2487,7 @@ template<class AllocatorT> BasicString<AllocatorT>
 operator+(BasicString<AllocatorT>&& lhs, const char* rhs)
 {
     BasicString<AllocatorT> ret{std::forward<BasicString<AllocatorT>>(lhs)};
+
     return ret += rhs;
 }
 
@@ -2445,6 +2504,7 @@ template<class AllocatorT> BasicString<AllocatorT>
 operator+(const BasicString<AllocatorT>& lhs, char rhs)
 {
     BasicString<AllocatorT> ret(lhs);
+
     return ret += rhs;
 }
 
@@ -2461,6 +2521,7 @@ template<class AllocatorT> BasicString<AllocatorT>
 operator+(BasicString<AllocatorT>&& lhs, char rhs)
 {
     BasicString<AllocatorT> ret{std::forward<BasicString<AllocatorT>>(lhs)};
+
     return ret += rhs;
 }
 
