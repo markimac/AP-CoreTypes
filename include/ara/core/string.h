@@ -57,10 +57,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Constructs an empty string with optionally given allocator.
      */
-    explicit BasicString(const AllocatorT& a = AllocatorT()) noexcept(
-      std::is_nothrow_constructible<string_t, const AllocatorT&>::value)
-      : _data(a)
-    {}
+    explicit BasicString(const AllocatorT& a = AllocatorT()) : _data(a) {}
 
     /**
      * @brief Copy constructor. Constructs the string with the copy of the
@@ -68,10 +65,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @param bs another string to be used as the source of the content.
      */
-    BasicString(const BasicString& bs) noexcept(
-      std::is_nothrow_copy_constructible<string_t>::value)
-      : _data(bs._data)
-    {}
+    BasicString(const BasicString& bs) : _data(bs._data) {}
 
     /**
      * @brief Move constructor. Constructs the string with the contents of
@@ -89,17 +83,10 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param n the ending position of the substring.
      * @param a the allocator.
      */
-    BasicString(
-      const BasicString& str,
-      size_type          pos,
-      size_type          n = npos,
-      const AllocatorT&  a =
-        AllocatorT()) noexcept(std::is_nothrow_constructible<string_t,
-                                                             const string_t&,
-                                                             size_type,
-                                                             size_type,
-                                                             const AllocatorT&>::
-                                 value)
+    BasicString(const BasicString& str,
+                size_type          pos,
+                size_type          n = npos,
+                const AllocatorT&  a = AllocatorT())
       : _data(str._data, pos, n, a)
     {}
 
@@ -110,15 +97,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param n the length of the string.
      * @param a the allocator.
      */
-    BasicString(
-      const char*       s,
-      size_type         n,
-      const AllocatorT& a =
-        AllocatorT()) noexcept(std::is_nothrow_constructible<string_t,
-                                                             const char*,
-                                                             size_type,
-                                                             const AllocatorT&>::
-                                 value)
+    BasicString(const char* s, size_type n, const AllocatorT& a = AllocatorT())
       : _data(s, n, a)
     {}
 
@@ -128,10 +107,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param s the string.
      * @param a the allocator.
      */
-    BasicString(const char* s, const AllocatorT& a = AllocatorT()) noexcept(
-      std::is_nothrow_constructible<string_t, const char*, const AllocatorT&>::
-        value)
-      : _data(s, a)
+    BasicString(const char* s, const AllocatorT& a = AllocatorT()) : _data(s, a)
     {}
 
     /**
@@ -142,11 +118,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param c the char to fill the string.
      * @param a the allocator.
      */
-    BasicString(size_type n, char c, const AllocatorT& a = AllocatorT()) noexcept(
-      std::is_nothrow_constructible<string_t,
-                                    size_type,
-                                    char,
-                                    const AllocatorT&>::value)
+    BasicString(size_type n, char c, const AllocatorT& a = AllocatorT())
       : _data(n, c, a)
     {}
 
@@ -157,15 +129,10 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param end the iterator pointing to the end of the substring.
      * @param a the allocator.
      */
-    template<class InputIterator> BasicString(
-      InputIterator     begin,
-      InputIterator     end,
-      const AllocatorT& a =
-        AllocatorT()) noexcept(std::is_nothrow_constructible<string_t,
-                                                             InputIterator,
-                                                             InputIterator,
-                                                             const AllocatorT&>::
-                                 value)
+    template<class InputIterator>
+    BasicString(InputIterator     begin,
+                InputIterator     end,
+                const AllocatorT& a = AllocatorT())
       : _data(begin, end, a)
     {}
 
@@ -176,12 +143,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param a the allocator.
      */
     BasicString(std::initializer_list<char> i,
-                const AllocatorT&           a =
-                  AllocatorT()) noexcept(std::
-                                           is_nothrow_constructible<
-                                             string_t,
-                                             std::initializer_list<char>,
-                                             const AllocatorT&>::value)
+                const AllocatorT&           a = AllocatorT())
       : _data(i, a)
     {}
 
@@ -191,11 +153,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param bs a string to copy.
      * @param a the allocator.
      */
-    BasicString(const BasicString& bs, const AllocatorT& a) noexcept(
-      std::is_nothrow_constructible<string_t,
-                                    const string_t&,
-                                    const AllocatorT&>::value)
-      : _data(bs._data, a)
+    BasicString(const BasicString& bs, const AllocatorT& a) : _data(bs._data, a)
     {}
 
     /**
@@ -204,9 +162,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param bs a string to move.
      * @param a the allocator.
      */
-    BasicString(BasicString&& bs, const AllocatorT& a) noexcept(
-      std::is_nothrow_constructible<string_t, string_t&&, const AllocatorT&>::
-        value)
+    BasicString(BasicString&& bs, const AllocatorT& a)
       : _data(std::move(bs._data), a)
     {}
 
@@ -218,8 +174,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return reference to string instance.
      */
     // assignment operator= from STL
-    BasicString& operator=(const BasicString& str) noexcept(
-      std::is_nothrow_assignable<string_t, const string_t&>::value)
+    BasicString& operator=(const BasicString& str)
     {
         _data = str._data;
         return *this;
@@ -245,8 +200,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return reference to string instance.
      */
-    BasicString& operator=(const char* s) noexcept(
-      std::is_nothrow_assignable<string_t, const char*&>::value)
+    BasicString& operator=(const char* s)
     {
         _data = s;
         return *this;
@@ -259,8 +213,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return reference to string instance.
      */
-    BasicString&
-    operator=(char c) noexcept(std::is_nothrow_assignable<string_t, char>::value)
+    BasicString& operator=(char c)
     {
         _data = c;
         return *this;
@@ -273,8 +226,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return reference to string instance.
      */
-    BasicString& operator=(std::initializer_list<char> i) noexcept(
-      std::is_nothrow_assignable<string_t, std::initializer_list<char>>::value)
+    BasicString& operator=(std::initializer_list<char> i)
     {
         _data = i;
         return *this;
@@ -456,7 +408,10 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return constant reference to the element.
      */
-    const_reference operator[](size_type pos) const { return _data[pos]; }
+    const_reference operator[](size_type pos) const noexcept
+    {
+        return _data[pos];
+    }
 
     /**
      * @brief Access specified element.
@@ -465,7 +420,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return reference to the element.
      */
-    reference operator[](size_type pos) { return _data[pos]; }
+    reference operator[](size_type pos) noexcept { return _data[pos]; }
 
     /**
      * @brief Access specified element with bounds checking.
@@ -490,28 +445,28 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return constant reference to the first character.
      */
-    const char& front() const { return _data.front(); }
+    const char& front() const noexcept { return _data.front(); }
 
     /**
      * @brief Access first element.
      *
      * @return reference to the first character.
      */
-    char& front() { return _data.front(); }
+    char& front() noexcept { return _data.front(); }
 
     /**
      * @brief Access last element.
      *
      * @return constant reference to the last character.
      */
-    const char& back() const { return _data.back(); }
+    const char& back() const noexcept { return _data.back(); }
 
     /**
      * @brief Access last element.
      *
      * @return reference to the last character.
      */
-    char& back() { return _data.back(); }
+    char& back() noexcept { return _data.back(); }
 
     // modifier methods from STL
 
@@ -919,7 +874,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Removes the last character from the string.
      */
-    void pop_back() { _data.pop_back(); }
+    void pop_back() noexcept { _data.pop_back(); }
 
     /**
      * @brief Replaces part of the string with a specified one.
@@ -1137,7 +1092,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @param str the string to swap.
      */
-    void swap(BasicString& str) { _data.swap(str._data); }
+    void swap(BasicString& str) noexcept { _data.swap(str._data); }
 
     // comparision operators from STL
     /**
@@ -1147,7 +1102,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return True if strings are identical, false otherwise.
      */
-    bool operator==(const BasicString& other) const
+    bool operator==(const BasicString& other) const noexcept
     {
         return _data == other._data;
     }
@@ -1159,7 +1114,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return True if strings are identical, false otherwise.
      */
-    bool operator==(const char* s) const { return _data == s; }
+    bool operator==(const char* s) const noexcept { return _data == s; }
 
     /**
      * @brief Checks if two strings are diffrent.
@@ -1168,7 +1123,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return True if strings are different, false otherwise.
      */
-    bool operator!=(const BasicString& other) const
+    bool operator!=(const BasicString& other) const noexcept
     {
         return _data != other._data;
     }
@@ -1180,7 +1135,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return True if strings are different, false otherwise.
      */
-    bool operator!=(const char* s) const { return _data != s; }
+    bool operator!=(const char* s) const noexcept { return _data != s; }
 
     /**
      * @brief Lexicographically compares two strings.
@@ -1190,7 +1145,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return True if this string instance is lexicographically lesser than
      * other, false otherwise.
      */
-    bool operator<(const BasicString& other) const
+    bool operator<(const BasicString& other) const noexcept
     {
         return _data < other._data;
     }
@@ -1203,7 +1158,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return True if this string instance is lexicographically lesser than s,
      * false otherwise.
      */
-    bool operator<(const char* s) const { return _data < s; }
+    bool operator<(const char* s) const noexcept { return _data < s; }
 
     /**
      * @brief Lexicographically compares two strings.
@@ -1213,7 +1168,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return True if this string instance is lexicographically greater than
      * other, false otherwise.
      */
-    bool operator>(const BasicString& other) const
+    bool operator>(const BasicString& other) const noexcept
     {
         return _data > other._data;
     }
@@ -1226,7 +1181,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return True if this string instance is lexicographically greater than s,
      * false otherwise.
      */
-    bool operator>(const char* s) const { return _data > s; }
+    bool operator>(const char* s) const noexcept { return _data > s; }
 
     /**
      * @brief Lexicographically compares two strings.
@@ -1236,7 +1191,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return True if this string instance is lexicographically not greater
      * than other, false otherwise.
      */
-    bool operator<=(const BasicString& other) const
+    bool operator<=(const BasicString& other) const noexcept
     {
         return _data <= other._data;
     }
@@ -1249,7 +1204,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return True if this string instance is lexicographically not greater
      * than s, false otherwise.
      */
-    bool operator<=(const char* s) const { return _data <= s; }
+    bool operator<=(const char* s) const noexcept { return _data <= s; }
 
     /**
      * @brief Lexicographically compares two strings.
@@ -1259,7 +1214,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return True if this string instance is lexicographically not lesser than
      * other, false otherwise.
      */
-    bool operator>=(const BasicString& other) const
+    bool operator>=(const BasicString& other) const noexcept
     {
         return _data >= other._data;
     }
@@ -1272,7 +1227,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return True if this string instance is lexicographically not lesser than
      * s, false otherwise.
      */
-    bool operator>=(const char* s) const { return _data >= s; }
+    bool operator>=(const char* s) const noexcept { return _data >= s; }
 
     // string operations methods from STL
 
@@ -1325,7 +1280,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the first character of the substring being looked
      * for or BasicString::npos if not found.
      */
-    size_type find(const char* s, size_type pos, size_type n) const
+    size_type find(const char* s, size_type pos, size_type n) const noexcept
     {
         return _data.find(s, pos, n);
     }
@@ -1339,7 +1294,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the first character of the substring being looked
      * for or BasicString::npos if not found.
      */
-    size_type find(const char* s, size_type pos = 0) const
+    size_type find(const char* s, size_type pos = 0) const noexcept
     {
         return _data.find(s, pos);
     }
@@ -1382,7 +1337,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the first character of the substring being looked
      * for or BasicString::npos if not found.
      */
-    size_type rfind(const char* s, size_type pos, size_type n) const
+    size_type rfind(const char* s, size_type pos, size_type n) const noexcept
     {
         return _data.rfind(s, pos, n);
     }
@@ -1396,7 +1351,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the first character of the substring being looked
      * for or BasicString::npos if not found.
      */
-    size_type rfind(const char* s, size_type pos = npos) const
+    size_type rfind(const char* s, size_type pos = npos) const noexcept
     {
         return _data.rfind(s, pos);
     }
@@ -1442,7 +1397,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the found character or BasicString::npos if not
      * found.
      */
-    size_type find_first_of(const char* s, size_type pos, size_type n) const
+    size_type
+    find_first_of(const char* s, size_type pos, size_type n) const noexcept
     {
         return _data.find_first_of(s, pos, n);
     }
@@ -1457,7 +1413,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the found character or BasicString::npos if not
      * found.
      */
-    size_type find_first_of(const char* s, size_type pos = 0) const
+    size_type find_first_of(const char* s, size_type pos = 0) const noexcept
     {
         return _data.find_first_of(s, pos);
     }
@@ -1504,7 +1460,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the found character or BasicString::npos if not
      * found.
      */
-    size_type find_last_of(const char* s, size_type pos, size_type n) const
+    size_type
+    find_last_of(const char* s, size_type pos, size_type n) const noexcept
     {
         return _data.find_last_of(s, pos, n);
     }
@@ -1519,7 +1476,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the found character or BasicString::npos if not
      * found.
      */
-    size_type find_last_of(const char* s, size_type pos = npos) const
+    size_type find_last_of(const char* s, size_type pos = npos) const noexcept
     {
         return _data.find_last_of(s, pos);
     }
@@ -1566,7 +1523,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the found character or BasicString::npos if not
      * found.
      */
-    size_type find_first_not_of(const char* s, size_type pos, size_type n) const
+    size_type
+    find_first_not_of(const char* s, size_type pos, size_type n) const noexcept
     {
         return _data.find_first_not_of(s, pos, n);
     }
@@ -1581,7 +1539,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the found character or BasicString::npos if not
      * found.
      */
-    size_type find_first_not_of(const char* s, size_type pos = 0) const
+    size_type find_first_not_of(const char* s, size_type pos = 0) const noexcept
     {
         return _data.find_first_not_of(s, pos);
     }
@@ -1628,7 +1586,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the found character or BasicString::npos if not
      * found.
      */
-    size_type find_last_not_of(const char* s, size_type pos, size_type n) const
+    size_type
+    find_last_not_of(const char* s, size_type pos, size_type n) const noexcept
     {
         return _data.find_last_not_of(s, pos, n);
     }
@@ -1643,7 +1602,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @return a position of the found character or BasicString::npos if not
      * found.
      */
-    size_type find_last_not_of(const char* s, size_type pos = npos) const
+    size_type
+    find_last_not_of(const char* s, size_type pos = npos) const noexcept
     {
         return _data.find_last_not_of(s, pos);
     }
@@ -1746,7 +1706,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * positive value if the BasicString's value appears after the character
      * sequence in the string.
      */
-    int compare(const char* s) const { return _data.compare(s); }
+    int compare(const char* s) const noexcept { return _data.compare(s); }
 
     /**
      * @brief Lexicographically compares the content of the string with the
@@ -2198,7 +2158,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return True if strings are identical, false otherwise.
      */
-    friend bool operator==(const char* s, const BasicString& bs)
+    friend bool operator==(const char* s, const BasicString& bs) noexcept
     {
         return bs == s;
     }
@@ -2211,7 +2171,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @return True if strings are different, false otherwise.
      */
-    friend bool operator!=(const char* s, const BasicString& bs)
+    friend bool operator!=(const char* s, const BasicString& bs) noexcept
     {
         return bs != s;
     }
@@ -2233,7 +2193,7 @@ using String = BasicString<>;
  * @req {SWS_CORE_03296}
  */
 template<typename Allocator> void
-swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs)
+swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs) noexcept
 {
     lhs.swap(rhs);
 }
@@ -2247,7 +2207,7 @@ swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs)
  * @return True if s is lexicographically lesser than bs, false otherwise.
  */
 template<class AllocatorT> bool
-operator<(const char* s, const BasicString<AllocatorT>& bs)
+operator<(const char* s, const BasicString<AllocatorT>& bs) noexcept
 {
     return bs.compare(s) > 0;
 }
@@ -2261,7 +2221,7 @@ operator<(const char* s, const BasicString<AllocatorT>& bs)
  * @return True if s is lexicographically greater than bs, false otherwise.
  */
 template<class AllocatorT> bool
-operator>(const char* s, const BasicString<AllocatorT>& bs)
+operator>(const char* s, const BasicString<AllocatorT>& bs) noexcept
 {
     return bs.compare(s) < 0;
 }
@@ -2275,7 +2235,7 @@ operator>(const char* s, const BasicString<AllocatorT>& bs)
  * @return True if s is lexicographically not greater than bs, false otherwise.
  */
 template<class AllocatorT> bool
-operator<=(const char* s, const BasicString<AllocatorT>& bs)
+operator<=(const char* s, const BasicString<AllocatorT>& bs) noexcept
 {
     return bs.compare(s) >= 0;
 }
@@ -2289,7 +2249,7 @@ operator<=(const char* s, const BasicString<AllocatorT>& bs)
  * @return True if s is lexicographically not lesser than bs, false otherwise.
  */
 template<class AllocatorT> bool
-operator>=(const char* s, const BasicString<AllocatorT>& bs)
+operator>=(const char* s, const BasicString<AllocatorT>& bs) noexcept
 {
     return bs.compare(s) <= 0;
 }
