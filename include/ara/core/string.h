@@ -2256,6 +2256,8 @@ using String = BasicString<>;
  * @param lhs an instance of BasicString to swap.
  * @param rhs an instance of BasicString to swap.
  *
+ * @tparam Allocator an allocator type.
+ *
  * @req {SWS_CORE_03296}
  */
 template<typename Allocator> void
@@ -2269,6 +2271,8 @@ swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs) noexcept
  *
  * @param s null-terminated const char string to compare.
  * @param bs BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
  *
  * @return True if s is lexicographically lesser than bs, false otherwise.
  */
@@ -2284,6 +2288,8 @@ operator<(const char* s, const BasicString<AllocatorT>& bs) noexcept
  * @param s null-terminated const char string to compare.
  * @param bs BasicString instance to compare.
  *
+ * @tparam AllocatorT an allocator type.
+ *
  * @return True if s is lexicographically greater than bs, false otherwise.
  */
 template<class AllocatorT> bool
@@ -2297,6 +2303,8 @@ operator>(const char* s, const BasicString<AllocatorT>& bs) noexcept
  *
  * @param s null-terminated const char string to compare.
  * @param bs BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
  *
  * @return True if s is lexicographically not greater than bs, false otherwise.
  */
@@ -2312,6 +2320,8 @@ operator<=(const char* s, const BasicString<AllocatorT>& bs) noexcept
  * @param s null-terminated const char string to compare.
  * @param bs BasicString instance to compare.
  *
+ * @tparam AllocatorT an allocator type.
+ *
  * @return True if s is lexicographically not lesser than bs, false otherwise.
  */
 template<class AllocatorT> bool
@@ -2325,6 +2335,8 @@ operator>=(const char* s, const BasicString<AllocatorT>& bs) noexcept
  *
  * @param lhs the string to concatenate.
  * @param rhs the string to concatenate.
+ *
+ * @tparam AllocatorT an allocator type.
  *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
@@ -2344,6 +2356,8 @@ operator+(const BasicString<AllocatorT>& lhs,
  * @param lhs the string to concatenate.
  * @param rhs the string to concatenate.
  *
+ * @tparam AllocatorT an allocator type.
+ *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
  */
@@ -2360,6 +2374,8 @@ operator+(BasicString<AllocatorT>&& lhs, const BasicString<AllocatorT>& rhs)
  *
  * @param lhs the string to concatenate.
  * @param rhs the string to concatenate.
+ *
+ * @tparam AllocatorT an allocator type.
  *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
@@ -2378,6 +2394,8 @@ operator+(const BasicString<AllocatorT>& lhs, BasicString<AllocatorT>&& rhs)
  * @param lhs the string to concatenate.
  * @param rhs the string to concatenate.
  *
+ * @tparam AllocatorT an allocator type.
+ *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
  */
@@ -2394,6 +2412,8 @@ operator+(BasicString<AllocatorT>&& lhs, BasicString<AllocatorT>&& rhs)
  *
  * @param lhs the null-terminated const char* string to concatenate.
  * @param rhs the string to concatenate.
+ *
+ * @tparam AllocatorT an allocator type.
  *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
@@ -2412,6 +2432,8 @@ operator+(const char* lhs, const BasicString<AllocatorT>& rhs)
  * @param lhs the null-terminated const char* string to concatenate.
  * @param rhs the string to concatenate.
  *
+ * @tparam AllocatorT an allocator type.
+ *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
  */
@@ -2427,6 +2449,8 @@ operator+(const char* lhs, BasicString<AllocatorT>&& rhs)
  *
  * @param lhs the character to put at the beginning.
  * @param rhs the string to concatenate.
+ *
+ * @tparam AllocatorT an allocator type.
  *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
@@ -2446,6 +2470,8 @@ operator+(char lhs, const BasicString<AllocatorT>& rhs)
  * @param lhs the character to put at the beginning.
  * @param rhs the string to concatenate.
  *
+ * @tparam AllocatorT an allocator type.
+ *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
  */
@@ -2462,6 +2488,8 @@ operator+(char lhs, BasicString<AllocatorT>&& rhs)
  *
  * @param lhs the string to concatenate.
  * @param rhs the null-terminated const char* string to concatenate.
+ *
+ * @tparam AllocatorT an allocator type.
  *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
@@ -2480,6 +2508,8 @@ operator+(const BasicString<AllocatorT>& lhs, const char* rhs)
  * @param lhs the string to concatenate.
  * @param rhs the null-terminated const char* string to concatenate.
  *
+ * @tparam AllocatorT an allocator type.
+ *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
  */
@@ -2497,6 +2527,8 @@ operator+(BasicString<AllocatorT>&& lhs, const char* rhs)
  * @param lhs the string to concatenate.
  * @param rhs the null-terminated const char* string to concatenate.
  *
+ * @tparam AllocatorT an allocator type.
+ *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
  */
@@ -2513,6 +2545,8 @@ operator+(const BasicString<AllocatorT>& lhs, char rhs)
  *
  * @param lhs the string to concatenate.
  * @param rhs the null-terminated const char* string to concatenate.
+ *
+ * @tparam AllocatorT an allocator type.
  *
  * @return An instance of BasicString containing concatenated content of the
  * given strings.
