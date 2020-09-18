@@ -1777,7 +1777,9 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     template<typename T,
              typename = typename std::
                enable_if<std::is_convertible<T, StringView>::value, void>::type>
-    BasicString(T const& t, size_type pos, size_type n) : _data(t, pos, n)
+    BasicString(T const& t, size_type pos, size_type n)
+      : _data(static_cast<StringView>(t).substr(pos, n).data(),
+              static_cast<StringView>(t).substr(pos, n).length())
     {}
 
     /**
@@ -1822,10 +1824,13 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @req {SWS_CORE_03306}
      */
-    template<typename T> BasicString&
-    assign(T const& t, size_type pos, size_type n = npos)
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString& assign(T const& t, size_type pos, size_type n = npos)
     {
-        _data.assign(t, pos, n);
+        StringView sv = static_cast<StringView>(t).substr(pos, n);
+        _data.assign(sv.data(), sv.length());
         return *this;
     }
 
@@ -1840,7 +1845,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     BasicString& operator+=(StringView sv)
     {
-        _data += sv;
+        _data.append(sv.data(), sv.length());
         return *this;
     }
 
@@ -1855,7 +1860,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     BasicString& append(StringView sv)
     {
-        _data.append(sv);
+        _data.append(sv.data(), sv.length());
         return *this;
     }
 
@@ -1877,7 +1882,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                enable_if<std::is_convertible<T, StringView>::value, void>::type>
     BasicString& append(T const& t, size_type pos, size_type n = npos)
     {
-        _data.append(t, pos, n);
+        StringView sv = static_cast<StringView>(t).substr(pos, n);
+        _data.append(sv.data(), sv.length());
         return *this;
     }
 
@@ -1894,7 +1900,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     BasicString& insert(size_type pos, StringView sv)
     {
-        _data.insert(pos, sv);
+        _data.insert(pos, sv.data(), sv.length());
         return *this;
     }
 
@@ -1918,7 +1924,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString&
     insert(size_type pos1, T const& t, size_type pos2, size_type n = npos)
     {
-        _data.insert(pos1, t, pos2, n);
+        StringView sv = static_cast<StringView>(t).substr(pos2, n);
+        _data.insert(pos1, sv.data(), sv.length());
         return *this;
     }
 
@@ -1935,7 +1942,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     BasicString& replace(size_type pos1, size_type n1, StringView sv)
     {
-        _data.replace(pos1, n1, sv);
+        _data.replace(pos1, n1, sv.data(), sv.length());
         return *this;
     }
 
@@ -1963,7 +1970,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                          size_type pos2,
                          size_type n2 = npos)
     {
-        _data.replace(pos1, n1, t, pos2, n2);
+        StringView sv = static_cast<StringView>(t).substr(pos2, n2);
+        _data.replace(pos1, n1, sv.data(), sv.length());
         return *this;
     }
 
@@ -1980,7 +1988,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     BasicString& replace(const_iterator i1, const_iterator i2, StringView sv)
     {
-        _data.replace(i1, i2, sv);
+        _data.replace(i1, i2, sv.data(), sv.length());
         return *this;
     }
 
@@ -1997,7 +2005,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     size_type find(StringView sv, size_type pos = 0) const noexcept
     {
-        return _data.find(sv, pos);
+        return static_cast<StringView>(_data).find(sv, pos);
     }
 
     /**
@@ -2013,7 +2021,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     size_type rfind(StringView sv, size_type pos = npos) const noexcept
     {
-        return _data.rfind(sv, pos);
+        return static_cast<StringView>(_data).rfind(sv, pos);
     }
 
     /**
@@ -2030,7 +2038,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     size_type find_first_of(StringView sv, size_type pos = 0) const noexcept
     {
-        return _data.find_first_of(sv, pos);
+        return static_cast<StringView>(_data).find_first_of(sv, pos);
     }
 
     /**
@@ -2047,7 +2055,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     size_type find_last_of(StringView sv, size_type pos = npos) const noexcept
     {
-        return _data.find_last_of(sv, pos);
+        return static_cast<StringView>(_data).find_last_of(sv, pos);
     }
 
     /**
@@ -2064,7 +2072,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     size_type find_first_not_of(StringView sv, size_type pos = 0) const noexcept
     {
-        return _data.find_first_not_of(sv, pos);
+        return static_cast<StringView>(_data).find_first_not_of(sv, pos);
     }
 
     /**
@@ -2082,7 +2090,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     size_type
     find_last_not_of(StringView sv, size_type pos = npos) const noexcept
     {
-        return _data.find_last_not_of(sv, pos);
+        return static_cast<StringView>(_data).find_last_not_of(sv, pos);
     }
 
     /**
@@ -2098,7 +2106,10 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @req {SWS_CORE_03321}
      */
-    int compare(StringView sv) const noexcept { return _data.compare(sv); }
+    int compare(StringView sv) const noexcept
+    {
+        return static_cast<StringView>(_data).compare(sv);
+    }
 
     /**
      * @brief Lexicographically compares a substring with a content of the
@@ -2117,7 +2128,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     int compare(size_type pos1, size_type n1, StringView sv) const
     {
-        return _data.compare(pos1, n1, sv);
+        return static_cast<StringView>(_data).compare(pos1, n1, sv);
     }
 
     /**
@@ -2146,7 +2157,11 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                 size_type pos2,
                 size_type n2 = npos) const
     {
-        return _data.compare(pos1, n1, t, pos2, n2);
+        StringView sv = static_cast<StringView>(t);
+
+        // FIXME: replace this after ara::core::StringView reimplementation
+        return static_cast<StringView>(_data).substr(pos1, n1).compare(
+          sv.substr(pos2, n2));
     }
 
     // comparision operators from STL
