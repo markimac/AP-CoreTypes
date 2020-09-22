@@ -30,7 +30,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     string_t _data;
 
  public:
-    // types from STL
+    // types
     using traits_type    = typename string_t::traits_type;
     using value_type     = typename traits_type::char_type;
     using allocator_type = AllocatorT;
@@ -52,7 +52,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
 
     static constexpr size_type npos = string_t::npos;
 
-    // constructors from STL
+    // constructors
+
     /**
      * @brief Constructs an empty string with optionally given allocator.
      */
@@ -166,13 +167,42 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     {}
 
     /**
+     * @brief Constructs a string using a StringView object as source of the
+     * data.
+     *
+     * @param sv the StringView object used as source of the data.
+     *
+     * @req {SWS_CORE_03302}
+     */
+    explicit BasicString(StringView sv) : _data(sv.data(), sv.length()) {}
+
+    /**
+     * @brief Constructs a string using substring from an object, that is
+     * implicitly convertible to StringView.
+     *
+     * @param t the object being the source of a data.
+     * @param pos position of first character of the substring.
+     * @param n the length of the substring.
+     *
+     * @req {SWS_CORE_03303}
+     */
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString(T const& t, size_type pos, size_type n)
+      : _data(static_cast<StringView>(t).substr(pos, n).data(),
+              static_cast<StringView>(t).substr(pos, n).length())
+    {}
+
+    // assignment operator=
+
+    /**
      * @brief Copy assignment operator.
      *
      * @param str another string to use as data source.
      *
      * @return reference to string instance.
      */
-    // assignment operator= from STL
     BasicString& operator=(const BasicString& str)
     {
         _data = str._data;
@@ -236,7 +266,23 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
         return *this;
     }
 
-    // iterator methods from STL
+    /**
+     * @brief Replaces the string with contents of the StringView.
+     *
+     * @param sv the StringView used as source of a data.
+     *
+     * @return the instance of the string.
+     *
+     * @req {SWS_CORE_03304}
+     */
+    BasicString& operator=(StringView sv)
+    {
+        _data.assign(sv.data(), sv.length());
+
+        return *this;
+    }
+
+    // iterator methods
 
     /**
      * @brief Gets iterator pointing at begin of the string.
@@ -334,7 +380,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     const_reverse_iterator crend() const noexcept { return _data.crend(); }
 
-    // capacity methods from STL
+    // capacity methods
+
     /**
      * @brief Gets length of the string.
      *
@@ -403,7 +450,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     bool empty() const noexcept { return _data.empty(); }
 
-    // element access methods from STL
+    // element access methods
 
     /**
      * @brief Access specified element.
@@ -472,7 +519,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     char& back() noexcept { return _data.back(); }
 
-    // modifier methods from STL
+    // modifier methods
 
     /**
      * @brief Appends the string with given string as source of data.
@@ -527,6 +574,22 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& operator+=(std::initializer_list<char> i)
     {
         _data += i;
+
+        return *this;
+    }
+
+    /**
+     * @brief Appends the string with given StringView as data source.
+     *
+     * @param sv the StringView instance used as data source.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03307}
+     */
+    BasicString& operator+=(StringView sv)
+    {
+        _data.append(sv.data(), sv.length());
 
         return *this;
     }
@@ -602,6 +665,46 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& append(size_type n, char c)
     {
         _data.append(n, c);
+
+        return *this;
+    }
+
+    /**
+     * @brief Appends the string with given StringView as data source.
+     *
+     * @param sv the StringView instance used as data source.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03308}
+     */
+    BasicString& append(StringView sv)
+    {
+        _data.append(sv.data(), sv.length());
+
+        return *this;
+    }
+
+    /**
+     * @brief Appends the string with object convertible to StringView as data
+     * source.
+     *
+     * @param t the instance of object convertible to StringView used as data
+     * source.
+     * @param pos the begining of the substring to be appended.
+     * @param n the length of the substring.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03309}
+     */
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString& append(T const& t, size_type pos, size_type n = npos)
+    {
+        StringView sv = static_cast<StringView>(t).substr(pos, n);
+        _data.append(sv.data(), sv.length());
 
         return *this;
     }
@@ -713,6 +816,45 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString& assign(std::initializer_list<char> i)
     {
         _data.assign(i);
+
+        return *this;
+    }
+
+    /**
+     * @brief Replaces the string with contents of the StringView.
+     *
+     * @param sv the StringView used as source of a data.
+     *
+     * @return the instance of the string.
+     *
+     * @req {SWS_CORE_03305}
+     */
+    BasicString& assign(StringView sv)
+    {
+        _data.assign(sv.data(), sv.length());
+
+        return *this;
+    }
+
+    /**
+     * @brief Replaces the string using substring from an object, that is
+     * implicitly convertible to StringView.
+     *
+     * @param t the object being the source of a data.
+     * @param pos position of first character of the substring.
+     * @param n the length of the substring.
+     *
+     * @return the instance of the string.
+     *
+     * @req {SWS_CORE_03306}
+     */
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString& assign(T const& t, size_type pos, size_type n = npos)
+    {
+        StringView sv = static_cast<StringView>(t).substr(pos, n);
+        _data.assign(sv.data(), sv.length());
 
         return *this;
     }
@@ -850,6 +992,50 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     iterator insert(const_iterator p, std::initializer_list<char> i)
     {
         return _data.insert(p, i);
+    }
+
+    /**
+     * @brief Inserts the substring at specified place using the StringView as
+     * data source.
+     *
+     * @param pos the position where to insert a StringView.
+     * @param sv the StringView used as data source.
+     *
+     * @returns the instance of string.
+     *
+     * @req {SWS_CORE_03310}
+     */
+    BasicString& insert(size_type pos, StringView sv)
+    {
+        _data.insert(pos, sv.data(), sv.length());
+
+        return *this;
+    }
+
+    /**
+     * @brief Inserts at specified place a substring from an object convertible
+     * to StringView as data source.
+     *
+     * @param pos1 the positon where to insert a StringView.
+     * @param t the instance of object convertible to StringView used as data
+     * source.
+     * @param pos2 the begin of the substring to be inserted.
+     * @param n the end of the substring to be inserted.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03311}
+     */
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString&
+    insert(size_type pos1, T const& t, size_type pos2, size_type n = npos)
+    {
+        StringView sv = static_cast<StringView>(t).substr(pos2, n);
+        _data.insert(pos1, sv.data(), sv.length());
+
+        return *this;
     }
 
     /**
@@ -1113,6 +1299,72 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     }
 
     /**
+     * @brief Replaces a substring with the StringView as data source.
+     *
+     * @param pos1 start of the substring that is going to be replaced.
+     * @param n length of the substring that is going to be replaced.
+     * @param sv the StringView used as data source.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03312}
+     */
+    BasicString& replace(size_type pos1, size_type n1, StringView sv)
+    {
+        _data.replace(pos1, n1, sv.data(), sv.length());
+
+        return *this;
+    }
+
+    /**
+     * @brief Replaces at specified place a substring from an object convertible
+     * to StringView as data source.
+     *
+     * @param pos1 the begin of the replaced substring.
+     * @param n1 the length of the replaced substring.
+     * @param t the instance of object convertible to StringView used as data
+     * source.
+     * @param pos2 the begin of the substring to be inserted.
+     * @param n2 the length of the substring to be inserted.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03313}
+     */
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    BasicString& replace(size_type pos1,
+                         size_type n1,
+                         T const&  t,
+                         size_type pos2,
+                         size_type n2 = npos)
+    {
+        StringView sv = static_cast<StringView>(t).substr(pos2, n2);
+        _data.replace(pos1, n1, sv.data(), sv.length());
+
+        return *this;
+    }
+
+    /**
+     * @brief Replaces a substring using StringView instance as data source.
+     *
+     * @param i1 the iterator pointing to the begin of the substring.
+     * @param i2 the iterator pointing to the end of the substring.
+     * @param sv the StringView used as data source.
+     *
+     * @return the instance of string.
+     *
+     * @req {SWS_CORE_03314}
+     */
+    BasicString& replace(const_iterator i1, const_iterator i2, StringView sv)
+    {
+        _data.replace(i1, i2, sv.data(), sv.length());
+
+        return *this;
+    }
+
+    /**
      * @brief Copies a substring into specified buffer.
      *
      * @param s the buffer.
@@ -1133,7 +1385,706 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     void swap(BasicString& str) noexcept { _data.swap(str._data); }
 
-    // comparision operators from STL
+    // string operations methods
+
+    /**
+     * @brief Returns a pointer to a null-terminated const char array with data
+     * equivalent to those in the string.
+     *
+     * @return the pointer to the underlying character storage.
+     */
+    const char* c_str() const noexcept { return _data.c_str(); }
+
+    /**
+     * @brief Returns a pointer to the underlying character storage array.
+     *
+     * @return the pointer to the character storing array.
+     */
+    const char* data() const noexcept { return _data.data(); }
+
+    /**
+     * @brief Returns the allocator associated with the string.
+     *
+     * @return The associated allocator.
+     */
+    allocator_type get_allocator() const noexcept
+    {
+        return _data.get_allocator();
+    }
+
+    /**
+     * @brief Finds the first substring equal to the given character sequence.
+     *
+     * @param str the string to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
+    size_type find(const BasicString& str, size_type pos = 0) const noexcept
+    {
+        return _data.find(str._data, pos);
+    }
+
+    /**
+     * @brief Finds the first substring equal to the given character sequence.
+     *
+     * @param str the string to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
+    size_type find(const char* s, size_type pos, size_type n) const noexcept
+    {
+        return _data.find(s, pos, n);
+    }
+
+    /**
+     * @brief Finds the first substring equal to the given character sequence.
+     *
+     * @param str the null-terminated const char string to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
+    size_type find(const char* s, size_type pos = 0) const noexcept
+    {
+        return _data.find(s, pos);
+    }
+
+    /**
+     * @brief Finds the first substring equal to the given character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
+    size_type find(char c, size_type pos = 0) const noexcept
+    {
+        return _data.find(c, pos);
+    }
+
+    /**
+     * @brief Finds the first occurence of StringView in string.
+     *
+     * @param sv the StringView instance used as a substring being looked for.
+     * @param pos the assumed begin of the string.
+     *
+     * @return the position of the first character of the found substring or
+     * BasicString::npos if no such substring is found.
+     *
+     * @req {SWS_CORE_03315}
+     */
+    size_type find(StringView sv, size_type pos = 0) const noexcept
+    {
+        return static_cast<StringView>(_data).find(sv, pos);
+    }
+
+    /**
+     * @brief Finds the last substring equal to the given character sequence.
+     *
+     * @param str the string to search for.
+     * @param pos the position at which to end the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
+    size_type rfind(const BasicString& str, size_type pos = npos) const noexcept
+    {
+        return _data.rfind(str._data, pos);
+    }
+
+    /**
+     * @brief Finds the last substring equal to the given character sequence.
+     *
+     * @param str the string to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
+    size_type rfind(const char* s, size_type pos, size_type n) const noexcept
+    {
+        return _data.rfind(s, pos, n);
+    }
+
+    /**
+     * @brief Finds the last substring equal to the given character sequence.
+     *
+     * @param str the null-terminated const char string to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
+    size_type rfind(const char* s, size_type pos = npos) const noexcept
+    {
+        return _data.rfind(s, pos);
+    }
+
+    /**
+     * @brief Finds the last substring equal to the given character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the first character of the substring being looked
+     * for or BasicString::npos if not found.
+     */
+    size_type rfind(char c, size_type pos = npos) const noexcept
+    {
+        return _data.rfind(c, pos);
+    }
+
+    /**
+     * @brief Finds the last occurence of StringView in string.
+     *
+     * @param sv the StringView instance used as a substring being looked for.
+     * @param pos the assumed end of the string.
+     *
+     * @return the position of the first character of the found substring or
+     * BasicString::npos if no such substring is found.
+     *
+     * @req {SWS_CORE_03316}
+     */
+    size_type rfind(StringView sv, size_type pos = npos) const noexcept
+    {
+        return static_cast<StringView>(_data).rfind(sv, pos);
+    }
+
+    /**
+     * @brief Finds the first character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type
+    find_first_of(const BasicString& str, size_type pos = 0) const noexcept
+    {
+        return _data.find_first_of(str._data, pos);
+    }
+
+    /**
+     * @brief Finds the first character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type
+    find_first_of(const char* s, size_type pos, size_type n) const noexcept
+    {
+        return _data.find_first_of(s, pos, n);
+    }
+
+    /**
+     * @brief Finds the first character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type find_first_of(const char* s, size_type pos = 0) const noexcept
+    {
+        return _data.find_first_of(s, pos);
+    }
+
+    /**
+     * @brief Finds the first character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type find_first_of(char c, size_type pos = 0) const noexcept
+    {
+        return _data.find_first_of(c, pos);
+    }
+
+    /**
+     * @brief Finds the first character equal to one of the characters occurring
+     * in the specified string.
+     *
+     * @param sv the StringView instance used as source of data.
+     * @param pos the assumed begin of the string.
+     *
+     * @return the position of the found character or BasicString::npos if no
+     * such character is found.
+     *
+     * @req {SWS_CORE_03317}
+     */
+    size_type find_first_of(StringView sv, size_type pos = 0) const noexcept
+    {
+        return static_cast<StringView>(_data).find_first_of(sv, pos);
+    }
+
+    /**
+     * @brief Finds the last character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type
+    find_last_of(const BasicString& str, size_type pos = npos) const noexcept
+    {
+        return _data.find_last_of(str._data, pos);
+    }
+
+    /**
+     * @brief Finds the last character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type
+    find_last_of(const char* s, size_type pos, size_type n) const noexcept
+    {
+        return _data.find_last_of(s, pos, n);
+    }
+
+    /**
+     * @brief Finds the last character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type find_last_of(const char* s, size_type pos = npos) const noexcept
+    {
+        return _data.find_last_of(s, pos);
+    }
+
+    /**
+     * @brief Finds the last character equal to one of the characters in given
+     * character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type find_last_of(char c, size_type pos = npos) const noexcept
+    {
+        return _data.find_last_of(c, pos);
+    }
+
+    /**
+     * @brief Finds the first character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type
+    find_first_not_of(const BasicString& str, size_type pos = 0) const noexcept
+    {
+        return _data.find_first_not_of(str._data, pos);
+    }
+
+    /**
+     * @brief Finds the first character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type
+    find_first_not_of(const char* s, size_type pos, size_type n) const noexcept
+    {
+        return _data.find_first_not_of(s, pos, n);
+    }
+
+    /**
+     * @brief Finds the first character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type find_first_not_of(const char* s, size_type pos = 0) const noexcept
+    {
+        return _data.find_first_not_of(s, pos);
+    }
+
+    /**
+     * @brief Finds the first character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type find_first_not_of(char c, size_type pos = 0) const noexcept
+    {
+        return _data.find_first_not_of(c, pos);
+    }
+
+    /**
+     * @brief Finds the first character not equal to any of the characters
+     * occurring in the specified string.
+     *
+     * @param sv the StringView instance used as source of data.
+     * @param pos the assumed begin of the string.
+     *
+     * @return the position of the found character or BasicString::npos if no
+     * such character is found.
+     *
+     * @req {SWS_CORE_03319}
+     */
+    size_type find_first_not_of(StringView sv, size_type pos = 0) const noexcept
+    {
+        return static_cast<StringView>(_data).find_first_not_of(sv, pos);
+    }
+
+    /**
+     * @brief Finds the last character equal to one of the characters occurring
+     * in the specified string.
+     *
+     * @param sv the StringView instance used as source of data.
+     * @param pos the assumed end of the string.
+     *
+     * @return the position of the found character or BasicString::npos if no
+     * such character is found.
+     *
+     * @req {SWS_CORE_03318}
+     */
+    size_type find_last_of(StringView sv, size_type pos = npos) const noexcept
+    {
+        return static_cast<StringView>(_data).find_last_of(sv, pos);
+    }
+
+    /**
+     * @brief Finds the last character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type find_last_not_of(const BasicString& str,
+                               size_type          pos = npos) const noexcept
+    {
+        return _data.find_last_not_of(str._data, pos);
+    }
+
+    /**
+     * @brief Finds the last character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     * @param n the length of the string.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type
+    find_last_not_of(const char* s, size_type pos, size_type n) const noexcept
+    {
+        return _data.find_last_not_of(s, pos, n);
+    }
+
+    /**
+     * @brief Finds the last character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param str a string containing characters to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type
+    find_last_not_of(const char* s, size_type pos = npos) const noexcept
+    {
+        return _data.find_last_not_of(s, pos);
+    }
+
+    /**
+     * @brief Finds the last character equal to none of the characters in given
+     * character sequence.
+     *
+     * @param c the character to search for.
+     * @param pos the position at which to start the search.
+     *
+     * @return a position of the found character or BasicString::npos if not
+     * found.
+     */
+    size_type find_last_not_of(char c, size_type pos = npos) const noexcept
+    {
+        return _data.find_last_not_of(c, pos);
+    }
+
+    /**
+     * @brief Creates a substring from the string.
+     *
+     * @param pos the position of the first substring's character.
+     * @param n the length of the substring.
+     *
+     * @return an instance of the substring.
+     */
+    BasicString substr(size_type pos = 0, size_type n = npos) const
+    {
+        BasicString retval(_data.get_allocator());
+        retval._data = std::move(_data.substr(pos, n));
+
+        return retval;
+    }
+
+    /**
+     * @brief Finds the last character not equal to any of the characters
+     * occurring in the specified string.
+     *
+     * @param sv the StringView instance used as source of data.
+     * @param pos the assumed begin of the string.
+     *
+     * @return the position of the found character or BasicString::npos if no
+     * such character is found.
+     *
+     * @req {SWS_CORE_03320}
+     */
+    size_type
+    find_last_not_of(StringView sv, size_type pos = npos) const noexcept
+    {
+        return static_cast<StringView>(_data).find_last_not_of(sv, pos);
+    }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified one.
+     *
+     * @param str the string instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified string, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the string.
+     */
+    int compare(const BasicString& str) const noexcept
+    {
+        return _data.compare(str._data);
+    }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified substring.
+     *
+     * @param pos1 the position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param str the string instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified substring, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the substring.
+     */
+    int compare(size_type pos1, size_type n1, const BasicString& str) const
+    {
+        return _data.compare(pos1, n1, str._data);
+    }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified substring.
+     *
+     * @param pos1 the position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param str the string instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified substring, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the substring.
+     */
+    int compare(size_type          pos1,
+                size_type          n1,
+                const BasicString& str,
+                size_type          pos2,
+                size_type          n2) const
+    {
+        return _data.compare(pos1, n1, str._data, pos2, n2);
+    }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified null-terminated const char* string.
+     *
+     * @param s the null-terminated const char* string instance being compared
+     * with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified string, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the string.
+     */
+    int compare(const char* s) const noexcept { return _data.compare(s); }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified substring.
+     *
+     * @param pos1 the position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param str the string instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified substring, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the substring.
+     */
+    int compare(size_type pos1, size_type n1, const char* s) const
+    {
+        return _data.compare(pos1, n1, s);
+    }
+
+    /**
+     * @brief Lexicographically compares the content of the string with the
+     * specified substring.
+     *
+     * @param pos1 the position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param str the string instance being compared with.
+     * @param n2 the length of the string being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified substring, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the substring.
+     */
+    int compare(size_type pos1, size_type n1, const char* s, size_type n2) const
+    {
+        return _data.compare(pos1, n1, s, n2);
+    }
+
+    /**
+     * @brief Lexicographically compares the content of the string with a
+     * content of the StringView.
+     *
+     * @param sv the StringView instace being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified StringView, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the StringView.
+     *
+     * @req {SWS_CORE_03321}
+     */
+    int compare(StringView sv) const noexcept
+    {
+        return static_cast<StringView>(_data).compare(sv);
+    }
+
+    /**
+     * @brief Lexicographically compares a substring with a content of the
+     * StringView instance.
+     *
+     * @param pos1 position of the first character of the substring.
+     * @param n1 the length of the substring.
+     * @param sv the StringView instance being compared with.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified StringView, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the StringView.
+     *
+     * @req {SWS_CORE_03322}
+     */
+    int compare(size_type pos1, size_type n1, StringView sv) const
+    {
+        return static_cast<StringView>(_data).compare(pos1, n1, sv);
+    }
+
+    /**
+     * @brief Lexicographically compares a substring with a content of an object
+     * convertible to StringView.
+     *
+     * @param pos1 the begin the compared substring.
+     * @param n1 the length of the compared substring.
+     * @param t the instance of object convertible to StringView.
+     * @param pos2 the begin of the substring made of a given object.
+     * @param n2 the length of the substring made of a given object.
+     *
+     * @return negative value if the BasicString's value appears before the
+     * character sequence in the specified StringView, zero when identical,
+     * positive value if the BasicString's value appears after the character
+     * sequence in the StringView.
+     *
+     * @req {SWS_CORE_03323}
+     */
+    template<typename T,
+             typename = typename std::
+               enable_if<std::is_convertible<T, StringView>::value, void>::type>
+    int compare(size_type pos1,
+                size_type n1,
+                T const&  t,
+                size_type pos2,
+                size_type n2 = npos) const
+    {
+        StringView sv = static_cast<StringView>(t);
+
+        // FIXME: replace this after ara::core::StringView reimplementation
+        return static_cast<StringView>(_data).substr(pos1, n1).compare(
+          sv.substr(pos2, n2));
+    }
+
+    /**
+     * @brief Converts the string to the StringView instance.
+     *
+     * @return the instance of StringView.
+     *
+     * @req {SWS_CORE_03301}
+     */
+    operator StringView() const noexcept { return StringView(data(), size()); }
+
+    // comparision operators
+
     /**
      * @brief Checks if two strings are identical.
      *
@@ -1268,954 +2219,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      */
     bool operator>=(const char* s) const noexcept { return _data >= s; }
 
-    // string operations methods from STL
-
-    /**
-     * @brief Returns a pointer to a null-terminated const char array with data
-     * equivalent to those in the string.
-     *
-     * @return the pointer to the underlying character storage.
-     */
-    const char* c_str() const noexcept { return _data.c_str(); }
-
-    /**
-     * @brief Returns a pointer to the underlying character storage array.
-     *
-     * @return the pointer to the character storing array.
-     */
-    const char* data() const noexcept { return _data.data(); }
-
-    /**
-     * @brief Returns the allocator associated with the string.
-     *
-     * @return The associated allocator.
-     */
-    allocator_type get_allocator() const noexcept
-    {
-        return _data.get_allocator();
-    }
-
-    /**
-     * @brief Finds the first substring equal to the given character sequence.
-     *
-     * @param str the string to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the first character of the substring being looked
-     * for or BasicString::npos if not found.
-     */
-    size_type find(const BasicString& str, size_type pos = 0) const noexcept
-    {
-        return _data.find(str._data, pos);
-    }
-
-    /**
-     * @brief Finds the first substring equal to the given character sequence.
-     *
-     * @param str the string to search for.
-     * @param pos the position at which to start the search.
-     * @param n the length of the string.
-     *
-     * @return a position of the first character of the substring being looked
-     * for or BasicString::npos if not found.
-     */
-    size_type find(const char* s, size_type pos, size_type n) const noexcept
-    {
-        return _data.find(s, pos, n);
-    }
-
-    /**
-     * @brief Finds the first substring equal to the given character sequence.
-     *
-     * @param str the null-terminated const char string to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the first character of the substring being looked
-     * for or BasicString::npos if not found.
-     */
-    size_type find(const char* s, size_type pos = 0) const noexcept
-    {
-        return _data.find(s, pos);
-    }
-
-    /**
-     * @brief Finds the first substring equal to the given character sequence.
-     *
-     * @param c the character to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the first character of the substring being looked
-     * for or BasicString::npos if not found.
-     */
-    size_type find(char c, size_type pos = 0) const noexcept
-    {
-        return _data.find(c, pos);
-    }
-
-    /**
-     * @brief Finds the last substring equal to the given character sequence.
-     *
-     * @param str the string to search for.
-     * @param pos the position at which to end the search.
-     *
-     * @return a position of the first character of the substring being looked
-     * for or BasicString::npos if not found.
-     */
-    size_type rfind(const BasicString& str, size_type pos = npos) const noexcept
-    {
-        return _data.rfind(str._data, pos);
-    }
-
-    /**
-     * @brief Finds the last substring equal to the given character sequence.
-     *
-     * @param str the string to search for.
-     * @param pos the position at which to start the search.
-     * @param n the length of the string.
-     *
-     * @return a position of the first character of the substring being looked
-     * for or BasicString::npos if not found.
-     */
-    size_type rfind(const char* s, size_type pos, size_type n) const noexcept
-    {
-        return _data.rfind(s, pos, n);
-    }
-
-    /**
-     * @brief Finds the last substring equal to the given character sequence.
-     *
-     * @param str the null-terminated const char string to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the first character of the substring being looked
-     * for or BasicString::npos if not found.
-     */
-    size_type rfind(const char* s, size_type pos = npos) const noexcept
-    {
-        return _data.rfind(s, pos);
-    }
-
-    /**
-     * @brief Finds the last substring equal to the given character sequence.
-     *
-     * @param c the character to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the first character of the substring being looked
-     * for or BasicString::npos if not found.
-     */
-    size_type rfind(char c, size_type pos = npos) const noexcept
-    {
-        return _data.rfind(c, pos);
-    }
-
-    /**
-     * @brief Finds the first character equal to one of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type
-    find_first_of(const BasicString& str, size_type pos = 0) const noexcept
-    {
-        return _data.find_first_of(str._data, pos);
-    }
-
-    /**
-     * @brief Finds the first character equal to one of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     * @param n the length of the string.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type
-    find_first_of(const char* s, size_type pos, size_type n) const noexcept
-    {
-        return _data.find_first_of(s, pos, n);
-    }
-
-    /**
-     * @brief Finds the first character equal to one of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type find_first_of(const char* s, size_type pos = 0) const noexcept
-    {
-        return _data.find_first_of(s, pos);
-    }
-
-    /**
-     * @brief Finds the first character equal to one of the characters in given
-     * character sequence.
-     *
-     * @param c the character to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type find_first_of(char c, size_type pos = 0) const noexcept
-    {
-        return _data.find_first_of(c, pos);
-    }
-
-    /**
-     * @brief Finds the last character equal to one of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type
-    find_last_of(const BasicString& str, size_type pos = npos) const noexcept
-    {
-        return _data.find_last_of(str._data, pos);
-    }
-
-    /**
-     * @brief Finds the last character equal to one of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     * @param n the length of the string.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type
-    find_last_of(const char* s, size_type pos, size_type n) const noexcept
-    {
-        return _data.find_last_of(s, pos, n);
-    }
-
-    /**
-     * @brief Finds the last character equal to one of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type find_last_of(const char* s, size_type pos = npos) const noexcept
-    {
-        return _data.find_last_of(s, pos);
-    }
-
-    /**
-     * @brief Finds the last character equal to one of the characters in given
-     * character sequence.
-     *
-     * @param c the character to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type find_last_of(char c, size_type pos = npos) const noexcept
-    {
-        return _data.find_last_of(c, pos);
-    }
-
-    /**
-     * @brief Finds the first character equal to none of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type
-    find_first_not_of(const BasicString& str, size_type pos = 0) const noexcept
-    {
-        return _data.find_first_not_of(str._data, pos);
-    }
-
-    /**
-     * @brief Finds the first character equal to none of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     * @param n the length of the string.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type
-    find_first_not_of(const char* s, size_type pos, size_type n) const noexcept
-    {
-        return _data.find_first_not_of(s, pos, n);
-    }
-
-    /**
-     * @brief Finds the first character equal to none of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type find_first_not_of(const char* s, size_type pos = 0) const noexcept
-    {
-        return _data.find_first_not_of(s, pos);
-    }
-
-    /**
-     * @brief Finds the first character equal to none of the characters in given
-     * character sequence.
-     *
-     * @param c the character to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type find_first_not_of(char c, size_type pos = 0) const noexcept
-    {
-        return _data.find_first_not_of(c, pos);
-    }
-
-    /**
-     * @brief Finds the last character equal to none of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type find_last_not_of(const BasicString& str,
-                               size_type          pos = npos) const noexcept
-    {
-        return _data.find_last_not_of(str._data, pos);
-    }
-
-    /**
-     * @brief Finds the last character equal to none of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     * @param n the length of the string.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type
-    find_last_not_of(const char* s, size_type pos, size_type n) const noexcept
-    {
-        return _data.find_last_not_of(s, pos, n);
-    }
-
-    /**
-     * @brief Finds the last character equal to none of the characters in given
-     * character sequence.
-     *
-     * @param str a string containing characters to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type
-    find_last_not_of(const char* s, size_type pos = npos) const noexcept
-    {
-        return _data.find_last_not_of(s, pos);
-    }
-
-    /**
-     * @brief Finds the last character equal to none of the characters in given
-     * character sequence.
-     *
-     * @param c the character to search for.
-     * @param pos the position at which to start the search.
-     *
-     * @return a position of the found character or BasicString::npos if not
-     * found.
-     */
-    size_type find_last_not_of(char c, size_type pos = npos) const noexcept
-    {
-        return _data.find_last_not_of(c, pos);
-    }
-
-    /**
-     * @brief Creates a substring from the string.
-     *
-     * @param pos the position of the first substring's character.
-     * @param n the length of the substring.
-     *
-     * @return an instance of the substring.
-     */
-    BasicString substr(size_type pos = 0, size_type n = npos) const
-    {
-        BasicString retval(_data.get_allocator());
-        retval._data = std::move(_data.substr(pos, n));
-
-        return retval;
-    }
-
-    /**
-     * @brief Lexicographically compares the content of the string with the
-     * specified one.
-     *
-     * @param str the string instance being compared with.
-     *
-     * @return negative value if the BasicString's value appears before the
-     * character sequence in the specified string, zero when identical,
-     * positive value if the BasicString's value appears after the character
-     * sequence in the string.
-     */
-    int compare(const BasicString& str) const noexcept
-    {
-        return _data.compare(str._data);
-    }
-
-    /**
-     * @brief Lexicographically compares the content of the string with the
-     * specified substring.
-     *
-     * @param pos1 the position of the first character of the substring.
-     * @param n1 the length of the substring.
-     * @param str the string instance being compared with.
-     *
-     * @return negative value if the BasicString's value appears before the
-     * character sequence in the specified substring, zero when identical,
-     * positive value if the BasicString's value appears after the character
-     * sequence in the substring.
-     */
-    int compare(size_type pos1, size_type n1, const BasicString& str) const
-    {
-        return _data.compare(pos1, n1, str._data);
-    }
-
-    /**
-     * @brief Lexicographically compares the content of the string with the
-     * specified substring.
-     *
-     * @param pos1 the position of the first character of the substring.
-     * @param n1 the length of the substring.
-     * @param str the string instance being compared with.
-     *
-     * @return negative value if the BasicString's value appears before the
-     * character sequence in the specified substring, zero when identical,
-     * positive value if the BasicString's value appears after the character
-     * sequence in the substring.
-     */
-    int compare(size_type          pos1,
-                size_type          n1,
-                const BasicString& str,
-                size_type          pos2,
-                size_type          n2) const
-    {
-        return _data.compare(pos1, n1, str._data, pos2, n2);
-    }
-
-    /**
-     * @brief Lexicographically compares the content of the string with the
-     * specified null-terminated const char* string.
-     *
-     * @param s the null-terminated const char* string instance being compared
-     * with.
-     *
-     * @return negative value if the BasicString's value appears before the
-     * character sequence in the specified string, zero when identical,
-     * positive value if the BasicString's value appears after the character
-     * sequence in the string.
-     */
-    int compare(const char* s) const noexcept { return _data.compare(s); }
-
-    /**
-     * @brief Lexicographically compares the content of the string with the
-     * specified substring.
-     *
-     * @param pos1 the position of the first character of the substring.
-     * @param n1 the length of the substring.
-     * @param str the string instance being compared with.
-     *
-     * @return negative value if the BasicString's value appears before the
-     * character sequence in the specified substring, zero when identical,
-     * positive value if the BasicString's value appears after the character
-     * sequence in the substring.
-     */
-    int compare(size_type pos1, size_type n1, const char* s) const
-    {
-        return _data.compare(pos1, n1, s);
-    }
-
-    /**
-     * @brief Lexicographically compares the content of the string with the
-     * specified substring.
-     *
-     * @param pos1 the position of the first character of the substring.
-     * @param n1 the length of the substring.
-     * @param str the string instance being compared with.
-     * @param n2 the length of the string being compared with.
-     *
-     * @return negative value if the BasicString's value appears before the
-     * character sequence in the specified substring, zero when identical,
-     * positive value if the BasicString's value appears after the character
-     * sequence in the substring.
-     */
-    int compare(size_type pos1, size_type n1, const char* s, size_type n2) const
-    {
-        return _data.compare(pos1, n1, s, n2);
-    }
-
-    /**
-     * @brief Converts the string to the StringView instance.
-     *
-     * @return the instance of StringView.
-     *
-     * @req {SWS_CORE_03301}
-     */
-    operator StringView() const noexcept { return StringView(data(), size()); }
-
-    /**
-     * @brief Constructs a string using a StringView object as source of the
-     * data.
-     *
-     * @param sv the StringView object used as source of the data.
-     *
-     * @req {SWS_CORE_03302}
-     */
-    explicit BasicString(StringView sv) : _data(sv.data(), sv.length()) {}
-
-    /**
-     * @brief Constructs a string using substring from an object, that is
-     * implicitly convertible to StringView.
-     *
-     * @param t the object being the source of a data.
-     * @param pos position of first character of the substring.
-     * @param n the length of the substring.
-     *
-     * @req {SWS_CORE_03303}
-     */
-    template<typename T,
-             typename = typename std::
-               enable_if<std::is_convertible<T, StringView>::value, void>::type>
-    BasicString(T const& t, size_type pos, size_type n)
-      : _data(static_cast<StringView>(t).substr(pos, n).data(),
-              static_cast<StringView>(t).substr(pos, n).length())
-    {}
-
-    /**
-     * @brief Replaces the string with contents of the StringView.
-     *
-     * @param sv the StringView used as source of a data.
-     *
-     * @return the instance of the string.
-     *
-     * @req {SWS_CORE_03304}
-     */
-    BasicString& operator=(StringView sv)
-    {
-        _data.assign(sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Replaces the string with contents of the StringView.
-     *
-     * @param sv the StringView used as source of a data.
-     *
-     * @return the instance of the string.
-     *
-     * @req {SWS_CORE_03305}
-     */
-    BasicString& assign(StringView sv)
-    {
-        _data.assign(sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Replaces the string using substring from an object, that is
-     * implicitly convertible to StringView.
-     *
-     * @param t the object being the source of a data.
-     * @param pos position of first character of the substring.
-     * @param n the length of the substring.
-     *
-     * @return the instance of the string.
-     *
-     * @req {SWS_CORE_03306}
-     */
-    template<typename T,
-             typename = typename std::
-               enable_if<std::is_convertible<T, StringView>::value, void>::type>
-    BasicString& assign(T const& t, size_type pos, size_type n = npos)
-    {
-        StringView sv = static_cast<StringView>(t).substr(pos, n);
-        _data.assign(sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Appends the string with given StringView as data source.
-     *
-     * @param sv the StringView instance used as data source.
-     *
-     * @return the instance of string.
-     *
-     * @req {SWS_CORE_03307}
-     */
-    BasicString& operator+=(StringView sv)
-    {
-        _data.append(sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Appends the string with given StringView as data source.
-     *
-     * @param sv the StringView instance used as data source.
-     *
-     * @return the instance of string.
-     *
-     * @req {SWS_CORE_03308}
-     */
-    BasicString& append(StringView sv)
-    {
-        _data.append(sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Appends the string with object convertible to StringView as data
-     * source.
-     *
-     * @param t the instance of object convertible to StringView used as data
-     * source.
-     * @param pos the begining of the substring to be appended.
-     * @param n the length of the substring.
-     *
-     * @return the instance of string.
-     *
-     * @req {SWS_CORE_03309}
-     */
-    template<typename T,
-             typename = typename std::
-               enable_if<std::is_convertible<T, StringView>::value, void>::type>
-    BasicString& append(T const& t, size_type pos, size_type n = npos)
-    {
-        StringView sv = static_cast<StringView>(t).substr(pos, n);
-        _data.append(sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Inserts the substring at specified place using the StringView as
-     * data source.
-     *
-     * @param pos the position where to insert a StringView.
-     * @param sv the StringView used as data source.
-     *
-     * @returns the instance of string.
-     *
-     * @req {SWS_CORE_03310}
-     */
-    BasicString& insert(size_type pos, StringView sv)
-    {
-        _data.insert(pos, sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Inserts at specified place a substring from an object convertible
-     * to StringView as data source.
-     *
-     * @param pos1 the positon where to insert a StringView.
-     * @param t the instance of object convertible to StringView used as data
-     * source.
-     * @param pos2 the begin of the substring to be inserted.
-     * @param n the end of the substring to be inserted.
-     *
-     * @return the instance of string.
-     *
-     * @req {SWS_CORE_03311}
-     */
-    template<typename T,
-             typename = typename std::
-               enable_if<std::is_convertible<T, StringView>::value, void>::type>
-    BasicString&
-    insert(size_type pos1, T const& t, size_type pos2, size_type n = npos)
-    {
-        StringView sv = static_cast<StringView>(t).substr(pos2, n);
-        _data.insert(pos1, sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Replaces a substring with the StringView as data source.
-     *
-     * @param pos1 start of the substring that is going to be replaced.
-     * @param n length of the substring that is going to be replaced.
-     * @param sv the StringView used as data source.
-     *
-     * @return the instance of string.
-     *
-     * @req {SWS_CORE_03312}
-     */
-    BasicString& replace(size_type pos1, size_type n1, StringView sv)
-    {
-        _data.replace(pos1, n1, sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Replaces at specified place a substring from an object convertible
-     * to StringView as data source.
-     *
-     * @param pos1 the begin of the replaced substring.
-     * @param n1 the length of the replaced substring.
-     * @param t the instance of object convertible to StringView used as data
-     * source.
-     * @param pos2 the begin of the substring to be inserted.
-     * @param n2 the length of the substring to be inserted.
-     *
-     * @return the instance of string.
-     *
-     * @req {SWS_CORE_03313}
-     */
-    template<typename T,
-             typename = typename std::
-               enable_if<std::is_convertible<T, StringView>::value, void>::type>
-    BasicString& replace(size_type pos1,
-                         size_type n1,
-                         T const&  t,
-                         size_type pos2,
-                         size_type n2 = npos)
-    {
-        StringView sv = static_cast<StringView>(t).substr(pos2, n2);
-        _data.replace(pos1, n1, sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Replaces a substring using StringView instance as data source.
-     *
-     * @param i1 the iterator pointing to the begin of the substring.
-     * @param i2 the iterator pointing to the end of the substring.
-     * @param sv the StringView used as data source.
-     *
-     * @return the instance of string.
-     *
-     * @req {SWS_CORE_03314}
-     */
-    BasicString& replace(const_iterator i1, const_iterator i2, StringView sv)
-    {
-        _data.replace(i1, i2, sv.data(), sv.length());
-
-        return *this;
-    }
-
-    /**
-     * @brief Finds the first occurence of StringView in string.
-     *
-     * @param sv the StringView instance used as a substring being looked for.
-     * @param pos the assumed begin of the string.
-     *
-     * @return the position of the first character of the found substring or
-     * BasicString::npos if no such substring is found.
-     *
-     * @req {SWS_CORE_03315}
-     */
-    size_type find(StringView sv, size_type pos = 0) const noexcept
-    {
-        return static_cast<StringView>(_data).find(sv, pos);
-    }
-
-    /**
-     * @brief Finds the last occurence of StringView in string.
-     *
-     * @param sv the StringView instance used as a substring being looked for.
-     * @param pos the assumed end of the string.
-     *
-     * @return the position of the first character of the found substring or
-     * BasicString::npos if no such substring is found.
-     *
-     * @req {SWS_CORE_03316}
-     */
-    size_type rfind(StringView sv, size_type pos = npos) const noexcept
-    {
-        return static_cast<StringView>(_data).rfind(sv, pos);
-    }
-
-    /**
-     * @brief Finds the first character equal to one of the characters occurring
-     * in the specified string.
-     *
-     * @param sv the StringView instance used as source of data.
-     * @param pos the assumed begin of the string.
-     *
-     * @return the position of the found character or BasicString::npos if no
-     * such character is found.
-     *
-     * @req {SWS_CORE_03317}
-     */
-    size_type find_first_of(StringView sv, size_type pos = 0) const noexcept
-    {
-        return static_cast<StringView>(_data).find_first_of(sv, pos);
-    }
-
-    /**
-     * @brief Finds the last character equal to one of the characters occurring
-     * in the specified string.
-     *
-     * @param sv the StringView instance used as source of data.
-     * @param pos the assumed end of the string.
-     *
-     * @return the position of the found character or BasicString::npos if no
-     * such character is found.
-     *
-     * @req {SWS_CORE_03318}
-     */
-    size_type find_last_of(StringView sv, size_type pos = npos) const noexcept
-    {
-        return static_cast<StringView>(_data).find_last_of(sv, pos);
-    }
-
-    /**
-     * @brief Finds the first character not equal to any of the characters
-     * occurring in the specified string.
-     *
-     * @param sv the StringView instance used as source of data.
-     * @param pos the assumed begin of the string.
-     *
-     * @return the position of the found character or BasicString::npos if no
-     * such character is found.
-     *
-     * @req {SWS_CORE_03319}
-     */
-    size_type find_first_not_of(StringView sv, size_type pos = 0) const noexcept
-    {
-        return static_cast<StringView>(_data).find_first_not_of(sv, pos);
-    }
-
-    /**
-     * @brief Finds the last character not equal to any of the characters
-     * occurring in the specified string.
-     *
-     * @param sv the StringView instance used as source of data.
-     * @param pos the assumed begin of the string.
-     *
-     * @return the position of the found character or BasicString::npos if no
-     * such character is found.
-     *
-     * @req {SWS_CORE_03320}
-     */
-    size_type
-    find_last_not_of(StringView sv, size_type pos = npos) const noexcept
-    {
-        return static_cast<StringView>(_data).find_last_not_of(sv, pos);
-    }
-
-    /**
-     * @brief Lexicographically compares the content of the string with a
-     * content of the StringView.
-     *
-     * @param sv the StringView instace being compared with.
-     *
-     * @return negative value if the BasicString's value appears before the
-     * character sequence in the specified StringView, zero when identical,
-     * positive value if the BasicString's value appears after the character
-     * sequence in the StringView.
-     *
-     * @req {SWS_CORE_03321}
-     */
-    int compare(StringView sv) const noexcept
-    {
-        return static_cast<StringView>(_data).compare(sv);
-    }
-
-    /**
-     * @brief Lexicographically compares a substring with a content of the
-     * StringView instance.
-     *
-     * @param pos1 position of the first character of the substring.
-     * @param n1 the length of the substring.
-     * @param sv the StringView instance being compared with.
-     *
-     * @return negative value if the BasicString's value appears before the
-     * character sequence in the specified StringView, zero when identical,
-     * positive value if the BasicString's value appears after the character
-     * sequence in the StringView.
-     *
-     * @req {SWS_CORE_03322}
-     */
-    int compare(size_type pos1, size_type n1, StringView sv) const
-    {
-        return static_cast<StringView>(_data).compare(pos1, n1, sv);
-    }
-
-    /**
-     * @brief Lexicographically compares a substring with a content of an object
-     * convertible to StringView.
-     *
-     * @param pos1 the begin the compared substring.
-     * @param n1 the length of the compared substring.
-     * @param t the instance of object convertible to StringView.
-     * @param pos2 the begin of the substring made of a given object.
-     * @param n2 the length of the substring made of a given object.
-     *
-     * @return negative value if the BasicString's value appears before the
-     * character sequence in the specified StringView, zero when identical,
-     * positive value if the BasicString's value appears after the character
-     * sequence in the StringView.
-     *
-     * @req {SWS_CORE_03323}
-     */
-    template<typename T,
-             typename = typename std::
-               enable_if<std::is_convertible<T, StringView>::value, void>::type>
-    int compare(size_type pos1,
-                size_type n1,
-                T const&  t,
-                size_type pos2,
-                size_type n2 = npos) const
-    {
-        StringView sv = static_cast<StringView>(t);
-
-        // FIXME: replace this after ara::core::StringView reimplementation
-        return static_cast<StringView>(_data).substr(pos1, n1).compare(
-          sv.substr(pos2, n2));
-    }
-
-    // comparision operators from STL
     /**
      * @brief Checks if two strings are identical.
      *
