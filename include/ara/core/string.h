@@ -2073,168 +2073,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @req {SWS_CORE_03301}
      */
     operator StringView() const noexcept { return StringView(data(), size()); }
-
-    // comparision operators
-
-    /**
-     * @brief Checks if two strings are identical.
-     *
-     * @param other the BasicString instance to compare.
-     *
-     * @return True if strings are identical, false otherwise.
-     */
-    bool operator==(const BasicString& other) const noexcept
-    {
-        return _data == other._data;
-    }
-
-    /**
-     * @brief Checks if two strings are identical.
-     *
-     * @param s the plain null-terminated const char* string instance to compare.
-     *
-     * @return True if strings are identical, false otherwise.
-     */
-    bool operator==(const char* s) const noexcept { return _data == s; }
-
-    /**
-     * @brief Checks if two strings are diffrent.
-     *
-     * @param other the BasicString instance to compare.
-     *
-     * @return True if strings are different, false otherwise.
-     */
-    bool operator!=(const BasicString& other) const noexcept
-    {
-        return _data != other._data;
-    }
-
-    /**
-     * @brief Checks if two strings are diffrent.
-     *
-     * @param s the plain null-terminated const char* string instance to compare.
-     *
-     * @return True if strings are different, false otherwise.
-     */
-    bool operator!=(const char* s) const noexcept { return _data != s; }
-
-    /**
-     * @brief Lexicographically compares two strings.
-     *
-     * @param other BasicString instance to compare.
-     *
-     * @return True if this string instance is lexicographically lesser than
-     * other, false otherwise.
-     */
-    bool operator<(const BasicString& other) const noexcept
-    {
-        return _data < other._data;
-    }
-
-    /**
-     * @brief Lexicographically compares two strings.
-     *
-     * @param s null-terminated const char string to compare.
-     *
-     * @return True if this string instance is lexicographically lesser than s,
-     * false otherwise.
-     */
-    bool operator<(const char* s) const noexcept { return _data < s; }
-
-    /**
-     * @brief Lexicographically compares two strings.
-     *
-     * @param other BasicString instance to compare.
-     *
-     * @return True if this string instance is lexicographically greater than
-     * other, false otherwise.
-     */
-    bool operator>(const BasicString& other) const noexcept
-    {
-        return _data > other._data;
-    }
-
-    /**
-     * @brief Lexicographically compares two strings.
-     *
-     * @param s null-terminated const char string to compare.
-     *
-     * @return True if this string instance is lexicographically greater than s,
-     * false otherwise.
-     */
-    bool operator>(const char* s) const noexcept { return _data > s; }
-
-    /**
-     * @brief Lexicographically compares two strings.
-     *
-     * @param other BasicString instance to compare.
-     *
-     * @return True if this string instance is lexicographically not greater
-     * than other, false otherwise.
-     */
-    bool operator<=(const BasicString& other) const noexcept
-    {
-        return _data <= other._data;
-    }
-
-    /**
-     * @brief Lexicographically compares two strings.
-     *
-     * @param other BasicString instance to compare.
-     *
-     * @return True if this string instance is lexicographically not greater
-     * than s, false otherwise.
-     */
-    bool operator<=(const char* s) const noexcept { return _data <= s; }
-
-    /**
-     * @brief Lexicographically compares two strings.
-     *
-     * @param other BasicString instance to compare.
-     *
-     * @return True if this string instance is lexicographically not lesser than
-     * other, false otherwise.
-     */
-    bool operator>=(const BasicString& other) const noexcept
-    {
-        return _data >= other._data;
-    }
-
-    /**
-     * @brief Lexicographically compares two strings.
-     *
-     * @param s null-terminated const char string to compare.
-     *
-     * @return True if this string instance is lexicographically not lesser than
-     * s, false otherwise.
-     */
-    bool operator>=(const char* s) const noexcept { return _data >= s; }
-
-    /**
-     * @brief Checks if two strings are identical.
-     *
-     * @param s the plain null-terminated const char* string instance to compare.
-     * @param bs the BasicString instance to compare.
-     *
-     * @return True if strings are identical, false otherwise.
-     */
-    friend bool operator==(const char* s, const BasicString& bs) noexcept
-    {
-        return bs == s;
-    }
-
-    /**
-     * @brief Checks if two strings are diffrent.
-     *
-     * @param s the plain null-terminated const char* string instance to compare.
-     * @param bs the BasicString instance to compare.
-     *
-     * @return True if strings are different, false otherwise.
-     */
-    friend bool operator!=(const char* s, const BasicString& bs) noexcept
-    {
-        return bs != s;
-    }
 };
 
 /**
@@ -2260,6 +2098,139 @@ swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs) noexcept
     lhs.swap(rhs);
 }
 
+// comparision operators
+
+/**
+ * @brief Checks if two strings are identical.
+ *
+ * @param lhs the BasicString instance to compare.
+ * @param rhs the BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if strings are identical, false otherwise.
+ */
+template<class AllocatorT> bool
+operator==(const BasicString<AllocatorT>& lhs,
+           const BasicString<AllocatorT>& rhs) noexcept
+{
+    return lhs.compare(rhs) == 0;
+}
+
+/**
+ * @brief Checks if two strings are identical.
+ *
+ * @param bs the BasicString instance to compare.
+ * @param s the plain null-terminated const char* string instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if strings are identical, false otherwise.
+ */
+template<class AllocatorT> bool
+operator==(const BasicString<AllocatorT>& bs, const char* s) noexcept
+{
+    return bs.compare(s) == 0;
+}
+
+/**
+ * @brief Checks if two strings are identical.
+ *
+ * @param s the plain null-terminated const char* string instance to compare.
+ * @param bs the BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if strings are identical, false otherwise.
+ */
+template<class AllocatorT> bool
+operator==(const char* s, const BasicString<AllocatorT>& bs) noexcept
+{
+    return bs.compare(s) == 0;
+}
+
+/**
+ * @brief Checks if two strings are diffrent.
+ *
+ * @param lhs the BasicString instance to compare.
+ * @param rhs the BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if strings are different, false otherwise.
+ */
+template<class AllocatorT> bool
+operator!=(const BasicString<AllocatorT>& lhs,
+           const BasicString<AllocatorT>& rhs) noexcept
+{
+    return lhs.compare(rhs) != 0;
+}
+
+/**
+ * @brief Checks if two strings are diffrent.
+ *
+ * @param bs the BasicString instance to compare.
+ * @param s the plain null-terminated const char* string instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if strings are different, false otherwise.
+ */
+template<class AllocatorT> bool
+operator!=(const BasicString<AllocatorT>& bs, const char* s) noexcept
+{
+    return bs.compare(s) != 0;
+}
+
+/**
+ * @brief Checks if two strings are diffrent.
+ *
+ * @param s the plain null-terminated const char* string instance to compare.
+ * @param bs the BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if strings are different, false otherwise.
+ */
+template<class AllocatorT> bool
+operator!=(const char* s, const BasicString<AllocatorT>& bs) noexcept
+{
+    return bs.compare(s) != 0;
+}
+
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param lhs BasicString instance to compare.
+ * @param rhs BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if lhs is lexicographically lesser than rhs, false otherwise.
+ */
+template<class AllocatorT> bool
+operator<(const BasicString<AllocatorT>& lhs,
+          const BasicString<AllocatorT>& rhs) noexcept
+{
+    return lhs.compare(rhs) < 0;
+}
+
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param bs the BasicString instance to compare.
+ * @param s null-terminated const char string to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if bs is lexicographically lesser than s, false otherwise.
+ */
+template<class AllocatorT> bool
+operator<(const BasicString<AllocatorT>& bs, const char* s) noexcept
+{
+    return bs.compare(s) < 0;
+}
+
 /**
  * @brief Lexicographically compares two strings.
  *
@@ -2272,6 +2243,40 @@ swap(BasicString<Allocator>& lhs, BasicString<Allocator>& rhs) noexcept
  */
 template<class AllocatorT> bool
 operator<(const char* s, const BasicString<AllocatorT>& bs) noexcept
+{
+    return bs.compare(s) > 0;
+}
+
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param lhs BasicString instance to compare.
+ * @param rhs BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if lhs is lexicographically greater than rhs, false otherwise.
+ */
+template<class AllocatorT> bool
+operator>(const BasicString<AllocatorT>& lhs,
+          const BasicString<AllocatorT>& rhs) noexcept
+{
+    return lhs.compare(rhs) > 0;
+}
+
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param bs the BasicString instance to compare.
+ * @param s null-terminated const char string to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if bs is lexicographically greater than s,
+ * false otherwise.
+ */
+template<class AllocatorT> bool
+operator>(const BasicString<AllocatorT>& bs, const char* s) noexcept
 {
     return bs.compare(s) > 0;
 }
@@ -2295,6 +2300,41 @@ operator>(const char* s, const BasicString<AllocatorT>& bs) noexcept
 /**
  * @brief Lexicographically compares two strings.
  *
+ * @param lhs BasicString instance to compare.
+ * @param rhs BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if lhs is lexicographically not greater
+ * than rhs, false otherwise.
+ */
+template<class AllocatorT> bool
+operator<=(const BasicString<AllocatorT>& lhs,
+           const BasicString<AllocatorT>& rhs) noexcept
+{
+    return lhs.compare(rhs) <= 0;
+}
+
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param bs BasicString instance to compare.
+ * @param s null-terminated const char string to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if bs is lexicographically not greater
+ * than s, false otherwise.
+ */
+template<class AllocatorT> bool
+operator<=(const BasicString<AllocatorT>& bs, const char* s) noexcept
+{
+    return bs.compare(s) <= 0;
+}
+
+/**
+ * @brief Lexicographically compares two strings.
+ *
  * @param s null-terminated const char string to compare.
  * @param bs BasicString instance to compare.
  *
@@ -2304,6 +2344,41 @@ operator>(const char* s, const BasicString<AllocatorT>& bs) noexcept
  */
 template<class AllocatorT> bool
 operator<=(const char* s, const BasicString<AllocatorT>& bs) noexcept
+{
+    return bs.compare(s) >= 0;
+}
+
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param lhs BasicString instance to compare.
+ * @param rhs BasicString instance to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if lhs is lexicographically not lesser than
+ * rhs, false otherwise.
+ */
+template<class AllocatorT> bool
+operator>=(const BasicString<AllocatorT>& lhs,
+           const BasicString<AllocatorT>& rhs) noexcept
+{
+    return lhs.compare(rhs) >= 0;
+}
+
+/**
+ * @brief Lexicographically compares two strings.
+ *
+ * @param bs the BasicString instance to compare.
+ * @param s null-terminated const char string to compare.
+ *
+ * @tparam AllocatorT an allocator type.
+ *
+ * @return True if bs is lexicographically not lesser than
+ * s, false otherwise.
+ */
+template<class AllocatorT> bool
+operator>=(const BasicString<AllocatorT>& bs, const char* s) noexcept
 {
     return bs.compare(s) >= 0;
 }
