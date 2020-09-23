@@ -1693,6 +1693,23 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     }
 
     /**
+     * @brief Finds the last character equal to one of the characters occurring
+     * in the specified string.
+     *
+     * @param sv the StringView instance used as source of data.
+     * @param pos the assumed end of the string.
+     *
+     * @return the position of the found character or BasicString::npos if no
+     * such character is found.
+     *
+     * @req {SWS_CORE_03318}
+     */
+    size_type find_last_of(StringView sv, size_type pos = npos) const noexcept
+    {
+        return static_cast<StringView>(_data).find_last_of(sv, pos);
+    }
+
+    /**
      * @brief Finds the first character equal to none of the characters in given
      * character sequence.
      *
@@ -1773,23 +1790,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     }
 
     /**
-     * @brief Finds the last character equal to one of the characters occurring
-     * in the specified string.
-     *
-     * @param sv the StringView instance used as source of data.
-     * @param pos the assumed end of the string.
-     *
-     * @return the position of the found character or BasicString::npos if no
-     * such character is found.
-     *
-     * @req {SWS_CORE_03318}
-     */
-    size_type find_last_of(StringView sv, size_type pos = npos) const noexcept
-    {
-        return static_cast<StringView>(_data).find_last_of(sv, pos);
-    }
-
-    /**
      * @brief Finds the last character equal to none of the characters in given
      * character sequence.
      *
@@ -1854,22 +1854,6 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     }
 
     /**
-     * @brief Creates a substring from the string.
-     *
-     * @param pos the position of the first substring's character.
-     * @param n the length of the substring.
-     *
-     * @return an instance of the substring.
-     */
-    BasicString substr(size_type pos = 0, size_type n = npos) const
-    {
-        BasicString retval(_data.get_allocator());
-        retval._data = std::move(_data.substr(pos, n));
-
-        return retval;
-    }
-
-    /**
      * @brief Finds the last character not equal to any of the characters
      * occurring in the specified string.
      *
@@ -1885,6 +1869,22 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     find_last_not_of(StringView sv, size_type pos = npos) const noexcept
     {
         return static_cast<StringView>(_data).find_last_not_of(sv, pos);
+    }
+
+    /**
+     * @brief Creates a substring from the string.
+     *
+     * @param pos the position of the first substring's character.
+     * @param n the length of the substring.
+     *
+     * @return an instance of the substring.
+     */
+    BasicString substr(size_type pos = 0, size_type n = npos) const
+    {
+        BasicString retval(_data.get_allocator());
+        retval._data = std::move(_data.substr(pos, n));
+
+        return retval;
     }
 
     /**
