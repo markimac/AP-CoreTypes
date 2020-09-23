@@ -8,8 +8,9 @@
 #ifndef ARA_CORE_STRING_H_
 #define ARA_CORE_STRING_H_
 
-#include <string>   // std::basic_string
-#include <utility>  // std::forward, std::move, std::swap
+#include <initializer_list>  // std::initializer_list
+#include <string>            // std::basic_string
+#include <utility>           // std::forward, std::move, std::swap
 
 #include "ara/core/allocator.h"
 #include "ara/core/string_view.h"
@@ -193,6 +194,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
       : _data(static_cast<StringView>(t).substr(pos, n).data(),
               static_cast<StringView>(t).substr(pos, n).length())
     {}
+
+    ~BasicString() = default;
 
     // assignment operator=
 
@@ -703,10 +706,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                enable_if<std::is_convertible<T, StringView>::value, void>::type>
     BasicString& append(T const& t, size_type pos, size_type n = npos)
     {
-        StringView sv = static_cast<StringView>(t).substr(pos, n);
-        _data.append(sv.data(), sv.length());
-
-        return *this;
+        return append(static_cast<StringView>(t).substr(pos, n));
     }
 
     /**
@@ -853,10 +853,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                enable_if<std::is_convertible<T, StringView>::value, void>::type>
     BasicString& assign(T const& t, size_type pos, size_type n = npos)
     {
-        StringView sv = static_cast<StringView>(t).substr(pos, n);
-        _data.assign(sv.data(), sv.length());
-
-        return *this;
+        return assign(static_cast<StringView>(t).substr(pos, n));
     }
 
     /**
@@ -1032,10 +1029,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     BasicString&
     insert(size_type pos1, T const& t, size_type pos2, size_type n = npos)
     {
-        StringView sv = static_cast<StringView>(t).substr(pos2, n);
-        _data.insert(pos1, sv.data(), sv.length());
-
-        return *this;
+        return insert(pos1, static_cast<StringView>(t).substr(pos2, n));
     }
 
     /**
@@ -1340,10 +1334,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
                          size_type pos2,
                          size_type n2 = npos)
     {
-        StringView sv = static_cast<StringView>(t).substr(pos2, n2);
-        _data.replace(pos1, n1, sv.data(), sv.length());
-
-        return *this;
+        return replace(pos1, n1, static_cast<StringView>(t).substr(pos2, n2));
     }
 
     /**
