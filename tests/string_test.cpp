@@ -2272,6 +2272,27 @@ TEMPLATE_LIST_TEST_CASE("BasicString::append",
         CHECK(bs == str.c_str());
     }
 
+    SECTION("BasicString::append(InputIterator, InputIterator)")
+    {
+        std::string example("asdfqwerty");
+
+        BasicString bs("qwe");
+        std::string str("qwe");
+
+        auto begin_rty  = example.begin();
+        auto end_rty    = example.begin();
+        auto begin_asdf = example.begin();
+        auto end_asdf   = example.begin();
+        std::advance(begin_rty, 7);
+        std::advance(end_rty, 10);
+        std::advance(end_asdf, 4);
+
+        bs.append(begin_rty, end_rty).append(begin_asdf, end_asdf);
+        str.append(begin_rty, end_rty).append(begin_asdf, end_asdf);
+
+        CHECK(bs == str.c_str());
+    }
+
     SECTION("BasicString::append(std::initializer_list<char>)")
     {
         BasicString bs("qwe");

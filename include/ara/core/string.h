@@ -673,6 +673,37 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     }
 
     /**
+     * @brief Appends content of the string with a substring.
+     *
+     * @param first the iterator pointing to the first character of the
+     * substring.
+     * @param last the iterator pointing to the last character of the substring.
+     *
+     * @return the instance of the string.
+     */
+    template<typename InputIterator> BasicString&
+    append(InputIterator first, InputIterator last)
+    {
+        _data.append(first, last);
+
+        return *this;
+    }
+
+    /**
+     * @brief Appends content of the string with a substring.
+     *
+     * @param i the initializer_list being the source of data.
+     *
+     * @return the instance of the string.
+     */
+    BasicString& append(std::initializer_list<char> i)
+    {
+        _data.append(i);
+
+        return *this;
+    }
+
+    /**
      * @brief Appends the string with given StringView as data source.
      *
      * @param sv the StringView instance used as data source.
