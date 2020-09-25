@@ -57,6 +57,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
 
     /**
      * @brief Constructs an empty string with optionally given allocator.
+     *
+     * @param a the allocator.
      */
     explicit BasicString(const AllocatorT& a = AllocatorT()) : _data(a) {}
 
@@ -129,6 +131,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param begin the iterator pointing to the begin of the substring.
      * @param end the iterator pointing to the end of the substring.
      * @param a the allocator.
+     *
+     * @tparam InputIterator an iterator type.
      */
     template<class InputIterator>
     BasicString(InputIterator     begin,
@@ -184,6 +188,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param t the object being the source of a data.
      * @param pos position of first character of the substring.
      * @param n the length of the substring.
+     *
+     * @tparam T a type convertible to StringView.
      *
      * @req {SWS_CORE_03303}
      */
@@ -542,7 +548,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Appends the string with given null-terminated const char* string
      * as source of data.
      *
-     * @param str the appending string.
+     * @param s the appending null-terminated const char* string.
      *
      * @return the instance of appended string.
      */
@@ -556,7 +562,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Appends the string with given character.
      *
-     * @param str the appending string.
+     * @param c the appending character.
      *
      * @return the instance of appended string.
      */
@@ -570,7 +576,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Appends the string with initialization list as source of data.
      *
-     * @param str the appending string.
+     * @param i the appending initialization list.
      *
      * @return the instance of appended string.
      */
@@ -630,8 +636,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Appends the string with a const char* string as source of data.
      *
-     * @param str the appending string.
-     * @param n length of the str string.
+     * @param s the appending const char* string.
+     * @param n length of the s.
      *
      * @return the instance of appended string.
      */
@@ -646,7 +652,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Appends the string with a null-terminated const char* as source of
      * data.
      *
-     * @param str the appending null-terminated const char* string.
+     * @param s the appending null-terminated const char* string.
      *
      * @return the instance of appended string.
      */
@@ -678,6 +684,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param first the iterator pointing to the first character of the
      * substring.
      * @param last the iterator pointing to the last character of the substring.
+     *
+     * @tparam InputIterator an iterator type.
      *
      * @return the instance of the string.
      */
@@ -727,6 +735,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * source.
      * @param pos the begining of the substring to be appended.
      * @param n the length of the substring.
+     *
+     * @tparam T a type convertible to StringView.
      *
      * @return the instance of string.
      *
@@ -827,6 +837,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * substring.
      * @param last the iterator pointing to the last character of the substring.
      *
+     * @tparam InputIterator an iterator type.
+     *
      * @return the instance of the string.
      */
     template<class InputIterator> BasicString&
@@ -875,6 +887,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param pos position of first character of the substring.
      * @param n the length of the substring.
      *
+     * @tparam T a type convertible to StringView.
+     *
      * @return the instance of the string.
      *
      * @req {SWS_CORE_03306}
@@ -890,8 +904,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Inserts a given string in the specified place.
      *
-     * @param str the string being the source of the data.
      * @param pos1 the position where to insert a string.
+     * @param str the string being the source of the data.
      *
      * @return the instance of string.
      */
@@ -1001,6 +1015,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * string.
      * @param last the iterator pointing to the end of the inserted string.
      *
+     * @tparam InputIterator an iterator type.
+     *
      * @return the instance of string.
      */
     template<class InputIterator> iterator
@@ -1049,6 +1065,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * source.
      * @param pos2 the begin of the substring to be inserted.
      * @param n the end of the substring to be inserted.
+     *
+     * @tparam T a type convertible to StringView.
      *
      * @return the instance of string.
      *
@@ -1293,6 +1311,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * string.
      * @param j2 the iterator pointing to the end of the replacement string.
      *
+     * @tparam InputIterator an iterator type.
+     *
      * @return the instance of string.
      */
     template<class InputIterator> BasicString& replace(const_iterator i1,
@@ -1351,6 +1371,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * source.
      * @param pos2 the begin of the substring to be inserted.
      * @param n2 the length of the substring to be inserted.
+     *
+     * @tparam T a type convertible to StringView.
      *
      * @return the instance of string.
      *
@@ -1451,7 +1473,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Finds the first substring equal to the given character sequence.
      *
-     * @param str the string to search for.
+     * @param s the null-terminated const char* string to search for.
      * @param pos the position at which to start the search.
      * @param n the length of the string.
      *
@@ -1466,7 +1488,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Finds the first substring equal to the given character sequence.
      *
-     * @param str the null-terminated const char string to search for.
+     * @param s the null-terminated const char* string to search for.
      * @param pos the position at which to start the search.
      *
      * @return a position of the first character of the substring being looked
@@ -1524,7 +1546,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Finds the last substring equal to the given character sequence.
      *
-     * @param str the string to search for.
+     * @param s the null-terminated const char* string to search for.
      * @param pos the position at which to start the search.
      * @param n the length of the string.
      *
@@ -1539,7 +1561,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
     /**
      * @brief Finds the last substring equal to the given character sequence.
      *
-     * @param str the null-terminated const char string to search for.
+     * @param s the null-terminated const char* string to search for.
      * @param pos the position at which to start the search.
      *
      * @return a position of the first character of the substring being looked
@@ -1600,7 +1622,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Finds the first character equal to one of the characters in given
      * character sequence.
      *
-     * @param str a string containing characters to search for.
+     * @param s a null-terminated const char* string containing characters to
+     * search for.
      * @param pos the position at which to start the search.
      * @param n the length of the string.
      *
@@ -1617,7 +1640,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Finds the first character equal to one of the characters in given
      * character sequence.
      *
-     * @param str a string containing characters to search for.
+     * @param s a null-terminated const char* string containing characters to
+     * search for.
      * @param pos the position at which to start the search.
      *
      * @return a position of the found character or BasicString::npos if not
@@ -1680,7 +1704,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Finds the last character equal to one of the characters in given
      * character sequence.
      *
-     * @param str a string containing characters to search for.
+     * @param s a null-terminated const char* string containing characters to
+     * search for.
      * @param pos the position at which to start the search.
      * @param n the length of the string.
      *
@@ -1697,7 +1722,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Finds the last character equal to one of the characters in given
      * character sequence.
      *
-     * @param str a string containing characters to search for.
+     * @param s a null-terminated const char* string containing characters to
+     * search for.
      * @param pos the position at which to start the search.
      *
      * @return a position of the found character or BasicString::npos if not
@@ -1760,7 +1786,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Finds the first character equal to none of the characters in given
      * character sequence.
      *
-     * @param str a string containing characters to search for.
+     * @param s a null-terminated const char* string containing characters to
+     * search for.
      * @param pos the position at which to start the search.
      * @param n the length of the string.
      *
@@ -1777,7 +1804,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Finds the first character equal to none of the characters in given
      * character sequence.
      *
-     * @param str a string containing characters to search for.
+     * @param s a null-terminated const char* string containing characters to
+     * search for.
      * @param pos the position at which to start the search.
      *
      * @return a position of the found character or BasicString::npos if not
@@ -1840,7 +1868,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Finds the last character equal to none of the characters in given
      * character sequence.
      *
-     * @param str a string containing characters to search for.
+     * @param s a null-terminated const char* string containing characters to
+     * search for.
      * @param pos the position at which to start the search.
      * @param n the length of the string.
      *
@@ -1857,7 +1886,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @brief Finds the last character equal to none of the characters in given
      * character sequence.
      *
-     * @param str a string containing characters to search for.
+     * @param s a null-terminated const char* string containing characters to
+     * search for.
      * @param pos the position at which to start the search.
      *
      * @return a position of the found character or BasicString::npos if not
@@ -1959,6 +1989,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param pos1 the position of the first character of the substring.
      * @param n1 the length of the substring.
      * @param str the string instance being compared with.
+     * @param pos2 the position of the first character of the str's substring.
+     * @param n2 the length of the str's substring.
      *
      * @return negative value if the BasicString's value appears before the
      * character sequence in the specified substring, zero when identical,
@@ -1994,7 +2026,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @param pos1 the position of the first character of the substring.
      * @param n1 the length of the substring.
-     * @param str the string instance being compared with.
+     * @param s the null-terminated const char* string instance being compared
+     * with.
      *
      * @return negative value if the BasicString's value appears before the
      * character sequence in the specified substring, zero when identical,
@@ -2012,7 +2045,7 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      *
      * @param pos1 the position of the first character of the substring.
      * @param n1 the length of the substring.
-     * @param str the string instance being compared with.
+     * @param s the const char* string instance being compared with.
      * @param n2 the length of the string being compared with.
      *
      * @return negative value if the BasicString's value appears before the
@@ -2072,6 +2105,8 @@ template<class AllocatorT = ara::core::Allocator<char>> class BasicString
      * @param t the instance of object convertible to StringView.
      * @param pos2 the begin of the substring made of a given object.
      * @param n2 the length of the substring made of a given object.
+     *
+     * @tparam T a type convertible to StringView.
      *
      * @return negative value if the BasicString's value appears before the
      * character sequence in the specified StringView, zero when identical,
@@ -2625,7 +2660,7 @@ operator+(BasicString<AllocatorT>&& lhs, const char* rhs)
  * @brief Concatenates two strings.
  *
  * @param lhs the string to concatenate.
- * @param rhs the null-terminated const char* string to concatenate.
+ * @param rhs the character to concatenate.
  *
  * @tparam AllocatorT an allocator type.
  *
@@ -2644,7 +2679,7 @@ operator+(const BasicString<AllocatorT>& lhs, char rhs)
  * @brief Concatenates two strings.
  *
  * @param lhs the string to concatenate.
- * @param rhs the null-terminated const char* string to concatenate.
+ * @param rhs the character to concatenate.
  *
  * @tparam AllocatorT an allocator type.
  *
